@@ -17,6 +17,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
     opts = {
       :hosts => [::LogStash::Util::SafeURI.new("127.0.0.1")],
       :logger => Cabin::Channel.get,
+      :target_bulk_bytes => 9_000_000,
       :metric => ::LogStash::Instrument::NullMetric.new(:dummy).namespace(:alsodummy)
     }
 
@@ -226,8 +227,8 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
           end
         end
 
-        context "if a message is over TARGET_BULK_BYTES" do
-          let(:target_bulk_bytes) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES }
+        context "if a message is over target_bulk_bytes" do
+          let(:target_bulk_bytes) { subject.target_bulk_bytes }
           let(:message) { "a" * (target_bulk_bytes + 1) }
 
           it "should be handled properly" do
@@ -256,8 +257,8 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
             s = subject.send(:bulk, actions)
           end
 
-          context "if one exceeds TARGET_BULK_BYTES" do
-            let(:target_bulk_bytes) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES }
+          context "if one exceeds target_bulk_bytes" do
+            let(:target_bulk_bytes) { subject.target_bulk_bytes }
             let(:message1) { "a" * (target_bulk_bytes + 1) }
             it "executes two bulk_send operations" do
               allow(subject).to receive(:join_bulk_responses)

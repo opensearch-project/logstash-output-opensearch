@@ -35,6 +35,7 @@ module LogStash; module Outputs; class OpenSearch;
       end
 
       common_options[:timeout] = params["timeout"] if params["timeout"]
+      common_options[:target_bulk_bytes] = params["target_bulk_bytes"]
 
       if params["path"]
         client_settings[:path] = dedup_slashes("/#{params["path"]}/")

@@ -34,6 +34,20 @@ module LogStash; module PluginMixins; module OpenSearch
         # this defaults to a concatenation of the path parameter and "_bulk"
         :bulk_path => { :validate => :string },
 
+        # Maximum number of bytes in bulk requests
+        # The criteria for deciding the default value of target_bulk_bytes is:
+        # 1. We need a number that's less than 10MiB because OpenSearch is commonly
+        #    configured (particular in AWS Opensearch Service) to not accept
+        #    bulks larger than that.
+        # 2. It must be large enough to amortize the connection constant
+        #    across multiple requests.
+        # 3. It must be small enough that even if multiple threads hit this size
+        #    we won't use a lot of heap.
+        :target_bulk_bytes => {
+            :validate => :number,
+            :default => 9 * 1024 * 1024 # 9MiB
+        },
+
         # Pass a set of key value pairs as the URL query string. This query string is added
         # to every host listed in the 'hosts' configuration. If the 'hosts' list contains
         # urls that already have query strings, the one specified here will be appended.

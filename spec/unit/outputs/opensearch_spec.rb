@@ -325,7 +325,7 @@ describe LogStash::Outputs::OpenSearch do
   end
 
   context '413 errors' do
-    let(:payload_size) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES + 1024 }
+    let(:payload_size) { subject.client.target_bulk_bytes + 1024 }
     let(:event) { ::LogStash::Event.new("message" => ("a" * payload_size ) ) }
 
     let(:logger_stub) { double("logger").as_null_object }
@@ -357,7 +357,7 @@ describe LogStash::Outputs::OpenSearch do
 
       expect(logger_stub).to have_received(:warn)
                                  .with(a_string_matching(/413 Payload Too Large/),
-                                       hash_including(:action_count => 1, :content_length => a_value > 20_000_000))
+                                       hash_including(:action_count => 1, :content_length => a_value > subject.client.target_bulk_bytes))
     end
   end
 

@@ -10,8 +10,7 @@
 require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/opensearch"
 
-describe "TARGET_BULK_BYTES", :integration => true do
-  let(:target_bulk_bytes) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES }
+describe "target_bulk_bytes", :integration => true do
   let(:event_count) { 1000 }
   let(:events) { event_count.times.map { event }.to_a }
   let(:config) {
@@ -32,11 +31,11 @@ describe "TARGET_BULK_BYTES", :integration => true do
   end
 
   describe "batches that are too large for one" do
-    let(:event) { LogStash::Event.new("message" => "a " * (((target_bulk_bytes/2) / event_count)+1)) }
+    let(:event) { LogStash::Event.new("message" => "a " * (((subject.client.target_bulk_bytes/2) / event_count)+1)) }
 
     it "should send in two batches" do
       expect(subject.client).to have_received(:bulk_send).twice do |payload|
-        expect(payload.size).to be <= target_bulk_bytes
+        expect(payload.size).to be <= subject.client.target_bulk_bytes
       end
     end
 
@@ -47,7 +46,7 @@ describe "TARGET_BULK_BYTES", :integration => true do
 
       it "should send in one batch" do
         expect(subject.client).to have_received(:bulk_send).once do |payload|
-          expect(payload.size).to be <= target_bulk_bytes
+          expect(payload.size).to be <= subject.client.target_bulk_bytes
         end
       end
     end
