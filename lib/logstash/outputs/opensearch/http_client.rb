@@ -15,23 +15,9 @@ require 'zlib'
 require 'stringio'
 
 module LogStash; module Outputs; class OpenSearch;
-  # This is a constant instead of a config option because
-  # there really isn't a good reason to configure it.
-  #
-  # The criteria used are:
-  # 1. We need a number that's less than 100MiB because OpenSearch
-  #    won't accept bulks larger than that.
-  # 2. It must be large enough to amortize the connection constant
-  #    across multiple requests.
-  # 3. It must be small enough that even if multiple threads hit this size
-  #    we won't use a lot of heap.
-  #
-  # We wound up agreeing that a number greater than 10 MiB and less than 100MiB
-  # made sense. We picked one on the lowish side to not use too much heap.
-  TARGET_BULK_BYTES = 20 * 1024 * 1024 # 20MiB
-
   class HttpClient
-    attr_reader :client, :options, :logger, :pool, :action_count, :recv_count
+    attr_reader :client, :options, :logger, :pool, :action_count, :recv_count, :target_bulk_bytes
+
     # This is here in case we use DEFAULT_OPTIONS in the future
     # DEFAULT_OPTIONS = {
     #   :setting => value
@@ -73,6 +59,8 @@ module LogStash; module Outputs; class OpenSearch;
       # mutex to prevent requests and sniffing to access the
       # connection pool at the same time
       @bulk_path = @options[:bulk_path]
+
+      @target_bulk_bytes = @options[:target_bulk_bytes]
     end
 
     def build_url_template
@@ -105,7 +93,6 @@ module LogStash; module Outputs; class OpenSearch;
     def bulk(actions)
       @action_count ||= 0
       @action_count += actions.size
-
       return if actions.empty?
 
       bulk_actions = actions.collect do |action, args, source|
@@ -132,7 +119,7 @@ module LogStash; module Outputs; class OpenSearch;
                     action.map {|line| LogStash::Json.dump(line)}.join("\n") :
                     LogStash::Json.dump(action)
         as_json << "\n"
-        if (stream_writer.pos + as_json.bytesize) > TARGET_BULK_BYTES && stream_writer.pos > 0
+        if (stream_writer.pos + as_json.bytesize) > @target_bulk_bytes && stream_writer.pos > 0
           stream_writer.flush # ensure writer has sync'd buffers before reporting sizes
           logger.debug("Sending partial bulk request for batch with one or more actions remaining.",
                        :action_count => batch_actions.size,
