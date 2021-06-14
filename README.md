@@ -1,15 +1,12 @@
-## My Project
+# Logstash Plugin
 
-TODO: Fill this README out!
+This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+It is fully free and fully open source. The license is Apache 2.0, meaning you are pretty much free to use it however you want in whatever way.
 
 ## Security
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+See [SECURITY](SECURITY.md) for more information.
 
 ## License
 
