@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version         = '11.0.2'
 
   s.licenses        = ['apache-2.0']
-  s.summary         = "Stores logs in Elasticsearch"
+  s.summary         = "Stores logs in OpenSearch"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
   s.authors         = ["Elastic"]
   s.email           = 'info@elastic.co'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.platform = RUBY_PLATFORM
 
   # Files
-  s.files = Dir["lib/**/*","spec/**/*","*.gemspec","*.md","CONTRIBUTORS","Gemfile","LICENSE","NOTICE.TXT", "vendor/jar-dependencies/**/*.jar", "vendor/jar-dependencies/**/*.rb", "VERSION", "docs/**/*"]
+  s.files = Dir["lib/**/*","spec/**/*","*.gemspec","*.md","Gemfile","LICENSE","NOTICE", "vendor/jar-dependencies/**/*.jar", "vendor/jar-dependencies/**/*.rb", "VERSION", "docs/**/*"]
 
   # Tests
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
@@ -30,6 +30,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'logstash-devutils'
   s.add_development_dependency 'flores'
   s.add_development_dependency 'cabin', ['~> 0.6']
-  # Still used in some specs, we should remove this ASAP
-  s.add_development_dependency 'elasticsearch'
 end

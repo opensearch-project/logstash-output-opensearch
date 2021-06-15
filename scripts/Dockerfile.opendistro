@@ -1,0 +1,11 @@
+FROM amazon/opendistro-for-elasticsearch:1.13.2
+
+ARG plugin_path=/usr/share/plugins/plugin
+ARG es_path=/usr/share/elasticsearch
+ARG es_yml=$es_path/config/elasticsearch.yml
+
+RUN /usr/share/elasticsearch/bin/elasticsearch-plugin remove opendistro_security
+COPY --chown=elasticsearch:elasticsearch spec/fixtures/scripts/groovy/* $es_path/config/scripts/
+COPY --chown=elasticsearch:elasticsearch spec/fixtures/test_certs/* $es_path/config/test_certs/
+COPY --chown=elasticsearch:elasticsearch scripts/elasticsearch-run.sh $es_path/
+

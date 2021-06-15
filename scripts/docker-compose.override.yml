@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  logstash:
+    command: /usr/share/plugins/plugin/scripts/logstash-run.sh
+    build:
+      args:
+        - LOGSTASH_VERSION=$LOGSTASH_VERSION
+    environment:
+      - INTEGRATION=${INTEGRATION:-false}
+
+
+  elasticsearch:
+    build:
+      context: ../
+      dockerfile: scripts/Dockerfile.opendistro
+      args:
+        - OPENDISTRO_VERSION=$OPENDISTRO_VERSION
+        - INTEGRATION=${INTEGRATION:-false}
+    command: /usr/share/elasticsearch/elasticsearch-run.sh
+    ports:
+      - "9200:9200"
+    user: elasticsearch
+
