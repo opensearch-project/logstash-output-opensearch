@@ -24,9 +24,7 @@ module ESHelper
   end
 
   def doc_type
-    if ESHelper.es_version_satisfies?(">=8")
-      nil
-    elsif ESHelper.es_version_satisfies?(">=7")
+    if ESHelper.es_version_satisfies?(">=7")
       "_doc"
     else
       "doc"
@@ -61,7 +59,7 @@ module ESHelper
   end
 
   def self.es_version
-    RSpec.configuration.filter[:es_version] || ENV['ES_VERSION'] || ENV['ELASTIC_STACK_VERSION']
+    RSpec.configuration.filter[:es_version] || ENV['ES_VERSION']
   end
 
   RSpec::Matchers.define :have_hits do |expected|
@@ -82,7 +80,7 @@ module ESHelper
   end
 
   def self.es_version_satisfies?(*requirement)
-    es_version = RSpec.configuration.filter[:es_version] || ENV['ES_VERSION'] || ENV['ELASTIC_STACK_VERSION']
+    es_version = RSpec.configuration.filter[:es_version]
     if es_version.nil?
       puts "Info: ES_VERSION, ELASTIC_STACK_VERSION or 'es_version' tag wasn't set. Returning false to all `es_version_satisfies?` call."
       return false
@@ -96,7 +94,6 @@ module ESHelper
     client.indices.delete_index_template(:name => "logstash*") rescue nil
     # This can fail if there are no indexes, ignore failure.
     client.indices.delete(:index => "*") rescue nil
-    clean_ilm(client) if supports_ilm?(client)
   end
 
   def set_cluster_settings(client, cluster_settings)
@@ -108,14 +105,6 @@ module ESHelper
     client.cluster.get_settings
   end
 
-  def get_policy(client, policy_name)
-    client.get_ilm_policy(name: policy_name)
-  end
-
-  def put_policy(client, policy_name, policy)
-    client.put_ilm_policy({:name => policy_name, :body=> policy})
-  end
-
   def put_alias(client, the_alias, index)
     body = {
         "aliases" => {
@@ -125,19 +114,6 @@ module ESHelper
         }
     }
     client.put_alias({name: the_alias, body: body})
-  end
-
-  def clean_ilm(client)
-    client.get_ilm_policy.each_key { |key| client.delete_ilm_policy(name: key)  if key =~ /logstash-policy/ }
-  end
-
-  def supports_ilm?(client)
-    begin
-      client.get_ilm_policy
-      true
-    rescue
-      false
-    end
   end
 
   def max_docs_policy(max_docs)
@@ -173,27 +149,16 @@ module ESHelper
   end
 
   def get_template(client, name)
-    if ESHelper.es_version_satisfies?(">=8")
-      t = client.indices.get_index_template(name: name)
-      t['index_templates'][0]['index_template']
-    else
-      t = client.indices.get_template(name: name)
-      t[name]
-    end
+    t = client.indices.get_template(name: name)
+    t[name]
   end
 
   def get_template_settings(template)
-    if ESHelper.es_version_satisfies?(">=8")
-      template['template']['settings']
-    else
-      template['settings']
-    end
+    template['settings']
   end
 
   def get_template_mappings(template)
-    if ESHelper.es_version_satisfies?(">=8")
-      template['template']['mappings']
-    elsif ESHelper.es_version_satisfies?(">=7")
+    if ESHelper.es_version_satisfies?(">=7")
       template['mappings']
     else
       template['mappings']["_default_"]

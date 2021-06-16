@@ -12,7 +12,6 @@ module LogStash; module Outputs; class ElasticSearch
         template = load_default_template(plugin.maximum_seen_major_version, plugin.ecs_compatibility)
       end
 
-      add_ilm_settings_to_template(plugin, template) if plugin.ilm_in_use?
       plugin.logger.debug("Attempting to install template", template: template)
       install(plugin.client, template_name(plugin), template, plugin.template_overwrite)
     end
@@ -29,27 +28,12 @@ module LogStash; module Outputs; class ElasticSearch
       client.template_install(template_name, template, template_overwrite)
     end
 
-    def self.add_ilm_settings_to_template(plugin, template)
-      # Overwrite any index patterns, and use the rollover alias. Use 'index_patterns' rather than 'template' for pattern
-      # definition - remove any existing definition of 'template'
-      template.delete('template') if template.include?('template') if plugin.maximum_seen_major_version < 8
-      template['index_patterns'] = "#{plugin.ilm_rollover_alias}-*"
-      settings = template_settings(plugin, template)
-      if settings && (settings['index.lifecycle.name'] || settings['index.lifecycle.rollover_alias'])
-        plugin.logger.info("Overwriting index lifecycle name and rollover alias as ILM is enabled")
-      end
-      settings.update({ 'index.lifecycle.name' => plugin.ilm_policy, 'index.lifecycle.rollover_alias' => plugin.ilm_rollover_alias})
-    end
-
     def self.template_settings(plugin, template)
-      plugin.maximum_seen_major_version < 8 ? template['settings']: template['template']['settings']
+      template['settings']
     end
 
-    # Template name - if template_name set, use it
-    #                 if not and ILM is enabled, use the rollover alias
-    #                 else use the default value of template_name
     def self.template_name(plugin)
-      plugin.ilm_in_use? && !plugin.original_params.key?('template_name') ? plugin.ilm_rollover_alias : plugin.template_name
+      plugin.template_name
     end
 
     def self.default_template_path(es_major_version, ecs_compatibility=:disabled)
