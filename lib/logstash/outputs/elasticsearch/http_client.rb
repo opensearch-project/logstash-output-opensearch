@@ -394,8 +394,6 @@ module LogStash; module Outputs; class ElasticSearch;
       maximum_seen_major_version < 8 ? '_template' : '_index_template'
     end
 
-    # ILM methods
-
     # check whether rollover alias already exists
     def rollover_alias_exists?(name)
       exists?(name)
@@ -415,25 +413,6 @@ module LogStash; module Outputs; class ElasticSearch;
         raise e
       end
     end
-
-    def get_xpack_info
-      get("/_xpack")
-    end
-
-    def get_ilm_endpoint
-      @pool.get("/_ilm/policy")
-    end
-
-    def ilm_policy_exists?(name)
-      exists?("/_ilm/policy/#{name}", true)
-    end
-
-    def ilm_policy_put(name, policy)
-      path = "_ilm/policy/#{name}"
-      logger.info("Installing ILM policy #{policy}", name: name)
-      @pool.put(path, nil, LogStash::Json.dump(policy))
-    end
-
 
     # Build a bulk item for an elasticsearch update action
     def update_action_builder(args, source)
