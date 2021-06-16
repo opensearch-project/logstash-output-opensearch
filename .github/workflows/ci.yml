@@ -1,0 +1,34 @@
+name: Build and Test logstash-output-opensearch plugin
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  Build:
+    name: Build and Test logstash-output-opensearch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v1
+
+      - name: Build and pull docker files
+        env:
+          OPENDISTRO_VERSION: "1.13.2"
+          LOGSTASH_VERSION: "7.13.2"
+        run: |
+          ./scripts/docker-setup.sh
+
+      - name: Run unit tests
+        run: |
+          ./scripts/docker-run.sh
+
+      - name: Run integration tests
+        env:
+          INTEGRATION: true
+        run: |
+          ./scripts/docker-run.sh
