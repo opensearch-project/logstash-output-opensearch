@@ -6,6 +6,7 @@ This document explains who the admins are (see below), what they do in this repo
 
 | Admin                    | GitHub ID                               | Affiliation |
 | -------------------------| --------------------------------------- | ----------- |
+| Jack Mazanec             | [jmazanec15](https://github.com/jmazanec15) | Amazon |
 | Vamshi Vijay Nakkirtha   | [vamshin](https://github.com/vamshin)   |   Amazon    |
 | Vijayan Balasubramanian  | [VijayanB](https://github.com/VijayanB) |   Amazon    |
 
