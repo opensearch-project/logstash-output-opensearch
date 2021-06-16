@@ -235,25 +235,8 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   # here like `pipeline => "%{INGEST_PIPELINE}"`
   config :pipeline, :validate => :string, :default => nil
 
-  # -----
-  # ILM configurations (beta)
-  # -----
-  # Flag for enabling Index Lifecycle Management integration.
-  config :ilm_enabled, :validate => [true, false, 'true', 'false', 'auto'], :default => 'auto'
-
-  # Rollover alias used for indexing data. If rollover alias doesn't exist, Logstash will create it and map it to the relevant index
-  config :ilm_rollover_alias, :validate => :string
-
-  # appends “{now/d}-000001” by default for new index creation, subsequent rollover indices will increment based on this pattern i.e. “000002”
-  # {now/d} is date math, and will insert the appropriate value automatically.
-  config :ilm_pattern, :validate => :string, :default => '{now/d}-000001'
-
-  # ILM policy to use, if undefined the default policy will be used.
-  config :ilm_policy, :validate => :string, :default => DEFAULT_POLICY
-
   attr_reader :client
   attr_reader :default_index
-  attr_reader :default_ilm_rollover_alias
   attr_reader :default_template_name
 
   def initialize(*params)
@@ -307,7 +290,6 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
     assert_es_version_supports_data_streams if data_stream_config?
     discover_cluster_uuid
     install_template
-    setup_ilm if ilm_in_use?
     super
   end
 
@@ -502,18 +484,14 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
     case ecs_compatibility
     when :disabled
       @default_index = "logstash-%{+yyyy.MM.dd}"
-      @default_ilm_rollover_alias = "logstash"
       @default_template_name = 'logstash'
     when :v1
       @default_index = "ecs-logstash-%{+yyyy.MM.dd}"
-      @default_ilm_rollover_alias = "ecs-logstash"
       @default_template_name = 'ecs-logstash'
     else
       fail("unsupported ECS Compatibility `#{ecs_compatibility}`")
     end
-
     @index ||= default_index
-    @ilm_rollover_alias ||= default_ilm_rollover_alias
     @template_name ||= default_template_name
   end
 
