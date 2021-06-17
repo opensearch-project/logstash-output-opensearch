@@ -20,9 +20,6 @@ module LogStash; module PluginMixins; module ElasticSearch
       # the following 3 options validation & setup methods are called inside build_client
       # because they must be executed prior to building the client and logstash
       # monitoring and management rely on directly calling build_client
-      # see https://github.com/logstash-plugins/logstash-output-elasticsearch/pull/934#pullrequestreview-396203307
-      validate_authentication
-      fill_hosts_from_cloud_id
       setup_hosts
 
       params["metric"] = metric
@@ -31,28 +28,6 @@ module LogStash; module PluginMixins; module ElasticSearch
       end
       ::LogStash::Outputs::ElasticSearch::HttpClientBuilder.build(@logger, @hosts, params)
     end
-
-    def validate_authentication
-      authn_options = 0
-      authn_options += 1 if @cloud_auth
-      authn_options += 1 if (@api_key && @api_key.value)
-      authn_options += 1 if (@user || (@password && @password.value))
-
-      if authn_options > 1
-        raise LogStash::ConfigurationError, 'Multiple authentication options are specified, please only use one of user/password, cloud_auth or api_key'
-      end
-
-      if @api_key && @api_key.value && @ssl   != true
-        raise(LogStash::ConfigurationError, "Using api_key authentication requires SSL/TLS secured communication using the `ssl => true` option")
-      end
-
-      if @cloud_auth
-        @user, @password = parse_user_password_from_cloud_auth(@cloud_auth)
-        # params is the plugin global params hash which will be passed to HttpClientBuilder.build
-        params['user'], params['password'] = @user, @password
-      end
-    end
-    private :validate_authentication
 
     def setup_hosts
       @hosts = Array(@hosts)
@@ -68,50 +43,6 @@ module LogStash; module PluginMixins; module ElasticSearch
     end
     private :hosts_default?
 
-    def fill_hosts_from_cloud_id
-      return unless @cloud_id
-
-      if @hosts && !hosts_default?(@hosts)
-        raise LogStash::ConfigurationError, 'Both cloud_id and hosts specified, please only use one of those.'
-      end
-      @hosts = parse_host_uri_from_cloud_id(@cloud_id)
-    end
-
-    def parse_host_uri_from_cloud_id(cloud_id)
-      begin # might not be available on older LS
-        require 'logstash/util/cloud_setting_id'
-      rescue LoadError
-        raise LogStash::ConfigurationError, 'The cloud_id setting is not supported by your version of Logstash, ' +
-            'please upgrade your installation (or set hosts instead).'
-      end
-
-      begin
-        cloud_id = LogStash::Util::CloudSettingId.new(cloud_id) # already does append ':{port}' to host
-      rescue ArgumentError => e
-        raise LogStash::ConfigurationError, e.message.to_s.sub(/Cloud Id/i, 'cloud_id')
-      end
-      cloud_uri = "#{cloud_id.elasticsearch_scheme}://#{cloud_id.elasticsearch_host}"
-      LogStash::Util::SafeURI.new(cloud_uri)
-    end
-    private :parse_host_uri_from_cloud_id
-
-    def parse_user_password_from_cloud_auth(cloud_auth)
-      begin # might not be available on older LS
-        require 'logstash/util/cloud_setting_auth'
-      rescue LoadError
-        raise LogStash::ConfigurationError, 'The cloud_auth setting is not supported by your version of Logstash, ' +
-            'please upgrade your installation (or set user/password instead).'
-      end
-
-      cloud_auth = cloud_auth.value if cloud_auth.is_a?(LogStash::Util::Password)
-      begin
-        cloud_auth = LogStash::Util::CloudSettingAuth.new(cloud_auth)
-      rescue ArgumentError => e
-        raise LogStash::ConfigurationError, e.message.to_s.sub(/Cloud Auth/i, 'cloud_auth')
-      end
-      [ cloud_auth.username, cloud_auth.password ]
-    end
-    private :parse_user_password_from_cloud_auth
 
     # Plugin initialization extension point (after a successful ES connection).
     def finish_register

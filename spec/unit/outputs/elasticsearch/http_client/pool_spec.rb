@@ -13,7 +13,6 @@ describe LogStash::Outputs::ElasticSearch::HttpClient::Pool do
 
   let(:manticore_double) { double("manticore a") }
   before(:each) do
-
     response_double = double("manticore response").as_null_object
     # Allow healtchecks
     allow(manticore_double).to receive(:head).with(any_args).and_return(response_double)
