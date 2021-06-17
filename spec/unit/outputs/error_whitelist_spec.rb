@@ -15,8 +15,6 @@ describe "whitelisting error types in expected behavior" do
     allow(subject).to receive(:finish_register)
 
     subject.register
-
-    allow(subject.client).to receive(:get_xpack_info)
     allow(subject.client).to receive(:bulk).and_return(
       {
         "errors" => true,
