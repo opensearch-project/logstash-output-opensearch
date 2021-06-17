@@ -86,7 +86,6 @@ require "forwardable"
 class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   declare_threadsafe!
 
-  require "logstash/outputs/elasticsearch/license_checker"
   require "logstash/outputs/elasticsearch/http_client"
   require "logstash/outputs/elasticsearch/http_client_builder"
   require "logstash/plugin_mixins/elasticsearch/api_configs"
@@ -249,10 +248,7 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
 
     @logger.info("New Elasticsearch output", :class => self.class.name, :hosts => @hosts.map(&:sanitized).map(&:to_s))
 
-    # the license_checking behaviour in the Pool class is externalized in the LogStash::ElasticSearchOutputLicenseChecker
-    # class defined in license_check.rb. This license checking is specific to the elasticsearch output here and passed
-    # to build_client down to the Pool class.
-    @client = build_client(LicenseChecker.new(@logger))
+    @client = build_client
 
     @after_successful_connection_thread = after_successful_connection do
       begin

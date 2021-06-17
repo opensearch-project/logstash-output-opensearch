@@ -1,5 +1,4 @@
 require "concurrent/atomic/atomic_reference"
-require "logstash/plugin_mixins/elasticsearch/noop_license_checker"
 
 module LogStash; module Outputs; class ElasticSearch; class HttpClient;
   class Pool
@@ -32,10 +31,8 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
     end
 
     attr_reader :logger, :adapter, :sniffing, :sniffer_delay, :resurrect_delay, :healthcheck_path, :sniffing_path, :bulk_path
-    attr_reader :license_checker # license_checker is used by the pool specs
 
     ROOT_URI_PATH = '/'.freeze
-    LICENSE_PATH = '/_license'.freeze
 
     DEFAULT_OPTIONS = {
       :healthcheck_path => ROOT_URI_PATH,
@@ -70,8 +67,6 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
       # Holds metadata about all URLs
       @url_info = {}
       @stopping = false
-
-      @license_checker = options[:license_checker] || LogStash::PluginMixins::ElasticSearch::NoopLicenseChecker::INSTANCE
 
       @last_es_version = Concurrent::AtomicReference.new
     end
@@ -242,17 +237,6 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
       end
     end
 
-    # Retrieve ES node license information
-    # @param url [LogStash::Util::SafeURI] ES node URL
-    # @return [Hash] deserialized license document or empty Hash upon any error
-    def get_license(url)
-      response = perform_request_to_url(url, :get, LICENSE_PATH)
-      LogStash::Json.load(response.body)
-    rescue => e
-      logger.error("Unable to get license information", url: url.sanitized.to_s, exception: e.class, message: e.message)
-      {}
-    end
-
     def health_check_request(url)
       logger.debug("Running health check to see if an ES connection is working", url: url.sanitized.to_s, path: @healthcheck_path)
       perform_request_to_url(url, :head, @healthcheck_path)
@@ -270,9 +254,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
           @state_mutex.synchronize do
             meta[:version] = es_version
             set_last_es_version(es_version, url)
-
-            alive = @license_checker.appropriate_license?(self, url)
-            meta[:state] = alive ? :alive : :dead
+            meta[:state] = :alive
           end
         rescue HostUnreachableError, BadResponseCodeError => e
           logger.warn("Attempted to resurrect connection to dead ES instance, but got an error", url: url.sanitized.to_s, exception: e.class, message: e.message)
