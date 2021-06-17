@@ -7,7 +7,7 @@ require "logstash/outputs/elasticsearch"
 describe LogStash::Outputs::ElasticSearch do
   subject(:elasticsearch_output_instance) { described_class.new(options) }
   let(:options) { {} }
-  let(:maximum_seen_major_version) { [1,2,5,6,7,8].sample }
+  let(:maximum_seen_major_version) { [1,2,5,6,7].sample }
 
   let(:do_register) { true }
 
@@ -33,7 +33,6 @@ describe LogStash::Outputs::ElasticSearch do
       subject.register
 
       allow(subject.client).to receive(:maximum_seen_major_version).at_least(:once).and_return(maximum_seen_major_version)
-      allow(subject.client).to receive(:get_xpack_info)
 
       subject.client.pool.adapter.manticore.respond_with(:body => "{}")
     end
@@ -114,24 +113,6 @@ describe LogStash::Outputs::ElasticSearch do
           end
         end
       end
-
-      context "for 8.x elasticsearch clusters" do
-        let(:maximum_seen_major_version) { 8 }
-        it "should not include '_type'" do
-          action_tuple = subject.send(:event_action_tuple, LogStash::Event.new("type" => "foo"))
-          action_params = action_tuple[1]
-          expect(action_params).not_to include(:_type)
-        end
-
-        context "with 'document type set'" do
-          let(:options) { super().merge("document_type" => "bar")}
-          it "should not include '_type'" do
-            action_tuple = subject.send(:event_action_tuple, LogStash::Event.new("type" => "foo"))
-            action_params = action_tuple[1]
-            expect(action_params).not_to include(:_type)
-          end
-        end
-      end
     end
 
     describe "with auth" do
@@ -161,24 +142,6 @@ describe LogStash::Outputs::ElasticSearch do
         }
 
         include_examples("an authenticated config")
-      end
-
-      context 'claud_auth also set' do
-        let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-        let(:options) { { "user" => user, "password" => password, "cloud_auth" => "elastic:my-passwd-00" } }
-
-        it "should fail" do
-          expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-        end
-      end
-
-      context 'api_key also set' do
-        let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-        let(:options) { { "user" => user, "password" => password, "api_key" => "some_key" } }
-
-        it "should fail" do
-          expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-        end
       end
 
     end
@@ -676,82 +639,6 @@ describe LogStash::Outputs::ElasticSearch do
     end
   end
 
-  describe "cloud.id" do
-    let(:do_register) { false }
-
-    let(:valid_cloud_id) do
-      'sample:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJGFjMzFlYmI5MDI0MTc3MzE1NzA0M2MzNGZkMjZmZDQ2OjkyNDMkYTRjMDYyMzBlNDhjOGZjZTdiZTg4YTA3NGEzYmIzZTA6OTI0NA=='
-    end
-
-    let(:options) { { 'cloud_id' => valid_cloud_id } }
-
-    before(:each) do
-      stub_manticore_client!
-    end
-
-    it "should set host(s)" do
-      subject.register
-      es_url = subject.client.pool.urls.first
-      expect( es_url.to_s ).to eql('https://ac31ebb90241773157043c34fd26fd46.us-central1.gcp.cloud.es.io:9243/')
-    end
-
-    context 'invalid' do
-      let(:options) { { 'cloud_id' => 'invalid:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlv' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /cloud_id.*? is invalid/
-      end
-    end
-
-    context 'hosts also set' do
-      let(:options) { { 'cloud_id' => valid_cloud_id, 'hosts' => [ 'localhost' ] } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /cloud_id and hosts/
-      end
-    end
-  end if LOGSTASH_VERSION > '6.0'
-
-  describe "cloud.auth" do
-    let(:do_register) { false }
-
-    let(:options) { { 'cloud_auth' => LogStash::Util::Password.new('elastic:my-passwd-00') } }
-
-    before(:each) do
-      stub_manticore_client!
-    end
-
-    it "should set host(s)" do
-      subject.register
-      es_url = subject.client.pool.urls.first
-      expect( es_url.user ).to eql('elastic')
-      expect( es_url.password ).to eql('my-passwd-00')
-    end
-
-    context 'invalid' do
-      let(:options) { { 'cloud_auth' => 'invalid-format' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /cloud_auth.*? format/
-      end
-    end
-
-    context 'user also set' do
-      let(:options) { { 'cloud_auth' => 'elastic:my-passwd-00', 'user' => 'another' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-      end
-    end
-
-    context 'api_key also set' do
-      let(:options) { { 'cloud_auth' => 'elastic:my-passwd-00', 'api_key' => 'some_key' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-      end
-    end
-  end if LOGSTASH_VERSION > '6.0'
 
   context 'handling elasticsearch document-level status meant for the DLQ' do
     let(:options) { { "manage_template" => false } }
@@ -918,15 +805,6 @@ describe LogStash::Outputs::ElasticSearch do
         expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
       end
     end
-
-    context 'cloud_auth also set' do
-      let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-      let(:options) { { "ssl" => true, "api_key" => api_key, 'cloud_auth' => 'foobar' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-      end
-    end
   end
 
   describe "post-register ES setup" do
@@ -960,41 +838,6 @@ describe LogStash::Outputs::ElasticSearch do
       subject.send :wait_for_successful_connection
 
       expect(logger).to have_received(:error).with(/Failed to install template/i, anything)
-    end
-
-    context 'error raised' do
-
-      let(:es_version) { '7.8.0' }
-      let(:options) { super().merge('data_stream' => 'true') }
-      let(:latch) { Concurrent::CountDownLatch.new }
-
-      before do
-        allow(subject).to receive(:install_template)
-        allow(subject).to receive(:discover_cluster_uuid)
-        allow(subject).to receive(:ilm_in_use?).and_return nil
-        # executes from the after_successful_connection thread :
-        allow(subject).to receive(:finish_register) { latch.wait }.and_call_original
-        subject.register
-      end
-
-      it 'keeps logging on multi_receive' do
-        allow(subject).to receive(:retrying_submit)
-        latch.count_down; sleep(1.0)
-
-        expect_logged_error = lambda do |count|
-          expect(logger).to have_received(:error).with(
-              /Elasticsearch setup did not complete normally, please review previously logged errors/i,
-              hash_including(message:  'A data_stream configuration is only supported since Elasticsearch 7.9.0 (detected version 7.8.0), please upgrade your cluster')
-          ).exactly(count).times
-        end
-
-        subject.multi_receive [ LogStash::Event.new('foo' => 1) ]
-        expect_logged_error.call(1)
-
-        subject.multi_receive [ LogStash::Event.new('foo' => 2) ]
-        expect_logged_error.call(2)
-      end
-
     end
   end
 
