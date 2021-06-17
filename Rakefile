@@ -9,7 +9,6 @@ ECS_LOGSTASH_INDEX_PATTERNS = %w(
 )
 
 task :'vendor-ecs-schemata' do
-  download_ecs_schema(:v1, 6)
   download_ecs_schema(:v1, 7)
 end
 task :vendor => :'vendor-ecs-schemata'
