@@ -12,7 +12,7 @@ describe "TARGET_BULK_BYTES", :integration => true do
       }
   }
   let(:index) { 10.times.collect { rand(10).to_s }.join("") }
-  let(:type) { ESHelper.es_version_satisfies?("< 7") ? "doc" : "_doc" }
+  let(:type) { "_doc" }
 
   subject { LogStash::Outputs::ElasticSearch.new(config) }
 
@@ -48,7 +48,7 @@ end
 describe "indexing" do
   let(:event) { LogStash::Event.new("message" => "Hello World!", "type" => type) }
   let(:index) { 10.times.collect { rand(10).to_s }.join("") }
-  let(:type) { ESHelper.es_version_satisfies?("< 7") ? "doc" : "_doc" }
+  let(:type) { "_doc" }
   let(:event_count) { 1 + rand(2) }
   let(:config) { "not implemented" }
   let(:events) { event_count.times.map { event }.to_a }
@@ -80,8 +80,7 @@ describe "indexing" do
       response = http_client.get("#{index_url}/_search?q=*&size=1000")
       result = LogStash::Json.load(response.body)
       result["hits"]["hits"].each do |doc|
-        expect(doc["_type"]).to eq(type) if ESHelper.es_version_satisfies?(">= 6", "< 8")
-        expect(doc).not_to include("_type") if ESHelper.es_version_satisfies?(">= 8")
+        expect(doc["_type"]).to eq(type)
         expect(doc["_index"]).to eq(index)
       end
     end
@@ -116,7 +115,7 @@ describe "indexing" do
   end
 
   describe "an indexer with no type value set (default to doc)", :integration => true do
-    let(:type) { ESHelper.es_version_satisfies?("< 7") ? "doc" : "_doc" }
+    let(:type) { "_doc" }
     let(:config) {
       {
         "hosts" => get_host_port,

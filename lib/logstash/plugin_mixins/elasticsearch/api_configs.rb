@@ -11,15 +11,6 @@ module LogStash; module PluginMixins; module ElasticSearch
         # Password to authenticate to a secure Elasticsearch cluster
         :password => { :validate => :password },
 
-        # Authenticate using Elasticsearch API key.
-        # format is id:api_key (as returned by https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html[Create API key])
-        :api_key => { :validate => :password },
-
-        # Cloud authentication string ("<username>:<password>" format) is an alternative for the `user`/`password` configuration.
-        #
-        # For more details, check out the https://www.elastic.co/guide/en/logstash/current/connecting-to-cloud.html#_cloud_auth[cloud documentation]
-        :cloud_auth => { :validate => :password },
-
         # The document ID for the index. Useful for overwriting existing entries in
         # Elasticsearch with the same ID.
         :document_id => { :validate => :string },
@@ -147,11 +138,6 @@ module LogStash; module PluginMixins; module ElasticSearch
         #
         # Any special characters present in the URLs here MUST be URL escaped! This means `#` should be put in as `%23` for instance.
         :hosts => { :validate => :uri, :default => [ DEFAULT_HOST ], :list => true },
-
-        # Cloud ID, from the Elastic Cloud web console. If set `hosts` should not be used.
-        #
-        # For more details, check out the https://www.elastic.co/guide/en/logstash/current/connecting-to-cloud.html#_cloud_id[cloud documentation]
-        :cloud_id => { :validate => :string },
 
         # Set initial interval in seconds between bulk retries. Doubled on each retry up to `retry_max_interval`
         :retry_initial_interval => { :validate => :number, :default => 2 },

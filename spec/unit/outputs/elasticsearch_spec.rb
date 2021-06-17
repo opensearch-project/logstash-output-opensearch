@@ -7,7 +7,7 @@ require "logstash/outputs/elasticsearch"
 describe LogStash::Outputs::ElasticSearch do
   subject(:elasticsearch_output_instance) { described_class.new(options) }
   let(:options) { {} }
-  let(:maximum_seen_major_version) { [1,2,5,6,7].sample }
+  let(:maximum_seen_major_version) { [7].sample }
 
   let(:do_register) { true }
 
@@ -69,20 +69,6 @@ describe LogStash::Outputs::ElasticSearch do
           let(:maximum_seen_major_version) { 7 }
           it "should return '_doc'" do
             expect(subject.send(:get_event_type, LogStash::Event.new("type" => "foo"))).to eql("_doc")
-          end
-        end
-
-        context "for 6.x elasticsearch clusters" do
-          let(:maximum_seen_major_version) { 6 }
-          it "should return 'doc'" do
-            expect(subject.send(:get_event_type, LogStash::Event.new("type" => "foo"))).to eql("doc")
-          end
-        end
-
-        context "for < 6.0 elasticsearch clusters" do
-          let(:maximum_seen_major_version) { 5 }
-          it "should get the type from the event" do
-            expect(subject.send(:get_event_type, LogStash::Event.new("type" => "foo"))).to eql("foo")
           end
         end
       end
@@ -760,52 +746,6 @@ describe LogStash::Outputs::ElasticSearch do
     end
   end
 
-  describe "API key" do
-    let(:manticore_options) { subject.client.pool.adapter.manticore.instance_variable_get(:@options) }
-    let(:api_key) { "some_id:some_api_key" }
-    let(:base64_api_key) { "ApiKey c29tZV9pZDpzb21lX2FwaV9rZXk=" }
-
-    context "when set without ssl" do
-      let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-      let(:options) { { "api_key" => api_key } }
-
-      it "should raise a configuration error" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /requires SSL\/TLS/
-      end
-    end
-
-    context "when set without ssl but with a https host" do
-      let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-      let(:options) { { "hosts" => ["https://some.host.com"], "api_key" => api_key } }
-
-      it "should raise a configuration error" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /requires SSL\/TLS/
-      end
-    end
-
-    context "when set" do
-      let(:options) { { "ssl" => true, "api_key" =>  ::LogStash::Util::Password.new(api_key) } }
-
-      it "should use the custom headers in the adapter options" do
-        expect(manticore_options[:headers]).to eq({ "Authorization" => base64_api_key })
-      end
-    end
-
-    context "when not set" do
-      it "should have no headers" do
-        expect(manticore_options[:headers]).to be_empty
-      end
-    end
-
-    context 'user also set' do
-      let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
-      let(:options) { { "ssl" => true, "api_key" => api_key, 'user' => 'another' } }
-
-      it "should fail" do
-        expect { subject.register }.to raise_error LogStash::ConfigurationError, /Multiple authentication options are specified/
-      end
-    end
-  end
 
   describe "post-register ES setup" do
     let(:do_register) { false }
