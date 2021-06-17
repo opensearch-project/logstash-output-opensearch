@@ -764,7 +764,6 @@ describe LogStash::Outputs::ElasticSearch do
 
     it "logs inability to retrieve uuid" do
       allow(subject).to receive(:install_template)
-      allow(subject).to receive(:ilm_in_use?).and_return nil
       subject.register
       subject.send :wait_for_successful_connection
 
@@ -773,7 +772,6 @@ describe LogStash::Outputs::ElasticSearch do
 
     it "logs template install failure" do
       allow(subject).to receive(:discover_cluster_uuid)
-      allow(subject).to receive(:ilm_in_use?).and_return nil
       subject.register
       subject.send :wait_for_successful_connection
 
