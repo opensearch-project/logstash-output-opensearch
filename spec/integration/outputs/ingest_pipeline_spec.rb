@@ -6,8 +6,7 @@ if ESHelper.es_version_satisfies?(">= 5")
       require "logstash/outputs/elasticsearch"
       settings = {
         "hosts" => "#{get_host_port()}",
-        "pipeline" => "apache-logs",
-        "data_stream" => 'false'
+        "pipeline" => "apache-logs"
       }
       next LogStash::Outputs::ElasticSearch.new(settings)
     end

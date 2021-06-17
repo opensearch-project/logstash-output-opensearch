@@ -92,7 +92,6 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   require "logstash/plugin_mixins/elasticsearch/api_configs"
   require "logstash/plugin_mixins/elasticsearch/common"
   require "logstash/outputs/elasticsearch/ilm"
-  require "logstash/outputs/elasticsearch/data_stream_support"
   require 'logstash/plugin_mixins/ecs_compatibility_support'
 
   # Protocol agnostic methods
@@ -107,8 +106,6 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   # Generic/API config options that any document indexer output needs
   include(LogStash::PluginMixins::ElasticSearch::APIConfigs)
 
-  # DS support
-  include(LogStash::Outputs::ElasticSearch::DataStreamSupport)
 
   DEFAULT_POLICY = "logstash-policy"
 
@@ -126,7 +123,7 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   #   would use the foo field for the action
   #
   # For more details on actions, check out the http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html[Elasticsearch bulk API documentation]
-  config :action, :validate => :string # :default => "index" unless data_stream
+  config :action, :validate => :string, :default => "index"
 
   # The index to write events to. This can be dynamic using the `%{foo}` syntax.
   # The default value will partition your indices by day so you can more easily
@@ -272,14 +269,8 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
     # To support BWC, we check if DLQ exists in core (< 5.4). If it doesn't, we use nil to resort to previous behavior.
     @dlq_writer = dlq_enabled? ? execution_context.dlq_writer : nil
 
-    if data_stream_config?
-      @event_mapper = -> (e) { data_stream_event_action_tuple(e) }
-      @event_target = -> (e) { data_stream_name(e) }
-      @index = "#{data_stream_type}-#{data_stream_dataset}-#{data_stream_namespace}".freeze # default name
-    else
-      @event_mapper = -> (e) { event_action_tuple(e) }
-      @event_target = -> (e) { e.sprintf(@index) }
-    end
+    @event_mapper = -> (e) { event_action_tuple(e) }
+    @event_target = -> (e) { e.sprintf(@index) }
 
     @bulk_request_metrics = metric.namespace(:bulk_requests)
     @document_level_metrics = metric.namespace(:documents)
@@ -287,7 +278,6 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
 
   # @override post-register when ES connection established
   def finish_register
-    assert_es_version_supports_data_streams if data_stream_config?
     discover_cluster_uuid
     install_template
     super
