@@ -12,17 +12,12 @@
       "host" : "dev-master",
       "ip" : "127.0.0.1",
       "version" : "7.0.0",
-      "build_flavor" : "default",
+      "build_flavor" : "oss",
       "build_type" : "tar",
       "build_hash" : "b0e7036",
       "roles" : [
         "master"
       ],
-      "attributes" : {
-        "ml.machine_memory" : "17179869184",
-        "ml.max_open_jobs" : "20",
-        "ml.enabled" : "true"
-      },
       "http" : {
         "bound_address" : [
           "127.0.0.1:9200",
@@ -38,18 +33,13 @@
       "host" : "dev-masterdata",
       "ip" : "127.0.0.1",
       "version" : "7.0.0",
-      "build_flavor" : "default",
+      "build_flavor" : "oss",
       "build_type" : "tar",
       "build_hash" : "b0e7036",
       "roles" : [
         "master",
         "data"
       ],
-      "attributes" : {
-        "ml.machine_memory" : "17179869184",
-        "ml.max_open_jobs" : "20",
-        "ml.enabled" : "true"
-      },
       "http" : {
         "bound_address" : [
           "127.0.0.1:9201",
@@ -65,17 +55,12 @@
       "host" : "dev-data",
       "ip" : "127.0.0.1",
       "version" : "7.0.0",
-      "build_flavor" : "default",
+      "build_flavor" : "oss",
       "build_type" : "tar",
       "build_hash" : "b0e7036",
       "roles" : [
         "data"
       ],
-      "attributes" : {
-        "ml.machine_memory" : "17179869184",
-        "ml.max_open_jobs" : "20",
-        "ml.enabled" : "true"
-      },
       "http" : {
         "bound_address" : [
           "127.0.0.1:9202",

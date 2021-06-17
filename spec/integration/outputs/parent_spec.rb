@@ -33,15 +33,8 @@ context "join field tests", :integration => true do
         }
       }
 
-      mapping = ESHelper.es_version_satisfies?('<7') ? { "mappings" => { type => properties } }
-                                                     : { "mappings" => properties}
+      mapping = { "mappings" => properties}
 
-      if ESHelper.es_version_satisfies?('<6')
-        mapping.merge!({
-               "settings" => {
-                 "mapping.single_type" => true
-               }})
-      end
       Manticore.put("#{index_url}", {:body => mapping.to_json, :headers => default_headers}).call
       pdoc = { "message" => "ohayo", join_field => parent_relation }
       Manticore.put("#{index_url}/#{type}/#{parent_id}", {:body => pdoc.to_json, :headers => default_headers}).call
