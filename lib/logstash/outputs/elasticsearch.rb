@@ -90,23 +90,16 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   require "logstash/outputs/elasticsearch/http_client_builder"
   require "logstash/plugin_mixins/elasticsearch/api_configs"
   require "logstash/plugin_mixins/elasticsearch/common"
-  require "logstash/outputs/elasticsearch/ilm"
   require 'logstash/plugin_mixins/ecs_compatibility_support'
 
   # Protocol agnostic methods
   include(LogStash::PluginMixins::ElasticSearch::Common)
-
-  # Methods for ILM support
-  include(LogStash::Outputs::ElasticSearch::Ilm)
 
   # ecs_compatibility option, provided by Logstash core or the support adapter.
   include(LogStash::PluginMixins::ECSCompatibilitySupport)
 
   # Generic/API config options that any document indexer output needs
   include(LogStash::PluginMixins::ElasticSearch::APIConfigs)
-
-
-  DEFAULT_POLICY = "logstash-policy"
 
   config_name "elasticsearch"
 
