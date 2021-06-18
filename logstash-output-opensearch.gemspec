@@ -1,13 +1,13 @@
 Gem::Specification.new do |s|
   s.name            = 'logstash-output-opensearch'
-  s.version         = '11.0.2'
+  s.version         = '1.0.0'
 
-  s.licenses        = ['apache-2.0']
+  s.licenses        = ['Apache License (2.0)']
   s.summary         = "Stores logs in OpenSearch"
-  s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
+  s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gem. This gem is not a stand-alone program"
   s.authors         = ["OpenSearch"]
   s.email           = 'opensearch@amazon.com'
-  s.homepage        = "http://logstash.net/"
+  s.homepage        = "https://opensearch.org/"
   s.require_paths = ["lib"]
 
   s.platform = RUBY_PLATFORM
