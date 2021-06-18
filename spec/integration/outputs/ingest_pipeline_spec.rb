@@ -1,4 +1,4 @@
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 
 describe "Ingest pipeline execution behavior", :integration => true do
   subject! do

@@ -1,4 +1,4 @@
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 
 describe "client create actions", :integration => true do
   require "logstash/outputs/elasticsearch"
