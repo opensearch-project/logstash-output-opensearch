@@ -17,7 +17,7 @@ describe "index template expected behavior", :integration => true do
       "template_overwrite" => true,
       "hosts" => "#{get_host_port()}"
     }
-    next LogStash::Outputs::ElasticSearch.new(settings)
+    next LogStash::Outputs::OpenSearch.new(settings)
   end
 
   before :each do

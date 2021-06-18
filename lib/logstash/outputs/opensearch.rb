@@ -92,7 +92,7 @@ require "forwardable"
 # For requests compression, regardless of the Elasticsearch version, users have to enable `http_compression` 
 # setting in their Logstash config file.
 #
-class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
+class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   declare_threadsafe!
 
   require "logstash/outputs/opensearch/http_client"
@@ -102,17 +102,17 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   require 'logstash/plugin_mixins/ecs_compatibility_support'
 
   # Protocol agnostic methods
-  include(LogStash::PluginMixins::ElasticSearch::Common)
+  include(LogStash::PluginMixins::OpenSearch::Common)
 
   # ecs_compatibility option, provided by Logstash core or the support adapter.
   include(LogStash::PluginMixins::ECSCompatibilitySupport)
 
   # Generic/API config options that any document indexer output needs
-  include(LogStash::PluginMixins::ElasticSearch::APIConfigs)
+  include(LogStash::PluginMixins::OpenSearch::APIConfigs)
 
   config_name "opensearch"
 
-  # The Elasticsearch action to perform. Valid actions are:
+  # The OpenSearch action to perform. Valid actions are:
   #
   # - index: indexes a document (an event from Logstash).
   # - delete: deletes a document by id (An id is required for this action)
@@ -137,7 +137,7 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
 
   config :document_type,
     :validate => :string,
-    :deprecated => "Document types are being deprecated in Elasticsearch 6.0, and removed entirely in 7.0. You should avoid this feature"
+    :deprecated => "Document types are being deprecated in OpenSearch 6.0, and removed entirely in 7.0. You should avoid this feature"
 
   # From Logstash 1.3 onwards, a template is applied to Elasticsearch during
   # Logstash's startup if one with the name `template_name` does not already exist.
@@ -409,11 +409,11 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   end
 
   def retry_on_conflict_action_name
-    maximum_seen_major_version >= 7 ? :retry_on_conflict : :_retry_on_conflict
+    :retry_on_conflict
   end
 
   def routing_field_name
-    maximum_seen_major_version >= 6 ? :routing : :_routing
+    :routing
   end
 
   # Determine the correct value for the 'type' field for the given event

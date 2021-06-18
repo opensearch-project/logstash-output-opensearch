@@ -12,9 +12,9 @@ require "logstash/outputs/opensearch"
 require "logstash/outputs/opensearch/http_client"
 require "logstash/outputs/opensearch/http_client_builder"
 
-describe LogStash::Outputs::ElasticSearch::HttpClientBuilder do
+describe LogStash::Outputs::OpenSearch::HttpClientBuilder do
   describe "auth setup with url encodable passwords" do
-    let(:klass) { LogStash::Outputs::ElasticSearch::HttpClientBuilder }
+    let(:klass) { LogStash::Outputs::OpenSearch::HttpClientBuilder }
     let(:user) { "foo@bar"}
     let(:password) {"baz@blah" }
     let(:password_secured) do

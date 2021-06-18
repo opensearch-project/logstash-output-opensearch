@@ -27,7 +27,7 @@ context "join field tests", :integration => true do
     let(:default_headers) {
       {"Content-Type" => "application/json"}
     }
-    subject { LogStash::Outputs::ElasticSearch.new(config) }
+    subject { LogStash::Outputs::OpenSearch.new(config) }
 
     before do
       # Add mapping and a parent document

@@ -13,7 +13,7 @@ require "flores/random"
 require 'concurrent/atomic/count_down_latch'
 require "logstash/outputs/opensearch"
 
-describe LogStash::Outputs::ElasticSearch do
+describe LogStash::Outputs::OpenSearch do
   subject(:elasticsearch_output_instance) { described_class.new(options) }
   let(:options) { {} }
   let(:maximum_seen_major_version) { [7].sample }
@@ -21,7 +21,7 @@ describe LogStash::Outputs::ElasticSearch do
   let(:do_register) { true }
 
   let(:stub_http_client_pool!) do
-    allow_any_instance_of(LogStash::Outputs::ElasticSearch::HttpClient::Pool).to receive(:start)
+    allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:start)
   end
 
   let(:after_successful_connection_thread_mock) do
@@ -67,7 +67,7 @@ describe LogStash::Outputs::ElasticSearch do
 
     let(:stub_http_client_pool!) do
       [:start_resurrectionist, :start_sniffer, :healthcheck!].each do |method|
-        allow_any_instance_of(LogStash::Outputs::ElasticSearch::HttpClient::Pool).to receive(method)
+        allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(method)
       end
     end
 
@@ -240,7 +240,7 @@ describe LogStash::Outputs::ElasticSearch do
     context "429 errors" do
       let(:event) { ::LogStash::Event.new("foo" => "bar") }
       let(:error) do
-        ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError.new(
+        ::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError.new(
           429, double("url").as_null_object, request_body, double("response body")
         )
       end
@@ -287,7 +287,7 @@ describe LogStash::Outputs::ElasticSearch do
         { "took"=>1, "ingest_took"=>9, "errors"=>true,
           "items"=>[{"index"=>{"_index"=>"bar1", "_type"=>"_doc", "_id"=>nil, "status"=>500,
                               "error"=>{"type" => "illegal_state_exception",
-                                      "reason" => "pipeline with id [test-ingest] could not be loaded, caused by [ElasticsearchParseException[Error updating pipeline with id [test-ingest]]; nested: ElasticsearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]; nested: IllegalArgumentException[no enrich index exists for policy with name [test-metadata1]];; ElasticsearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]; nested: IllegalArgumentException[no enrich index exists for policy with name [test-metadata1]];; java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]"
+                                      "reason" => "pipeline with id [test-ingest] could not be loaded, caused by [OpenSearchParseException[Error updating pipeline with id [test-ingest]]; nested: OpenSearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]; nested: IllegalArgumentException[no enrich index exists for policy with name [test-metadata1]];; OpenSearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]; nested: IllegalArgumentException[no enrich index exists for policy with name [test-metadata1]];; java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]]"
                                       }
                               }
                     },
@@ -296,7 +296,7 @@ describe LogStash::Outputs::ElasticSearch do
                     {"index"=>{"_index"=>"bar2", "_type"=>"_doc", "_id"=>nil, "status"=>201}},
                     {"index"=>{"_index"=>"bar2", "_type"=>"_doc", "_id"=>nil, "status"=>500,
                                "error"=>{"type" => "illegal_state_exception",
-                                        "reason" => "pipeline with id [test-ingest] could not be loaded, caused by [ElasticsearchParseException[Error updating pipeline with id [test-ingest]]; nested: ElasticsearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]];"
+                                        "reason" => "pipeline with id [test-ingest] could not be loaded, caused by [OpenSearchParseException[Error updating pipeline with id [test-ingest]]; nested: OpenSearchException[java.lang.IllegalArgumentException: no enrich index exists for policy with name [test-metadata1]];"
                                         }
                               }
                     }]
@@ -321,7 +321,7 @@ describe LogStash::Outputs::ElasticSearch do
 
       it "should log specific error message" do
         expect(subject.logger).to receive(:error).with(/Encountered an unexpected error/i,
-                                                       hash_including(:message => 'Sent 2 documents but Elasticsearch returned 3 responses (likely a bug with _bulk endpoint)'))
+                                                       hash_including(:message => 'Sent 2 documents but OpenSearch returned 3 responses (likely a bug with _bulk endpoint)'))
 
         subject.multi_receive(events)
       end
@@ -329,7 +329,7 @@ describe LogStash::Outputs::ElasticSearch do
   end
 
   context '413 errors' do
-    let(:payload_size) { LogStash::Outputs::ElasticSearch::TARGET_BULK_BYTES + 1024 }
+    let(:payload_size) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES + 1024 }
     let(:event) { ::LogStash::Event.new("message" => ("a" * payload_size ) ) }
 
     let(:logger_stub) { double("logger").as_null_object }
@@ -561,7 +561,7 @@ describe LogStash::Outputs::ElasticSearch do
 
     let(:stub_http_client_pool!) do
       [:start_resurrectionist, :start_sniffer, :healthcheck!].each do |method|
-        allow_any_instance_of(LogStash::Outputs::ElasticSearch::HttpClient::Pool).to receive(method)
+        allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(method)
       end
     end
 
@@ -646,7 +646,7 @@ describe LogStash::Outputs::ElasticSearch do
           it 'should log at ERROR level' do
             subject.instance_variable_set(:@logger, double("logger").as_null_object)
             mock_response = { 'index' => { 'error' => { 'type' => 'invalid_index_name_exception' } } }
-            subject.handle_dlq_status("Could not index event to Elasticsearch.",
+            subject.handle_dlq_status("Could not index event to OpenSearch.",
               [:action, :params, :event], :some_status, mock_response)
           end
         end
@@ -657,7 +657,7 @@ describe LogStash::Outputs::ElasticSearch do
             subject.instance_variable_set(:@logger, logger)
             expect(logger).to receive(:warn).with(/Could not index/, hash_including(:status, :action, :response))
             mock_response = { 'index' => { 'error' => { 'type' => 'illegal_argument_exception' } } }
-            subject.handle_dlq_status("Could not index event to Elasticsearch.",
+            subject.handle_dlq_status("Could not index event to OpenSearch.",
               [:action, :params, :event], :some_status, mock_response)
           end
         end
@@ -669,7 +669,7 @@ describe LogStash::Outputs::ElasticSearch do
             expect(logger).to receive(:warn).with(/Could not index/, hash_including(:status, :action, :response))
             mock_response = { 'index' => {} }
             expect do
-              subject.handle_dlq_status("Could not index event to Elasticsearch.",
+              subject.handle_dlq_status("Could not index event to OpenSearch.",
                 [:action, :params, :event], :some_status, mock_response)
             end.to_not raise_error
           end
@@ -689,8 +689,8 @@ describe LogStash::Outputs::ElasticSearch do
         event = LogStash::Event.new("foo" => "bar")
         expect(dlq_writer).to receive(:write).once.with(event, /Could not index/)
         mock_response = { 'index' => { 'error' => { 'type' => 'illegal_argument_exception' } } }
-        action = LogStash::Outputs::ElasticSearch::EventActionTuple.new(:action, :params, event)
-        subject.handle_dlq_status("Could not index event to Elasticsearch.", action, 404, mock_response)
+        action = LogStash::Outputs::OpenSearch::EventActionTuple.new(:action, :params, event)
+        subject.handle_dlq_status("Could not index event to OpenSearch.", action, 404, mock_response)
       end
     end
 
@@ -724,7 +724,7 @@ describe LogStash::Outputs::ElasticSearch do
           event, reason = *args
           expect( event ).to be_a LogStash::Event
           expect( event ).to be events.first
-          expect( reason ).to start_with 'Could not index event to Elasticsearch. status: 400, action: ["index"'
+          expect( reason ).to start_with 'Could not index event to OpenSearch. status: 400, action: ["index"'
           expect( reason ).to match /_id=>"bar".*"foo"=>"bar".*response:.*"reason"=>"TEST"/
 
           method.call(*args) # won't hurt to call LogStash::Util::DummyDeadLetterQueueWriter
@@ -776,8 +776,8 @@ describe LogStash::Outputs::ElasticSearch do
       subject.register
       subject.send :wait_for_successful_connection
 
-      expect(logger).to have_received(:error).with(/Unable to retrieve Elasticsearch cluster uuid/i, anything)
-    end if LOGSTASH_VERSION >= '7.0.0'
+      expect(logger).to have_received(:error).with(/Unable to retrieve OpenSearch cluster uuid/i, anything)
+    end
 
     it "logs template install failure" do
       allow(subject).to receive(:discover_cluster_uuid)

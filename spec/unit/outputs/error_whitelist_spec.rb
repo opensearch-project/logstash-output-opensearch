@@ -16,7 +16,7 @@ describe "whitelisting error types in expected behavior" do
   let(:action1) { ["index", {:_id=>1, :routing=>nil, :_index=>"logstash-2014.11.17", :_type=> doc_type }, event1] }
   let(:settings) { {"manage_template" => true, "index" => "logstash-2014.11.17", "template_overwrite" => true, "hosts" => get_host_port() } }
 
-  subject { LogStash::Outputs::ElasticSearch.new(settings) }
+  subject { LogStash::Outputs::OpenSearch.new(settings) }
 
   before :each do
     allow(subject.logger).to receive(:warn)

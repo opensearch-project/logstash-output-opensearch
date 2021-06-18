@@ -14,7 +14,7 @@ require 'manticore/client'
 describe "Proxy option" do
   let(:settings) { { "hosts" => "node01" } }
   subject {
-    LogStash::Outputs::ElasticSearch.new(settings)
+    LogStash::Outputs::OpenSearch.new(settings)
   }
 
   before do

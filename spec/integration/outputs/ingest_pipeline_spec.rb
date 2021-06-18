@@ -16,7 +16,7 @@ describe "Ingest pipeline execution behavior", :integration => true do
       "hosts" => "#{get_host_port()}",
       "pipeline" => "apache-logs"
     }
-    next LogStash::Outputs::ElasticSearch.new(settings)
+    next LogStash::Outputs::OpenSearch.new(settings)
   end
 
   let(:http_client) { Manticore::Client.new }

@@ -7,7 +7,7 @@
 #  Modifications Copyright OpenSearch Contributors. See
 #  GitHub history for details.
 
-module LogStash; module Outputs; class ElasticSearch
+module LogStash; module Outputs; class OpenSearch
   class TemplateManager
     # To be mixed into the elasticsearch plugin base
     def self.install_template(plugin)

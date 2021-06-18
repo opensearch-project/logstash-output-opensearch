@@ -28,11 +28,7 @@ module OpenSearchHelper
   end
 
   def doc_type
-    if OpenSearchHelper.es_version_satisfies?(">=7")
-      "_doc"
-    else
-      "doc"
-    end
+    "_doc"
   end
 
   def todays_date
@@ -55,11 +51,7 @@ module OpenSearchHelper
 
   RSpec::Matchers.define :have_hits do |expected|
     match do |actual|
-      if OpenSearchHelper.es_version_satisfies?(">=7")
-        expected == actual['hits']['total']['value']
-      else
-        expected == actual['hits']['total']
-      end
+      expected == actual['hits']['total']['value']
     end
   end
 

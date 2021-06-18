@@ -31,7 +31,7 @@ describe "indexing with http_compression turned on", :integration => true do
       "http_compression" => true
     }
   }
-  subject { LogStash::Outputs::ElasticSearch.new(config) }
+  subject { LogStash::Outputs::OpenSearch.new(config) }
 
   let(:es_url) { "http://#{get_host_port}" }
   let(:index_url) {"#{es_url}/#{index}"}

@@ -9,7 +9,7 @@
 
 require "concurrent/atomic/atomic_reference"
 
-module LogStash; module Outputs; class ElasticSearch; class HttpClient;
+module LogStash; module Outputs; class OpenSearch; class HttpClient;
   class Pool
     class NoConnectionAvailableError < Error; end
     class BadResponseCodeError < Error
@@ -23,7 +23,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
       end
 
       def message
-        "Got response code '#{response_code}' contacting Elasticsearch at URL '#{@url}'"
+        "Got response code '#{response_code}' contacting OpenSearch at URL '#{@url}'"
       end
     end
     class HostUnreachableError < Error;
@@ -35,7 +35,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
       end
 
       def message
-        "Elasticsearch Unreachable: [#{@url}][#{original_error.class}] #{original_error.message}"
+        "OpenSearch Unreachable: [#{@url}][#{original_error.class}] #{original_error.message}"
       end
     end
 
@@ -157,7 +157,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
             sniff!
           rescue NoConnectionAvailableError => e
             @state_mutex.synchronize { # Synchronize around @url_info
-              logger.warn("Elasticsearch output attempted to sniff for new connections but cannot. No living connections are detected. Pool contains the following current URLs", :url_info => @url_info) }
+              logger.warn("OpenSearch output attempted to sniff for new connections but cannot. No living connections are detected. Pool contains the following current URLs", :url_info => @url_info) }
           end
         end
       end
@@ -309,7 +309,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
       end
 
       if state_changes[:removed].size > 0 || state_changes[:added].size > 0
-        logger.info? && logger.info("Elasticsearch pool URLs updated", :changes => state_changes)
+        logger.info? && logger.info("OpenSearch pool URLs updated", :changes => state_changes)
       end
       
       # Run an inline healthcheck anytime URLs are updated
@@ -433,7 +433,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
 
       major = major_version(version)
       if @maximum_seen_major_version.nil?
-        @logger.info("Elasticsearch version determined (#{version})", es_version: major)
+        @logger.info("OpenSearch version determined (#{version})", es_version: major)
         set_maximum_seen_major_version(major)
       elsif major > @maximum_seen_major_version
         warn_on_higher_major_version(major, url)
@@ -450,7 +450,7 @@ module LogStash; module Outputs; class ElasticSearch; class HttpClient;
 
     def warn_on_higher_major_version(major, url)
       @logger.warn("Detected a node with a higher major version than previously observed, " +
-                   "this could be the result of an Elasticsearch cluster upgrade",
+                   "this could be the result of an OpenSearch cluster upgrade",
                    previous_major: @maximum_seen_major_version, new_major: major, node_url: url.sanitized.to_s)
     end
 

@@ -33,7 +33,7 @@ describe "SSL option" do
         "pool_max" => 1,
         "pool_max_per_route" => 1
       }
-      LogStash::Outputs::ElasticSearch.new(settings)
+      LogStash::Outputs::OpenSearch.new(settings)
     end
     
     after do
@@ -54,7 +54,7 @@ describe "SSL option" do
       allow(subject.logger).to receive(:warn).with(any_args)
       
       subject.register
-      allow(LogStash::Outputs::ElasticSearch::HttpClient::Pool).to receive(:start)
+      allow(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:start)
     end
   end
 
@@ -76,7 +76,7 @@ describe "SSL option" do
         "ssl" => true,
         "cacert" => keystore_path,
       }
-      next LogStash::Outputs::ElasticSearch.new(settings)
+      next LogStash::Outputs::OpenSearch.new(settings)
     end
 
     it "should pass the keystore parameters to the ES client" do
