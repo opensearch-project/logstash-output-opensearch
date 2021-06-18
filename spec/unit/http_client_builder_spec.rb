@@ -1,7 +1,7 @@
 require "logstash/devutils/rspec/spec_helper"
-require "logstash/outputs/elasticsearch"
-require "logstash/outputs/elasticsearch/http_client"
-require "logstash/outputs/elasticsearch/http_client_builder"
+require "logstash/outputs/opensearch"
+require "logstash/outputs/opensearch/http_client"
+require "logstash/outputs/opensearch/http_client_builder"
 
 describe LogStash::Outputs::ElasticSearch::HttpClientBuilder do
   describe "auth setup with url encodable passwords" do

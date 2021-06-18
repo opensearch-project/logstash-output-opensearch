@@ -1,5 +1,5 @@
 require_relative "../../../spec/opensearch_spec_helper"
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 
 context "join field tests", :integration => true do
 

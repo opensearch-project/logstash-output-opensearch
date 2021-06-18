@@ -2,7 +2,7 @@ require_relative "../../../spec/opensearch_spec_helper"
 
 describe "metrics", :integration => true do
   subject! do
-    require "logstash/outputs/elasticsearch"
+    require "logstash/outputs/opensearch"
     settings = {
       "manage_template" => false,
       "hosts" => "#{get_host_port()}"

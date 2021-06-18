@@ -1,7 +1,7 @@
 require_relative "../../../spec/opensearch_spec_helper"
 
 describe "Update actions using painless scripts", :integration => true, :update_tests => 'painless' do
-  require "logstash/outputs/elasticsearch"
+  require "logstash/outputs/opensearch"
 
   def get_es_output( options={} )
     settings = {

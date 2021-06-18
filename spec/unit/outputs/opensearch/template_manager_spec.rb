@@ -1,5 +1,5 @@
 require "logstash/devutils/rspec/spec_helper"
-require "logstash/outputs/elasticsearch/template_manager"
+require "logstash/outputs/opensearch/template_manager"
 
 describe LogStash::Outputs::ElasticSearch::TemplateManager do
 

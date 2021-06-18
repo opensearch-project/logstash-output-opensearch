@@ -1,5 +1,5 @@
 require_relative "../../../spec/opensearch_spec_helper"
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 require "stringio"
 
 RSpec::Matchers.define :a_valid_gzip_encoded_string do

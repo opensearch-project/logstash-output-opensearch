@@ -1,4 +1,4 @@
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 require_relative "../../../spec/opensearch_spec_helper"
 
 describe "elasticsearch is down on startup", :integration => true do

@@ -19,9 +19,9 @@ if [[ "$INTEGRATION" != "true" ]]; then
   bundle exec rspec -fd spec/unit -t ~integration -t ~secure_integration
 else
   extra_tag_args="--tag ~secure_integration --tag integration"
-  extra_tag_args="$extra_tag_args --tag ~distribution:oss"
+  extra_tag_args="$extra_tag_args --tag distribution:oss"
   echo "Waiting for elasticsearch to respond..."
   ES_VERSION=$(wait_for_es)
   echo "Elasticsearch $ES_VERSION is Up!"
-  bundle exec rspec -fd $extra_tag_args --tag update_tests:painless --tag update_tests:groovy --tag es_version:$ES_VERSION spec/integration
+  bundle exec rspec -fd $extra_tag_args --tag update_tests:painless --tag es_version:$ES_VERSION spec/integration
 fi

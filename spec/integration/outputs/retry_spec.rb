@@ -1,4 +1,4 @@
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 require_relative "../../../spec/opensearch_spec_helper"
 
 describe "failures in bulk class expected behavior", :integration => true do

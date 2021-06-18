@@ -21,7 +21,7 @@ def download_ecs_schema(ecs_major_version, es_major)
     ecs_release_tag = ECS_VERSIONS.fetch(ecs_major_version)
     response = http.get("/elastic/ecs/#{ecs_release_tag}/generated/elasticsearch/#{es_major}/template.json")
     fail "#{response.code} #{response.message}" unless (200...300).cover?(response.code.to_i)
-    template_directory = File.expand_path("../lib/logstash/outputs/elasticsearch/templates/ecs-#{ecs_major_version}", __FILE__)
+    template_directory = File.expand_path("../lib/logstash/outputs/opensearch/templates/ecs-#{ecs_major_version}", __FILE__)
     Dir.mkdir(template_directory) unless File.exists?(template_directory)
     File.open(File.join(template_directory, "/elasticsearch-#{es_major}x.json"), "w") do |handle|
       handle.write(replace_index_patterns(response.body, ECS_LOGSTASH_INDEX_PATTERNS))

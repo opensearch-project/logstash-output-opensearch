@@ -1,5 +1,5 @@
 require_relative "../../../spec/opensearch_spec_helper"
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 
 describe "TARGET_BULK_BYTES", :integration => true do
   let(:target_bulk_bytes) { LogStash::Outputs::ElasticSearch::TARGET_BULK_BYTES }

@@ -86,10 +86,10 @@ require "forwardable"
 class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   declare_threadsafe!
 
-  require "logstash/outputs/elasticsearch/http_client"
-  require "logstash/outputs/elasticsearch/http_client_builder"
-  require "logstash/plugin_mixins/elasticsearch/api_configs"
-  require "logstash/plugin_mixins/elasticsearch/common"
+  require "logstash/outputs/opensearch/http_client"
+  require "logstash/outputs/opensearch/http_client_builder"
+  require "logstash/plugin_mixins/opensearch/api_configs"
+  require "logstash/plugin_mixins/opensearch/common"
   require 'logstash/plugin_mixins/ecs_compatibility_support'
 
   # Protocol agnostic methods
@@ -101,7 +101,7 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
   # Generic/API config options that any document indexer output needs
   include(LogStash::PluginMixins::ElasticSearch::APIConfigs)
 
-  config_name "elasticsearch"
+  config_name "opensearch"
 
   # The Elasticsearch action to perform. Valid actions are:
   #
@@ -392,11 +392,11 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
     params
   end
 
-  @@plugins = Gem::Specification.find_all{|spec| spec.name =~ /logstash-output-elasticsearch-/ }
+  @@plugins = Gem::Specification.find_all{|spec| spec.name =~ /logstash-output-opensearch-/ }
 
   @@plugins.each do |plugin|
     name = plugin.name.split('-')[-1]
-    require "logstash/outputs/elasticsearch/#{name}"
+    require "logstash/outputs/opensearch/#{name}"
   end
 
   def retry_on_conflict_action_name
