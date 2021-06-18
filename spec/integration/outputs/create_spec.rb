@@ -1,7 +1,7 @@
 require_relative "../../../spec/opensearch_spec_helper"
 
 describe "client create actions", :integration => true do
-  require "logstash/outputs/elasticsearch"
+  require "logstash/outputs/opensearch"
 
   def get_es_output(action, id, version=nil, version_type=nil)
     settings = {

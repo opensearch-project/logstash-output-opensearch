@@ -16,7 +16,7 @@ describe "SSL option" do
   
   context "when using ssl without cert verification" do
     subject do
-      require "logstash/outputs/elasticsearch"
+      require "logstash/outputs/opensearch"
       settings = {
         "hosts" => "localhost",
         "ssl" => true,
@@ -61,7 +61,7 @@ describe "SSL option" do
     end
 
     subject do
-      require "logstash/outputs/elasticsearch"
+      require "logstash/outputs/opensearch"
       settings = {
         "hosts" => "node01",
         "ssl" => true,

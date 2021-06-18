@@ -1,4 +1,4 @@
-require "logstash/outputs/elasticsearch/template_manager"
+require "logstash/outputs/opensearch/template_manager"
 
 module LogStash; module PluginMixins; module ElasticSearch
   module Common

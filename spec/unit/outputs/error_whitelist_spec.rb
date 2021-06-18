@@ -1,4 +1,4 @@
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 require_relative "../../../spec/opensearch_spec_helper"
 
 describe "whitelisting error types in expected behavior" do

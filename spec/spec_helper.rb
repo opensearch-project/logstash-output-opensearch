@@ -1,6 +1,6 @@
 require "logstash/devutils/rspec/spec_helper"
 
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 
 module LogStash::Outputs::ElasticSearch::SpecHelper
 end

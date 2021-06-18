@@ -1,6 +1,6 @@
-require "logstash/outputs/elasticsearch"
-require 'logstash/outputs/elasticsearch/http_client/pool'
-require 'logstash/outputs/elasticsearch/http_client/manticore_adapter'
+require "logstash/outputs/opensearch"
+require 'logstash/outputs/opensearch/http_client/pool'
+require 'logstash/outputs/opensearch/http_client/manticore_adapter'
 require 'cgi'
 require 'zlib'
 require 'stringio'

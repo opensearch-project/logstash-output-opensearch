@@ -2,7 +2,7 @@ require_relative "../../../spec/opensearch_spec_helper"
 
 describe "Ingest pipeline execution behavior", :integration => true do
   subject! do
-    require "logstash/outputs/elasticsearch"
+    require "logstash/outputs/opensearch"
     settings = {
       "hosts" => "#{get_host_port()}",
       "pipeline" => "apache-logs"

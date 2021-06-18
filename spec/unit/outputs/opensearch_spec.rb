@@ -2,7 +2,7 @@ require_relative "../../../spec/spec_helper"
 require "base64"
 require "flores/random"
 require 'concurrent/atomic/count_down_latch'
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 
 describe LogStash::Outputs::ElasticSearch do
   subject(:elasticsearch_output_instance) { described_class.new(options) }

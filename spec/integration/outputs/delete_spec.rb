@@ -1,9 +1,9 @@
 require_relative "../../../spec/opensearch_spec_helper"
-require "logstash/outputs/elasticsearch"
+require "logstash/outputs/opensearch"
 
 
 describe "Versioned delete", :integration => true do
-  require "logstash/outputs/elasticsearch"
+  require "logstash/outputs/opensearch"
 
   let(:es) { get_client }
 

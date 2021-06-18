@@ -1,5 +1,5 @@
 require "logstash/devutils/rspec/spec_helper"
-require "logstash/outputs/elasticsearch/http_client"
+require "logstash/outputs/opensearch/http_client"
 require 'cabin'
 
 describe LogStash::Outputs::ElasticSearch::HttpClient::ManticoreAdapter do

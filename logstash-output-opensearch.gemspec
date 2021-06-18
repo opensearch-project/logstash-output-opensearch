@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
-  s.name            = 'logstash-output-elasticsearch'
+  s.name            = 'logstash-output-opensearch'
   s.version         = '11.0.2'
 
   s.licenses        = ['apache-2.0']
   s.summary         = "Stores logs in OpenSearch"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
-  s.authors         = ["Elastic"]
-  s.email           = 'info@elastic.co'
+  s.authors         = ["OpenSearch"]
+  s.email           = 'opensearch@amazon.com'
   s.homepage        = "http://logstash.net/"
   s.require_paths = ["lib"]
 

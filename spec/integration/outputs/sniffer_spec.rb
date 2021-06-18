@@ -1,5 +1,5 @@
 require_relative "../../../spec/opensearch_spec_helper"
-require "logstash/outputs/elasticsearch/http_client"
+require "logstash/outputs/opensearch/http_client"
 require "json"
 require "socket"
 
