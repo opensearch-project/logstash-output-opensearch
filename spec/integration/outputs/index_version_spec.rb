@@ -25,7 +25,7 @@ describe "Versioned indexing", :integration => true do
   end
 
   context "when index only" do
-    subject { LogStash::Outputs::ElasticSearch.new(settings) }
+    subject { LogStash::Outputs::OpenSearch.new(settings) }
 
     before do
       subject.register

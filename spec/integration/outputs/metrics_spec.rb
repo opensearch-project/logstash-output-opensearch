@@ -16,7 +16,7 @@ describe "metrics", :integration => true do
       "manage_template" => false,
       "hosts" => "#{get_host_port()}"
     }
-    plugin = LogStash::Outputs::ElasticSearch.new(settings)
+    plugin = LogStash::Outputs::OpenSearch.new(settings)
   end
 
   let(:metric) { subject.metric }

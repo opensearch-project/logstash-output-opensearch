@@ -15,7 +15,7 @@ shared_examples "a routing indexer" do
     let(:event_count) { 10000 + rand(500) }
     let(:routing) { "not_implemented" }
     let(:config) { "not_implemented" }
-    subject { LogStash::Outputs::ElasticSearch.new(config) }
+    subject { LogStash::Outputs::OpenSearch.new(config) }
 
     before do
       subject.register

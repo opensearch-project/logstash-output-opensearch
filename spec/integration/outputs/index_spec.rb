@@ -11,7 +11,7 @@ require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/opensearch"
 
 describe "TARGET_BULK_BYTES", :integration => true do
-  let(:target_bulk_bytes) { LogStash::Outputs::ElasticSearch::TARGET_BULK_BYTES }
+  let(:target_bulk_bytes) { LogStash::Outputs::OpenSearch::TARGET_BULK_BYTES }
   let(:event_count) { 1000 }
   let(:events) { event_count.times.map { event }.to_a }
   let(:config) {
@@ -23,7 +23,7 @@ describe "TARGET_BULK_BYTES", :integration => true do
   let(:index) { 10.times.collect { rand(10).to_s }.join("") }
   let(:type) { "_doc" }
 
-  subject { LogStash::Outputs::ElasticSearch.new(config) }
+  subject { LogStash::Outputs::OpenSearch.new(config) }
 
   before do
     subject.register
@@ -61,7 +61,7 @@ describe "indexing" do
   let(:event_count) { 1 + rand(2) }
   let(:config) { "not implemented" }
   let(:events) { event_count.times.map { event }.to_a }
-  subject { LogStash::Outputs::ElasticSearch.new(config) }
+  subject { LogStash::Outputs::OpenSearch.new(config) }
   
   let(:es_url) { "http://#{get_host_port}" }
   let(:index_url) {"#{es_url}/#{index}"}

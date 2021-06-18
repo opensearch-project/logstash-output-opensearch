@@ -7,25 +7,25 @@
 #  Modifications Copyright OpenSearch Contributors. See
 #  GitHub history for details.
 
-module LogStash; module PluginMixins; module ElasticSearch
+module LogStash; module PluginMixins; module OpenSearch
   module APIConfigs
 
-    # This module defines common options that can be reused by alternate elasticsearch output plugins such as the elasticsearch_data_streams output.
+    # This module defines common options that can be reused by alternate OpenSearch output plugins such as the OpenSearch_data_streams output.
 
     DEFAULT_HOST = ::LogStash::Util::SafeURI.new("//127.0.0.1")
 
     CONFIG_PARAMS = {
-        # Username to authenticate to a secure Elasticsearch cluster
+        # Username to authenticate to a secure OpenSearch cluster
         :user => { :validate => :string },
-        # Password to authenticate to a secure Elasticsearch cluster
+        # Password to authenticate to a secure OpenSearch cluster
         :password => { :validate => :password },
 
         # The document ID for the index. Useful for overwriting existing entries in
-        # Elasticsearch with the same ID.
+        # OpenSearch with the same ID.
         :document_id => { :validate => :string },
 
-        # HTTP Path at which the Elasticsearch server lives. Use this if you must run Elasticsearch behind a proxy that remaps
-        # the root path for the Elasticsearch HTTP API lives.
+        # HTTP Path at which the OpenSearch server lives. Use this if you must run OpenSearch behind a proxy that remaps
+        # the root path for the OpenSearch HTTP API lives.
         # Note that if you use paths as components of URLs in the 'hosts' field you may
         # not also set this field. That will raise an error at startup
         :path => { :validate => :string },
@@ -39,7 +39,7 @@ module LogStash; module PluginMixins; module ElasticSearch
         # urls that already have query strings, the one specified here will be appended.
         :parameters => { :validate => :hash },
 
-        # Enable SSL/TLS secured communication to Elasticsearch cluster. Leaving this unspecified will use whatever scheme
+        # Enable SSL/TLS secured communication to OpenSearch cluster. Leaving this unspecified will use whatever scheme
         # is specified in the URLs listed in 'hosts'. If no explicit protocol is specified plain HTTP will be used.
         # If SSL is explicitly disabled here the plugin will refuse to start if an HTTPS URL is given in 'hosts'
         :ssl => { :validate => :boolean },
@@ -66,11 +66,11 @@ module LogStash; module PluginMixins; module ElasticSearch
         # Set the keystore password
         :keystore_password => { :validate => :password },
 
-        # This setting asks Elasticsearch for the list of all cluster nodes and adds them to the hosts list.
+        # This setting asks OpenSearch for the list of all cluster nodes and adds them to the hosts list.
         # Note: This will return ALL nodes with HTTP enabled (including master nodes!). If you use
         # this with master nodes, you probably want to disable HTTP on them by setting
-        # `http.enabled` to false in their elasticsearch.yml. You can either use the `sniffing` option or
-        # manually enter multiple Elasticsearch hosts using the `hosts` parameter.
+        # `http.enabled` to false in their OpenSearch.yml. You can either use the `sniffing` option or
+        # manually enter multiple OpenSearch hosts using the `hosts` parameter.
         :sniffing => { :validate => :boolean, :default => false },
 
         # How long to wait, in seconds, between sniffing attempts
@@ -87,11 +87,11 @@ module LogStash; module PluginMixins; module ElasticSearch
         # arguments of the URI type to prevent leaking credentials.
         :proxy => { :validate => :uri }, # but empty string is allowed
 
-        # Set the timeout, in seconds, for network operations and requests sent Elasticsearch. If
+        # Set the timeout, in seconds, for network operations and requests sent OpenSearch. If
         # a timeout occurs, the request will be retried.
         :timeout => { :validate => :number, :default => 60 },
 
-        # Set the Elasticsearch errors in the whitelist that you don't want to log.
+        # Set the OpenSearch errors in the whitelist that you don't want to log.
         # A useful example is when you want to skip all 409 errors
         # which are `document_already_exists_exception`.
         :failure_type_logging_whitelist => { :validate => :array, :default => [] },
@@ -129,10 +129,10 @@ module LogStash; module PluginMixins; module ElasticSearch
         # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
         :validate_after_inactivity => { :validate => :number, :default => 10000 },
 
-        # Enable gzip compression on requests. Note that response compression is on by default for Elasticsearch v5.0 and beyond
+        # Enable gzip compression on requests. Note that response compression is on by default for OpenSearch v5.0 and beyond
         :http_compression => { :validate => :boolean, :default => false },
 
-        # Custom Headers to send on each request to elasticsearch nodes
+        # Custom Headers to send on each request to OpenSearch nodes
         :custom_headers => { :validate => :hash, :default => {} },
 
         # Sets the host(s) of the remote instance. If given an array it will load balance requests across the hosts specified in the `hosts` parameter.
@@ -143,7 +143,7 @@ module LogStash; module PluginMixins; module ElasticSearch
         #     `["https://127.0.0.1:9200"]`
         #     `["https://127.0.0.1:9200/mypath"]` (If using a proxy on a subpath)
         # It is important to exclude http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html[dedicated master nodes] from the `hosts` list
-        # to prevent LS from sending bulk requests to the master nodes.  So this parameter should only reference either data or client nodes in Elasticsearch.
+        # to prevent LS from sending bulk requests to the master nodes.  So this parameter should only reference either data or client nodes in OpenSearch.
         #
         # Any special characters present in the URLs here MUST be URL escaped! This means `#` should be put in as `%23` for instance.
         :hosts => { :validate => :uri, :default => [ DEFAULT_HOST ], :list => true },

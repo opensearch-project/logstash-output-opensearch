@@ -11,7 +11,7 @@ require "logstash/devutils/rspec/spec_helper"
 require "logstash/outputs/opensearch/http_client"
 require 'cabin'
 
-describe LogStash::Outputs::ElasticSearch::HttpClient::ManticoreAdapter do
+describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
   let(:logger) { Cabin::Channel.get }
   let(:options) { {} }
 
@@ -70,12 +70,12 @@ describe LogStash::Outputs::ElasticSearch::HttpClient::ManticoreAdapter do
       uri_with_path = uri.clone
       uri_with_path.path = "/"
 
-      expect(::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError).to receive(:new).
+      expect(::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError).to receive(:new).
         with(resp.code, uri_with_path, nil, resp.body).and_call_original
 
       expect do
         subject.perform_request(uri, :get, "/")
-      end.to raise_error(::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError)
+      end.to raise_error(::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError)
     end
   end
 

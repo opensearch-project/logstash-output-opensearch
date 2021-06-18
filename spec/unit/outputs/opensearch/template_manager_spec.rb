@@ -10,7 +10,7 @@
 require "logstash/devutils/rspec/spec_helper"
 require "logstash/outputs/opensearch/template_manager"
 
-describe LogStash::Outputs::ElasticSearch::TemplateManager do
+describe LogStash::Outputs::OpenSearch::TemplateManager do
 
   context 'when ECS v1 is requested' do
     it 'resolves' do

@@ -23,7 +23,7 @@ describe "client create actions", :integration => true do
     settings['document_id'] = id
     settings['version'] = version if version
     settings['version_type'] = version_type if version_type
-    LogStash::Outputs::ElasticSearch.new(settings)
+    LogStash::Outputs::OpenSearch.new(settings)
   end
 
   before :each do

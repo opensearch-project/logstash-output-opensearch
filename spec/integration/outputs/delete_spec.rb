@@ -26,7 +26,7 @@ describe "Versioned delete", :integration => true do
   end
 
   context "when delete only" do
-    subject { LogStash::Outputs::ElasticSearch.new(settings) }
+    subject { LogStash::Outputs::OpenSearch.new(settings) }
 
     before do
       subject.register

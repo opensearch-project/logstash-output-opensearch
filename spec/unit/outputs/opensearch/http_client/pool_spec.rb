@@ -11,9 +11,9 @@ require "logstash/devutils/rspec/spec_helper"
 require "logstash/outputs/opensearch/http_client"
 require 'cabin'
 
-describe LogStash::Outputs::ElasticSearch::HttpClient::Pool do
+describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   let(:logger) { Cabin::Channel.get }
-  let(:adapter) { LogStash::Outputs::ElasticSearch::HttpClient::ManticoreAdapter.new(logger) }
+  let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger) }
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://localhost:9200")] }
   let(:options) { {:resurrect_delay => 2, :url_normalizer => proc {|u| u}} } # Shorten the delay a bit to speed up tests
   let(:es_node_versions) { [ "0.0.0" ] }
@@ -84,13 +84,13 @@ describe LogStash::Outputs::ElasticSearch::HttpClient::Pool do
     end
   end
 
-  describe 'resolving the address from Elasticsearch node info' do
+  describe 'resolving the address from OpenSearch node info' do
     let(:host) { "node.elastic.co"}
     let(:ip_address) { "192.168.1.0"}
     let(:port) { 9200 }
 
 
-    context 'in Elasticsearch 7.x'
+    context 'in OpenSearch 7.x'
     context 'with host and ip address' do
       let(:publish_address) { "#{host}/#{ip_address}:#{port}"}
       it 'should correctly extract the host' do

@@ -9,10 +9,10 @@
 
 require "logstash/outputs/opensearch/template_manager"
 
-module LogStash; module PluginMixins; module ElasticSearch
+module LogStash; module PluginMixins; module OpenSearch
   module Common
 
-    # This module defines common methods that can be reused by alternate elasticsearch output plugins such as the elasticsearch_data_streams output.
+    # This module defines common methods that can be reused by alternate elasticsearch output plugins such as the OpenSearch_data_streams output.
 
     attr_reader :hosts
 
@@ -35,7 +35,7 @@ module LogStash; module PluginMixins; module ElasticSearch
       if @proxy.eql?('')
         @logger.warn "Supplied proxy setting (proxy => '') has no effect"
       end
-      ::LogStash::Outputs::ElasticSearch::HttpClientBuilder.build(@logger, @hosts, params)
+      ::LogStash::Outputs::OpenSearch::HttpClientBuilder.build(@logger, @hosts, params)
     end
 
     def setup_hosts
@@ -48,7 +48,7 @@ module LogStash; module PluginMixins; module ElasticSearch
 
     def hosts_default?(hosts)
       # NOTE: would be nice if pipeline allowed us a clean way to detect a config default :
-      hosts.is_a?(Array) && hosts.size == 1 && hosts.first.equal?(LogStash::PluginMixins::ElasticSearch::APIConfigs::DEFAULT_HOST)
+      hosts.is_a?(Array) && hosts.size == 1 && hosts.first.equal?(LogStash::PluginMixins::OpenSearch::APIConfigs::DEFAULT_HOST)
     end
     private :hosts_default?
 
@@ -77,7 +77,7 @@ module LogStash; module PluginMixins; module ElasticSearch
       Thread.new do
         sleep_interval = @retry_initial_interval
         until successful_connection? || @stopping.true?
-          @logger.debug("Waiting for connectivity to Elasticsearch cluster, retrying in #{sleep_interval}s")
+          @logger.debug("Waiting for connectivity to OpenSearch cluster, retrying in #{sleep_interval}s")
           sleep_interval = sleep_for_interval(sleep_interval)
         end
         block.call if successful_connection?
@@ -90,7 +90,7 @@ module LogStash; module PluginMixins; module ElasticSearch
       cluster_info = client.get('/')
       plugin_metadata.set(:cluster_uuid, cluster_info['cluster_uuid'])
     rescue => e
-      @logger.error("Unable to retrieve Elasticsearch cluster uuid", message: e.message, exception: e.class, backtrace: e.backtrace)
+      @logger.error("Unable to retrieve OpenSearch cluster uuid", message: e.message, exception: e.class, backtrace: e.backtrace)
     end
 
     def retrying_submit(actions)
@@ -172,7 +172,7 @@ module LogStash; module PluginMixins; module ElasticSearch
       responses = bulk_response["items"]
       if responses.size != actions.size # can not map action -> response reliably
         # an ES bug (on 7.10.2, 7.11.1) where a _bulk request to index X documents would return Y (> X) items
-        msg = "Sent #{actions.size} documents but Elasticsearch returned #{responses.size} responses"
+        msg = "Sent #{actions.size} documents but OpenSearch returned #{responses.size} responses"
         @logger.warn(msg, actions: actions, responses: responses)
         fail("#{msg} (likely a bug with _bulk endpoint)")
       end
@@ -198,7 +198,7 @@ module LogStash; module PluginMixins; module ElasticSearch
           @logger.warn "Failed action", status: status, action: action, response: response if log_failure_type?(error)
           next
         elsif DOC_DLQ_CODES.include?(status)
-          handle_dlq_status("Could not index event to Elasticsearch.", action, status, response)
+          handle_dlq_status("Could not index event to OpenSearch.", action, status, response)
           @document_level_metrics.increment(:non_retryable_failures)
           next
         else
@@ -223,11 +223,11 @@ module LogStash; module PluginMixins; module ElasticSearch
       sleep_interval = @retry_initial_interval
       begin
         @client.bulk(actions) # returns { 'errors': ..., 'items': ... }
-      rescue ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::HostUnreachableError => e
+      rescue ::LogStash::Outputs::OpenSearch::HttpClient::Pool::HostUnreachableError => e
         # If we can't even connect to the server let's just print out the URL (:hosts is actually a URL)
         # and let the user sort it out from there
         @logger.error(
-          "Attempted to send a bulk request but Elasticsearch appears to be unreachable or down",
+          "Attempted to send a bulk request but OpenSearch appears to be unreachable or down",
           message: e.message, exception: e.class, will_retry_in_seconds: sleep_interval
         )
         @logger.debug? && @logger.debug("Failed actions for last bad bulk request", :actions => actions)
@@ -236,17 +236,17 @@ module LogStash; module PluginMixins; module ElasticSearch
         sleep_interval = sleep_for_interval(sleep_interval)
         @bulk_request_metrics.increment(:failures)
         retry unless @stopping.true?
-      rescue ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::NoConnectionAvailableError => e
+      rescue ::LogStash::Outputs::OpenSearch::HttpClient::Pool::NoConnectionAvailableError => e
         @logger.error(
           "Attempted to send a bulk request but there are no living connections in the pool " +
-          "(perhaps Elasticsearch is unreachable or down?)",
+          "(perhaps OpenSearch is unreachable or down?)",
           message: e.message, exception: e.class, will_retry_in_seconds: sleep_interval
         )
 
         sleep_interval = sleep_for_interval(sleep_interval)
         @bulk_request_metrics.increment(:failures)
         retry unless @stopping.true?
-      rescue ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError => e
+      rescue ::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError => e
         @bulk_request_metrics.increment(:failures)
         log_hash = {:code => e.response_code, :url => e.url.sanitized.to_s, :content_length => e.request_body.bytesize}
         log_hash[:body] = e.response_body if @logger.debug? # Generally this is too verbose
@@ -266,7 +266,7 @@ module LogStash; module PluginMixins; module ElasticSearch
         retry
       rescue => e # Stuff that should never happen - print out full connection issues
         @logger.error(
-          "An unknown error occurred sending a bulk request to Elasticsearch (will retry indefinitely)",
+          "An unknown error occurred sending a bulk request to OpenSearch (will retry indefinitely)",
           message: e.message, exception: e.class, backtrace: e.backtrace
         )
         @logger.debug? && @logger.debug("Failed actions for last bad bulk request", :actions => actions)

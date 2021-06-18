@@ -14,7 +14,7 @@ require 'cgi'
 require 'zlib'
 require 'stringio'
 
-module LogStash; module Outputs; class ElasticSearch;
+module LogStash; module Outputs; class OpenSearch;
   # This is a constant instead of a config option because
   # there really isn't a good reason to configure it.
   #
@@ -41,7 +41,7 @@ module LogStash; module Outputs; class ElasticSearch;
     # The `options` is a hash where the following symbol keys have meaning:
     #
     # * `:hosts` - array of String. Set a list of hosts to use for communication.
-    # * `:port` - number. set the port to use to communicate with Elasticsearch
+    # * `:port` - number. set the port to use to communicate with OpenSearch
     # * `:user` - String. The user to use for authentication.
     # * `:password` - String. The password to use for authentication.
     # * `:timeout` - Float. A duration value, in seconds, after which a socket
@@ -52,9 +52,9 @@ module LogStash; module Outputs; class ElasticSearch;
     #
     # * `:ssl` - Boolean. Enable or disable SSL/TLS.
     # * `:proxy` - String. Choose a HTTP HTTProxy to use.
-    # * `:path` - String. The leading path for prefixing Elasticsearch
+    # * `:path` - String. The leading path for prefixing OpenSearch
     # * `:headers` - Hash. Pairs of headers and their values
-    #   requests. This is sometimes used if you are proxying Elasticsearch access
+    #   requests. This is sometimes used if you are proxying OpenSearch access
     #   through a special http path, such as using mod_rewrite.
     def initialize(options={})
       @logger = options[:logger]
@@ -87,7 +87,7 @@ module LogStash; module Outputs; class ElasticSearch;
 
     def template_install(name, template, force=false)
       if template_exists?(name) && !force
-        @logger.debug("Found existing Elasticsearch template, skipping template management", name: name)
+        @logger.debug("Found existing OpenSearch template, skipping template management", name: name)
         return
       end
       template_put(name, template)
@@ -185,7 +185,7 @@ module LogStash; module Outputs; class ElasticSearch;
         emulate_batch_error_response(batch_actions, response.code, 'payload_too_large')
       else
         url = ::LogStash::Util::SafeURI.new(response.final_url)
-        raise ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError.new(
+        raise ::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError.new(
           response.code, url, body_stream.to_s, response.body
         )
       end
@@ -324,7 +324,7 @@ module LogStash; module Outputs; class ElasticSearch;
 
       adapter_options[:headers] = client_settings[:headers] if client_settings[:headers]
 
-      adapter_class = ::LogStash::Outputs::ElasticSearch::HttpClient::ManticoreAdapter
+      adapter_class = ::LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter
       adapter = adapter_class.new(@logger, adapter_options)
     end
     
@@ -342,7 +342,7 @@ module LogStash; module Outputs; class ElasticSearch;
       }
       pool_options[:scheme] = self.scheme if self.scheme
 
-      pool_class = ::LogStash::Outputs::ElasticSearch::HttpClient::Pool
+      pool_class = ::LogStash::Outputs::OpenSearch::HttpClient::Pool
       full_urls = @options[:hosts].map {|h| host_to_url(h) }
       pool = pool_class.new(@logger, adapter, full_urls, pool_options)
       pool.start
@@ -394,7 +394,7 @@ module LogStash; module Outputs; class ElasticSearch;
 
     def template_put(name, template)
       path = "#{template_endpoint}/#{name}"
-      logger.info("Installing Elasticsearch template", name: name)
+      logger.info("Installing OpenSearch template", name: name)
       @pool.put(path, nil, LogStash::Json.dump(template))
     end
 
@@ -412,8 +412,8 @@ module LogStash; module Outputs; class ElasticSearch;
       begin
         @pool.put(CGI::escape(alias_name), nil, LogStash::Json.dump(alias_definition))
         logger.info("Created rollover alias", name: alias_name)
-        # If the rollover alias already exists, ignore the error that comes back from Elasticsearch
-      rescue ::LogStash::Outputs::ElasticSearch::HttpClient::Pool::BadResponseCodeError => e
+        # If the rollover alias already exists, ignore the error that comes back from OpenSearch
+      rescue ::LogStash::Outputs::OpenSearch::HttpClient::Pool::BadResponseCodeError => e
         if e.response_code == 400
             logger.info("Rollover alias already exists, skipping", name: alias_name)
             return

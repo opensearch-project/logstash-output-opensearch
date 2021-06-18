@@ -48,7 +48,7 @@ describe "failures in bulk class expected behavior", :integration => true do
       "retry_max_interval" => 64,
       "retry_initial_interval" => 2
     }
-    next LogStash::Outputs::ElasticSearch.new(settings)
+    next LogStash::Outputs::OpenSearch.new(settings)
   end
 
   before :each do

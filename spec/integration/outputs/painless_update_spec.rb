@@ -20,7 +20,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
       "hosts" => get_host_port(),
       "action" => "update"
     }
-    LogStash::Outputs::ElasticSearch.new(settings.merge!(options))
+    LogStash::Outputs::OpenSearch.new(settings.merge!(options))
   end
 
   before :each do
