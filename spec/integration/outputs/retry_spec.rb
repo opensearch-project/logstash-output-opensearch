@@ -1,15 +1,15 @@
 require "logstash/outputs/elasticsearch"
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 
 describe "failures in bulk class expected behavior", :integration => true do
   let(:template) { '{"template" : "not important, will be updated by :index"}' }
   let(:event1) { LogStash::Event.new("somevalue" => 100, "@timestamp" => "2014-11-17T20:37:17.223Z", "@metadata" => {"retry_count" => 0}) }
   let(:action1) do
-    ESHelper.action_for_version(["index", {:_id=>nil, routing_field_name =>nil, :_index=>"logstash-2014.11.17" }, event1.to_hash])
+    ["index", {:_id=>nil, routing_field_name =>nil, :_index=>"logstash-2014.11.17" }, event1.to_hash]
   end
   let(:event2) { LogStash::Event.new("geoip" => { "location" => [ 0.0, 0.0] }, "@timestamp" => "2014-11-17T20:37:17.223Z", "@metadata" => {"retry_count" => 0}) }
   let(:action2) do
-    ESHelper.action_for_version(["index", {:_id=>nil, routing_field_name =>nil, :_index=>"logstash-2014.11.17" }, event2.to_hash])
+    ["index", {:_id=>nil, routing_field_name =>nil, :_index=>"logstash-2014.11.17" }, event2.to_hash]
   end
   let(:invalid_event) { LogStash::Event.new("geoip" => { "location" => "notlatlon" }, "@timestamp" => "2014-11-17T20:37:17.223Z") }
 

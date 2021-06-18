@@ -1,4 +1,4 @@
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/elasticsearch"
 require "stringio"
 
@@ -12,7 +12,7 @@ end
 describe "indexing with http_compression turned on", :integration => true do
   let(:event) { LogStash::Event.new("message" => "Hello World!", "type" => type) }
   let(:index) { 10.times.collect { rand(10).to_s }.join("") }
-  let(:type) { ESHelper.es_version_satisfies?("< 7") ? "doc" : "_doc" }
+  let(:type) { "_doc" }
   let(:event_count) { 10000 + rand(500) }
   let(:events) { event_count.times.map { event }.to_a }
   let(:config) {

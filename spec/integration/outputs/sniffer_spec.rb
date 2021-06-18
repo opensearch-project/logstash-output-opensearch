@@ -1,4 +1,4 @@
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/elasticsearch/http_client"
 require "json"
 require "socket"
@@ -33,25 +33,12 @@ describe "pool sniffer", :integration => true do
 
         expect(uris.size).to eq(1)
       end
-
-      it "should return the correct sniff URL" do
-        if ESHelper.es_version_satisfies?(">= 2", "<7")
-          # We do a more thorough check on these versions because we can more reliably guess the ip
-          uris = subject.check_sniff
-
-          expect(uris).to include(::LogStash::Util::SafeURI.new("//#{es_ip}:#{es_port}"))
-        else
-          # ES 1.x (and ES 7.x) returned the public hostname by default. This is hard to approximate
-          # so for ES1.x and 7.x we don't check the *exact* hostname
-          skip
-        end
-      end
     end
   end
 
 
 
-  if ESHelper.es_version_satisfies?(">= 7")
+  if OpenSearchHelper.es_version_satisfies?(">= 7")
     describe("Complex sniff parsing ES 7x") do
       before(:each) do
         response_double = double("_nodes/http", body: File.read("spec/fixtures/_nodes/7x.json"))

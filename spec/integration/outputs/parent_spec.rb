@@ -1,4 +1,4 @@
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/elasticsearch"
 
 context "join field tests", :integration => true do
@@ -6,7 +6,7 @@ context "join field tests", :integration => true do
   shared_examples "a join field based parent indexer" do
     let(:index) { 10.times.collect { rand(10).to_s }.join("") }
 
-    let(:type) { ESHelper.es_version_satisfies?("< 7") ? "doc" : "_doc" }
+    let(:type) { "_doc" }
 
     let(:event_count) { 10000 + rand(500) }
     let(:parent) { "not_implemented" }

@@ -5,7 +5,7 @@ require 'elasticsearch'
 require 'json'
 require 'cabin'
 
-module ESHelper
+module OpenSearchHelper
   def get_host_port
     if ENV["INTEGRATION"] == "true"
       "elasticsearch:9200"
@@ -19,20 +19,11 @@ module ESHelper
   end
 
   def doc_type
-    if ESHelper.es_version_satisfies?(">=7")
+    if OpenSearchHelper.es_version_satisfies?(">=7")
       "_doc"
     else
       "doc"
     end
-  end
-
-  def self.action_for_version(action)
-    action_params = action[1]
-    if ESHelper.es_version_satisfies?(">=8")
-      action_params.delete(:_type)
-    end
-    action[1] = action_params
-    action
   end
 
   def todays_date
@@ -55,7 +46,7 @@ module ESHelper
 
   RSpec::Matchers.define :have_hits do |expected|
     match do |actual|
-      if ESHelper.es_version_satisfies?(">=7")
+      if OpenSearchHelper.es_version_satisfies?(">=7")
         expected == actual['hits']['total']['value']
       else
         expected == actual['hits']['total']
@@ -149,14 +140,10 @@ module ESHelper
   end
 
   def get_template_mappings(template)
-    if ESHelper.es_version_satisfies?(">=7")
-      template['mappings']
-    else
-      template['mappings']["_default_"]
-    end
+    template['mappings']
   end
 end
 
 RSpec.configure do |config|
-  config.include ESHelper
+  config.include OpenSearchHelper
 end

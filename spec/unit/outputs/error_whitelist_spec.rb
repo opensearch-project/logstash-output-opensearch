@@ -1,5 +1,5 @@
 require "logstash/outputs/elasticsearch"
-require_relative "../../../spec/es_spec_helper"
+require_relative "../../../spec/opensearch_spec_helper"
 
 describe "whitelisting error types in expected behavior" do
   let(:template) { '{"template" : "not important, will be updated by :index"}' }
