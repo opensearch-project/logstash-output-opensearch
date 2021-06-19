@@ -11,15 +11,25 @@ services:
       - INTEGRATION=${INTEGRATION:-false}
 
 
+#  elasticsearch:
+#    build:
+#      context: ../
+#      dockerfile: scripts/Dockerfile.opendistro
+#      args:
+#        - OPENDISTRO_VERSION=$OPENDISTRO_VERSION
+#        - INTEGRATION=${INTEGRATION:-false}
+#    command: /usr/share/elasticsearch/elasticsearch-run.sh
+#    ports:
+#      - "9200:9200"
+#    user: elasticsearch
+
   elasticsearch:
     build:
       context: ../
-      dockerfile: scripts/Dockerfile.opendistro
+      dockerfile: scripts/Dockerfile.opensearch
       args:
-        - OPENDISTRO_VERSION=$OPENDISTRO_VERSION
         - INTEGRATION=${INTEGRATION:-false}
-    command: /usr/share/elasticsearch/elasticsearch-run.sh
+    command: /usr/share/opensearch/opensearch-run.sh
     ports:
       - "9200:9200"
-    user: elasticsearch
-
+    user: opensearch

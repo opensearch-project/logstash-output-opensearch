@@ -415,6 +415,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     def get_es_version(url)
       request = perform_request_to_url(url, :get, ROOT_URI_PATH)
       LogStash::Json.load(request.body)["version"]["number"] # e.g. "7.10.0"
+      #return "7.10.2"
     end
 
     def last_es_version

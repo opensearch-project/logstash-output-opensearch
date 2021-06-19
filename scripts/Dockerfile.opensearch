@@ -1,0 +1,10 @@
+FROM opensearchproject/opensearch:latest
+
+ARG plugin_path=/usr/share/plugins/plugin
+ARG es_path=/usr/share/opensearch
+ARG es_yml=$es_path/config/opensearch.yml
+
+RUN echo "plugins.security.disabled: true" >> $es_yml
+COPY --chown=opensearch:opensearch spec/fixtures/test_certs/* $es_path/config/test_certs/
+COPY --chown=opensearch:opensearch scripts/opensearch-run.sh $es_path/
+
