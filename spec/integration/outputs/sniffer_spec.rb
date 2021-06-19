@@ -47,25 +47,23 @@ describe "pool sniffer", :integration => true do
 
 
 
-  if OpenSearchHelper.es_version_satisfies?(">= 7")
-    describe("Complex sniff parsing ES 7x") do
-      before(:each) do
-        response_double = double("_nodes/http", body: File.read("spec/fixtures/_nodes/7x.json"))
-        allow(subject).to receive(:perform_request).and_return([nil, { version: "7.0" }, response_double])
-        subject.start
+  describe("Complex sniff parsing") do
+    before(:each) do
+      response_double = double("_nodes/http", body: File.read("spec/fixtures/_nodes/7x.json"))
+      allow(subject).to receive(:perform_request).and_return([nil, { version: "7.0" }, response_double])
+      subject.start
+    end
+
+    context "with mixed master-only, data-only, and data + master nodes" do
+      it "should execute a sniff without error" do
+        expect { subject.check_sniff }.not_to raise_error
       end
 
-      context "with mixed master-only, data-only, and data + master nodes" do
-        it "should execute a sniff without error" do
-          expect { subject.check_sniff }.not_to raise_error
-        end
+      it "should return the correct sniff URLs" do
+        # ie. with the master-only node, and with the node name correctly set.
+        uris = subject.check_sniff
 
-        it "should return the correct sniff URLs" do
-          # ie. with the master-only node, and with the node name correctly set.
-          uris = subject.check_sniff
-
-          expect(uris).to include(::LogStash::Util::SafeURI.new("//dev-masterdata:9201"), ::LogStash::Util::SafeURI.new("//dev-data:9202"))
-        end
+        expect(uris).to include(::LogStash::Util::SafeURI.new("//dev-masterdata:9201"), ::LogStash::Util::SafeURI.new("//dev-data:9202"))
       end
     end
   end
