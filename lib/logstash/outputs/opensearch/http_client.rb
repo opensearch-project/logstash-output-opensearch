@@ -399,7 +399,7 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def template_endpoint
-      maximum_seen_major_version < 8 ? '_template' : '_index_template'
+      '_template'
     end
 
     # check whether rollover alias already exists

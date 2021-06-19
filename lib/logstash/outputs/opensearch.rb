@@ -416,37 +416,17 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     :routing
   end
 
-  # Determine the correct value for the 'type' field for the given event
-  DEFAULT_EVENT_TYPE_ES6 = "doc".freeze
-  DEFAULT_EVENT_TYPE_ES7 = "_doc".freeze
+  DEFAULT_EVENT_TYPE_ES = "_doc".freeze
 
   def get_event_type(event)
     # Set the 'type' value for the index.
     type = if @document_type
              event.sprintf(@document_type)
            else
-             major_version = maximum_seen_major_version
-             if major_version < 6
-               es5_event_type(event)
-             elsif major_version == 6
-               DEFAULT_EVENT_TYPE_ES6
-             elsif major_version == 7
-               DEFAULT_EVENT_TYPE_ES7
-             else
-               nil
-             end
+             DEFAULT_EVENT_TYPE_ES
            end
 
     type.to_s
-  end
-
-  def es5_event_type(event)
-    type = event.get('type')
-    return DEFAULT_EVENT_TYPE_ES6 unless type
-    if !type.is_a?(String) && !type.is_a?(Numeric)
-      @logger.warn("Bad event type (non-string/integer type value set)", :type_class => type.class, :type_value => type, :event => event.to_hash)
-    end
-    type
   end
 
   ##
@@ -457,9 +437,8 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # @param noop_required_client [nil]: required `nil` for legacy reasons.
   # @return [Boolean]
   def use_event_type?(noop_required_client)
-    # always set type for ES <= 6
-    # for ES 7 only set it if the user defined it
-    (maximum_seen_major_version < 7) || (maximum_seen_major_version == 7 && @document_type)
+    # only if the user defined it
+    @document_type
   end
 
   def install_template

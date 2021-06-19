@@ -442,9 +442,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def set_maximum_seen_major_version(major)
-      if major >= 6
-        @logger.warn("Detected a 6.x and above cluster: the `type` event field won't be used to determine the document _type", es_version: major)
-      end
+      @logger.warn("the `type` event field won't be used to determine the document _type")
       @maximum_seen_major_version = major
     end
 

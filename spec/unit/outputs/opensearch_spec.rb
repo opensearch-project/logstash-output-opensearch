@@ -734,7 +734,7 @@ describe LogStash::Outputs::OpenSearch do
         subject.send(:submit, event_action_tuples)
       end
 
-    end if LOGSTASH_VERSION > '7.0'
+    end
   end
 
   describe "custom headers" do
