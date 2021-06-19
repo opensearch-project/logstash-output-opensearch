@@ -23,5 +23,5 @@ else
   echo "Waiting for elasticsearch to respond..."
   ES_VERSION=$(wait_for_es)
   echo "Elasticsearch $ES_VERSION is Up!"
-  bundle exec rspec -fd $extra_tag_args --tag update_tests:painless --tag es_version:$ES_VERSION spec/integration
+  bundle exec rspec -fd $extra_tag_args --tag update_tests:painless --tag es_version:7.10.2 spec/integration
 fi

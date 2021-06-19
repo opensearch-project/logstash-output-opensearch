@@ -162,14 +162,6 @@ module LogStash; module Outputs; class OpenSearch;
       }
     end
 
-    def self.setup_api_key(logger, params)
-      api_key = params["api_key"]
-
-      return {} unless (api_key && api_key.value)
-
-      { "Authorization" => "ApiKey " + Base64.strict_encode64(api_key.value) }
-    end
-
     private
     def self.dedup_slashes(url)
       url.gsub(/\/+/, "/")
