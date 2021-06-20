@@ -62,16 +62,6 @@ module OpenSearchHelper
     end
   end
 
-  def self.es_version_satisfies?(*requirement)
-    es_version = RSpec.configuration.filter[:es_version]
-    if es_version.nil?
-      puts "Info: ES_VERSION, ELASTIC_STACK_VERSION or 'es_version' tag wasn't set. Returning false to all `es_version_satisfies?` call."
-      return false
-    end
-    es_release_version = Gem::Version.new(es_version).release
-    Gem::Requirement.new(requirement).satisfied_by?(es_release_version)
-  end
-
   def clean(client)
     client.indices.delete_template(:name => "*")
     client.indices.delete_index_template(:name => "logstash*") rescue nil
@@ -133,11 +123,12 @@ module OpenSearchHelper
 
   def get_template(client, name)
     t = client.indices.get_template(name: name)
+    # TODO: use index template if version >= 7.8 & OpenSearch
     t[name]
   end
 
   def get_template_settings(template)
-    template['settings']
+    template['template']
   end
 
   def get_template_mappings(template)
