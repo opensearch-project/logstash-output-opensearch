@@ -44,7 +44,7 @@ describe "elasticsearch is down on startup", :integration => true do
   it 'should ingest events when Elasticsearch recovers before documents are sent' do
     allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_es_version).and_raise(::LogStash::Outputs::OpenSearch::HttpClient::Pool::HostUnreachableError.new(StandardError.new, "big fail"))
     subject.register
-    allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_es_version).and_return(OpenSearchHelper.es_version)
+    allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_es_version).and_return(OpenSearchHelper.version)
     subject.multi_receive([event1, event2])
     @es.indices.refresh
     r = @es.search(index: 'logstash-*')
@@ -56,7 +56,7 @@ describe "elasticsearch is down on startup", :integration => true do
     subject.register
     Thread.new do
       sleep 4
-      allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_es_version).and_return(OpenSearchHelper.es_version)
+      allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_es_version).and_return(OpenSearchHelper.version)
     end
     subject.multi_receive([event1, event2])
     @es.indices.refresh

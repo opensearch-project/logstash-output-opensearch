@@ -3,7 +3,7 @@ set -ex
 
 export PATH=$BUILD_DIR/gradle/bin:$PATH
 
-SERVICE_URL="http://elasticsearch:9200"
+SERVICE_URL="http://opensearch:9200"
 
 wait_for_es() {
   count=120
@@ -16,11 +16,10 @@ wait_for_es() {
 }
 
 if [[ "$INTEGRATION" != "true" ]]; then
-  bundle exec rspec -fd spec/unit -t ~integration -t ~secure_integration
+  bundle exec rspec -fd spec/unit -t ~integration
 else
-  extra_tag_args="--tag ~secure_integration --tag integration"
   echo "Waiting for elasticsearch to respond..."
   ES_VERSION=$(wait_for_es)
   echo "Elasticsearch $VERSION is Up!"
-  bundle exec rspec -fd $extra_tag_args --tag update_tests:painless --tag es_version:$VERSION spec/integration
+  bundle exec rspec -fd --tag integration --tag update_tests:painless --tag version:$VERSION spec/integration
 fi
