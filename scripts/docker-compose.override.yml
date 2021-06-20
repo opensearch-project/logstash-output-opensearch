@@ -23,7 +23,7 @@ services:
 #      - "9200:9200"
 #    user: elasticsearch
 
-  elasticsearch:
+  opensearch:
     build:
       context: ../
       dockerfile: scripts/Dockerfile.opensearch

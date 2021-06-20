@@ -74,12 +74,10 @@ describe LogStash::Outputs::OpenSearch do
     describe "getting a document type" do
       context "if document_type isn't set" do
         let(:options) { super().merge("document_type" => nil)}
-        context "for 7.x elasticsearch clusters" do
           let(:maximum_seen_major_version) { 7 }
           it "should return '_doc'" do
             expect(subject.send(:get_event_type, LogStash::Event.new("type" => "foo"))).to eql("_doc")
           end
-        end
       end
 
       context "with 'document type set'" do
@@ -91,7 +89,6 @@ describe LogStash::Outputs::OpenSearch do
     end
 
     describe "building an event action tuple" do
-      context "for 7.x elasticsearch clusters" do
         let(:maximum_seen_major_version) { 7 }
         it "should not include '_type' when 'document_type' is not explicitly defined" do
           action_tuple = subject.send(:event_action_tuple, LogStash::Event.new("type" => "foo"))
@@ -107,7 +104,6 @@ describe LogStash::Outputs::OpenSearch do
             expect(action_params).to include(:_type => "bar")
           end
         end
-      end
     end
 
     describe "with auth" do
@@ -758,16 +754,16 @@ describe LogStash::Outputs::OpenSearch do
 
   describe "post-register ES setup" do
     let(:do_register) { false }
-    let(:es_version) { '7.10.0' } # DS default on LS 8.x
+    let(:version) { '7.10.0' }
     let(:options) { { 'hosts' => '127.0.0.1:9999' } }
     let(:logger) { subject.logger }
 
     before do
       allow(logger).to receive(:error) # expect tracking
 
-      allow(subject).to receive(:last_es_version).and_return es_version
+      allow(subject).to receive(:last_es_version).and_return version
       # make successful_connection? return true:
-      allow(subject).to receive(:maximum_seen_major_version).and_return Integer(es_version.split('.').first)
+      allow(subject).to receive(:maximum_seen_major_version).and_return Integer(version.split('.').first)
       allow(subject).to receive(:stop_after_successful_connection_thread)
     end
 

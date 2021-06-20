@@ -16,7 +16,7 @@ module LogStash; module Outputs; class OpenSearch
         plugin.logger.info("Using mapping template from", :path => plugin.template)
         template = read_template_file(plugin.template)
       else
-        plugin.logger.info("Using a default mapping template", :es_version => plugin.maximum_seen_major_version,
+        plugin.logger.info("Using a default mapping template", :version => plugin.maximum_seen_major_version,
                                                                :ecs_compatibility => plugin.ecs_compatibility)
         template = load_default_template(plugin.maximum_seen_major_version, plugin.ecs_compatibility)
       end

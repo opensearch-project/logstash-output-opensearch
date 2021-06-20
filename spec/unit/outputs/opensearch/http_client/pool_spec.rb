@@ -85,12 +85,10 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   end
 
   describe 'resolving the address from OpenSearch node info' do
-    let(:host) { "node.elastic.co"}
+    let(:host) { "unit-test-node"}
     let(:ip_address) { "192.168.1.0"}
     let(:port) { 9200 }
 
-
-    context 'in OpenSearch 7.x'
     context 'with host and ip address' do
       let(:publish_address) { "#{host}/#{ip_address}:#{port}"}
       it 'should correctly extract the host' do

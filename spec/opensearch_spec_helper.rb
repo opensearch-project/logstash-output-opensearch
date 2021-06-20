@@ -17,7 +17,7 @@ require 'cabin'
 module OpenSearchHelper
   def get_host_port
     if ENV["INTEGRATION"] == "true"
-      "elasticsearch:9200"
+      "opensearch:9200"
     else
       "localhost:9200"
     end
@@ -45,8 +45,8 @@ module OpenSearchHelper
     :routing
   end
 
-  def self.es_version
-    RSpec.configuration.filter[:es_version] || ENV['ES_VERSION']
+  def self.version
+    RSpec.configuration.filter[:version]
   end
 
   RSpec::Matchers.define :have_hits do |expected|
