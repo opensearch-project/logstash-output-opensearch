@@ -155,14 +155,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
       double("response", :body => {})
     }
 
-    it "should call composable index template in version 8+" do
-      expect(subject).to receive(:maximum_seen_major_version).and_return(8)
-      expect(subject.pool).to receive(:put).with("_index_template/#{template_name}", nil, anything).and_return(get_response)
-      subject.template_put(template_name, template)
-    end
-
     it "should call index template" do
-      expect(subject).to receive(:maximum_seen_major_version).and_return(7)
       expect(subject.pool).to receive(:put).with("_template/#{template_name}", nil, anything).and_return(get_response)
       subject.template_put(template_name, template)
     end

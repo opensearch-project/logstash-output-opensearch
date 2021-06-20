@@ -66,7 +66,6 @@ module LogStash; module Outputs; class OpenSearch;
 
       client_settings.merge! setup_ssl(logger, params)
       common_options.merge! setup_basic_auth(logger, params)
-      client_settings[:headers].merge! setup_api_key(logger, params)
 
       external_version_types = ["external", "external_gt", "external_gte"]
       # External Version validation
