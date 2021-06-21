@@ -3,7 +3,7 @@ set -ex
 
 export PATH=$BUILD_DIR/gradle/bin:$PATH
 
-SERVICE_URL="http://opensearch:9200"
+SERVICE_URL="http://integration:9200"
 
 wait_for_es() {
   count=120

@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+
+  logstash:
+    command: /usr/share/plugins/plugin/scripts/logstash-run.sh
+    build:
+      args:
+        - LOGSTASH_VERSION=$LOGSTASH_VERSION
+    environment:
+      - INTEGRATION=${INTEGRATION:-false}
+
+
+  integration:
+    build:
+      context: ../../
+      dockerfile: scripts/opensearch/Dockerfile.opensearch
+      args:
+        - INTEGRATION=${INTEGRATION:-false}
+    command: /usr/share/opensearch/opensearch-run.sh
+    ports:
+      - "9200:9200"
+    user: opensearch
