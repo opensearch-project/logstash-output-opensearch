@@ -4,10 +4,10 @@ services:
 
   logstash:
     build:
-      context: ../
+      context: ../../
       dockerfile: scripts/Dockerfile
     command: scripts/run.sh
-    env_file: docker.env
+    env_file: ../docker.env
     environment:
       - SPEC_OPTS
       - LOG_LEVEL # devutils (>= 2.0.4) reads the ENV and sets LS logging

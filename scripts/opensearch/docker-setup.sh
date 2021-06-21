@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# This is intended to be run the plugin's root directory. `.ci/docker-setup.sh`
-# Ensure you have Docker installed locally and set the ELASTIC_STACK_VERSION environment variable.
+# This is intended to be run the plugin's root directory. `scripts/opensearch/docker-setup.sh`
+# Ensure you have Docker installed locally and set the OPENSEARCH_VERSION environment variable.
 set -e
 
 if [ -f Gemfile.lock ]; then
     rm Gemfile.lock
 fi
-cd scripts
+cd scripts/opensearch;
 
 if [ "$INTEGRATION" == "true" ]; then
     docker-compose down

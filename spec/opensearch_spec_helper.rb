@@ -17,7 +17,7 @@ require 'cabin'
 module OpenSearchHelper
   def get_host_port
     if ENV["INTEGRATION"] == "true"
-      "opensearch:9200"
+      "integration:9200"
     else
       "localhost:9200"
     end
