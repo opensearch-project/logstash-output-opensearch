@@ -1,3 +1,5 @@
+[![Build and Test logstash-output-opensearch plugin](https://github.com/opensearch-project/logstash-output-opensearch/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/opensearch-project/logstash-output-opensearch/actions/workflows/ci.yml)
+
 # Logstash Plugin
 
 - [Welcome!](#welcome)
