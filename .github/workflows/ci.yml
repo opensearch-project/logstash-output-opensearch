@@ -16,19 +16,41 @@ jobs:
       - name: Checkout plugin
         uses: actions/checkout@v1
 
-      - name: Build and pull docker files
+      - name: Build and pull docker files for opendistro
         env:
           OPENDISTRO_VERSION: "1.13.2"
           LOGSTASH_VERSION: "7.13.2"
         run: |
-          ./scripts/docker-setup.sh
+          ./scripts/opendistro/docker-setup.sh
 
-      - name: Run unit tests
+    # TODO: Refactor scripts into one unit test and multiple integration test
+      - name: Run unit tests for opendistro
+        env:
+          INTEGRATION: false
         run: |
-          ./scripts/docker-run.sh
+          ./scripts/opendistro/docker-run.sh
 
-      - name: Run integration tests
+      - name: Run integration tests for opendistro
         env:
           INTEGRATION: true
         run: |
-          ./scripts/docker-run.sh
+          ./scripts/opendistro/docker-run.sh
+
+      - name: Build and pull docker files for opensearch
+        env:
+          OPENSEARCH_VERSION: "1.0.0-rc1"
+          LOGSTASH_VERSION: "7.13.2"
+        run: |
+          ./scripts/opensearch/docker-setup.sh
+
+      - name: Run unit tests for OpenSearch
+        env:
+          INTEGRATION: false
+        run: |
+          ./scripts/opensearch/docker-run.sh
+
+      - name: Run integration tests for OpenSearch
+        env:
+          INTEGRATION: true
+        run: |
+          ./scripts/opensearch/docker-run.sh
