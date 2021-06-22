@@ -36,7 +36,7 @@ jobs:
         run: |
           ./scripts/opendistro/docker-run.sh
 
-      - name: Build and pull docker files for opensearch
+      - name: Build and pull docker files for OpenSearch
         env:
           OPENSEARCH_VERSION: "1.0.0-rc1"
           LOGSTASH_VERSION: "7.13.2"
