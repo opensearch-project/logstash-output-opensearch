@@ -19,43 +19,18 @@ require "thread" # for safe queueing
 require "uri" # for escaping user input
 require "forwardable"
 
-# .Compatibility Note
-# [NOTE]
-# ================================================================================
-# Starting with Elasticsearch 5.3, there's an {ref}modules-http.html[HTTP setting]
-# called `http.content_type.required`. If this option is set to `true`, and you
-# are using Logstash 2.4 through 5.2, you need to update the Elasticsearch output
-# plugin to version 6.2.5 or higher.
+# This plugin is the recommended method of storing logs in OpenSearch.
+# If you plan on using the OpenSearch Dashboards web interface, you'll want to use this output.
 #
-# ================================================================================
-#
-# This plugin is the recommended method of storing logs in Elasticsearch.
-# If you plan on using the Kibana web interface, you'll want to use this output.
-#
-# This output only speaks the HTTP protocol. HTTP is the preferred protocol for interacting with Elasticsearch as of Logstash 2.0.
+# This output only speaks the HTTP protocol. HTTP is the preferred protocol for interacting with OpenSearch.
 # We strongly encourage the use of HTTP over the node protocol for a number of reasons. HTTP is only marginally slower,
-# yet far easier to administer and work with. When using the HTTP protocol one may upgrade Elasticsearch versions without having
+# yet far easier to administer and work with. When using the HTTP protocol one may upgrade OpenSearch versions without having
 # to upgrade Logstash in lock-step.
 #
-# You can learn more about Elasticsearch at <https://www.elastic.co/products/elasticsearch>
-#
-# ==== Template management for Elasticsearch 5.x
-# Index template for this version (Logstash 5.0) has been changed to reflect Elasticsearch's mapping changes in version 5.0.
-# Most importantly, the subfield for string multi-fields has changed from `.raw` to `.keyword` to match ES default
-# behavior.
-#
-# ** Users installing ES 5.x and LS 5.x **
-# This change will not affect you and you will continue to use the ES defaults.
-#
-# ** Users upgrading from LS 2.x to LS 5.x with ES 5.x **
-# LS will not force upgrade the template, if `logstash` template already exists. This means you will still use
-# `.raw` for sub-fields coming from 2.x. If you choose to use the new template, you will have to reindex your data after
-# the new template is installed.
+# You can learn more about OpenSearch at <https://opensearch.org/>
 #
 # ==== Retry Policy
-#
-# The retry policy has changed significantly in the 2.2.0 release.
-# This plugin uses the Elasticsearch bulk API to optimize its imports into Elasticsearch. These requests may experience
+# This plugin uses the OpenSearch bulk API to optimize its imports into OpenSearch. These requests may experience
 # either partial or total failures.
 #
 # The following errors are retried infinitely:
@@ -65,7 +40,7 @@ require "forwardable"
 # - 503 (Service unavailable) errors
 #
 # NOTE: 409 exceptions are no longer retried. Please set a higher `retry_on_conflict` value if you experience 409 exceptions.
-# It is more performant for Elasticsearch to retry these exceptions than this plugin.
+# It is more performant for OpenSearch to retry these exceptions than this plugin.
 #
 # ==== Batch Sizes ====
 # This plugin attempts to send batches of events as a single request. However, if
@@ -84,12 +59,10 @@ require "forwardable"
 #
 # ==== HTTP Compression
 #
-# This plugin supports request and response compression. Response compression is enabled by default and 
-# for Elasticsearch versions 5.0 and later, the user doesn't have to set any configs in Elasticsearch for 
-# it to send back compressed response. For versions before 5.0, `http.compression` must be set to `true` in 
-# Elasticsearch[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html#modules-http] to take advantage of response compression when using this plugin
+# This plugin supports request and response compression. Response compression is enabled by default,
+# the user doesn't have to set any configs in OpenSearch for it to send back compressed response.
 #
-# For requests compression, regardless of the Elasticsearch version, users have to enable `http_compression` 
+# For requests compression, users have to enable `http_compression`
 # setting in their Logstash config file.
 #
 class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
@@ -118,12 +91,11 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # - delete: deletes a document by id (An id is required for this action)
   # - create: indexes a document, fails if a document by that id already exists in the index.
   # - update: updates a document by id. Update has a special case where you can upsert -- update a
-  #   document if not already present. See the `upsert` option. NOTE: This does not work and is not supported
-  #   in Elasticsearch 1.x. Please upgrade to ES 2.x or greater to use this feature with Logstash!
+  #   document if not already present. See the `upsert` option.
   # - A sprintf style string to change the action based on the content of the event. The value `%{[foo]}`
   #   would use the foo field for the action
   #
-  # For more details on actions, check out the http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html[Elasticsearch bulk API documentation]
+  # For more details on actions, check out the https://docs-beta.opensearch.org/opensearch/rest-api/bulk/[OpenSearch bulk API documentation]
   config :action, :validate => :string, :default => "index"
 
   # The index to write events to. This can be dynamic using the `%{foo}` syntax.
@@ -139,7 +111,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     :validate => :string,
     :deprecated => "Document types are removed entirely. You should avoid this feature"
 
-  # From Logstash 1.3 onwards, a template is applied to Elasticsearch during
+  # From Logstash 1.3 onwards, a template is applied to OpenSearch during
   # Logstash's startup if one with the name `template_name` does not already exist.
   # By default, the contents of this template is the default template for
   # `logstash-%{+YYYY.MM.dd}` which always matches indices based on the pattern
@@ -153,7 +125,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # API to apply your templates manually.
   config :manage_template, :validate => :boolean, :default => true
 
-  # This configuration option defines how the template is named inside Elasticsearch.
+  # This configuration option defines how the template is named inside OpenSearch.
   # Note that if you have used the template management features and subsequently
   # change this, you will need to prune the old template manually, e.g.
   #
@@ -167,7 +139,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   config :template, :validate => :path
 
   # The template_overwrite option will always overwrite the indicated template
-  # in Elasticsearch with either the one indicated by template or the included one.
+  # in OpenSearch with either the one indicated by template or the included one.
   # This option is set to false by default. If you always want to stay up to date
   # with the template provided by Logstash, this option could be very useful to you.
   # Likewise, if you have your own template file managed by puppet, for example, and
@@ -179,12 +151,9 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   config :template_overwrite, :validate => :boolean, :default => false
 
   # The version to use for indexing. Use sprintf syntax like `%{my_version}` to use a field value here.
-  # See https://www.elastic.co/blog/elasticsearch-versioning-support.
   config :version, :validate => :string
 
   # The version_type to use for indexing.
-  # See https://www.elastic.co/blog/elasticsearch-versioning-support.
-  # See also https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#_version_types
   config :version_type, :validate => ["internal", 'external', "external_gt", "external_gte", "force"]
 
   # A routing override to be applied to all processed events.
@@ -203,7 +172,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   config :upsert, :validate => :string, :default => ""
 
   # Enable `doc_as_upsert` for update mode.
-  # Create a new document with source if `document_id` doesn't exist in Elasticsearch
+  # Create a new document with source if `document_id` doesn't exist in OpenSearch
   config :doc_as_upsert, :validate => :boolean, :default => false
 
   # Set script name for scripted update mode
@@ -211,11 +180,11 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
 
   # Define the type of script referenced by "script" variable
   #  inline : "script" contains inline script
-  #  indexed : "script" contains the name of script directly indexed in elasticsearch
-  #  file    : "script" contains the name of script stored in elasticseach's config directory
+  #  indexed : "script" contains the name of script directly indexed in opensearch
+  #  file    : "script" contains the name of script stored in opensearch's config directory
   config :script_type, :validate => ["inline", 'indexed', "file"], :default => ["inline"]
 
-  # Set the language of the used script. If not set, this defaults to painless in ES 5.0
+  # Set the language of the used script. If not set, this defaults to painless
   config :script_lang, :validate => :string, :default => "painless"
 
   # Set variable name passed to script (scripted update)
@@ -224,9 +193,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # if enabled, script is in charge of creating non-existent document (scripted update)
   config :scripted_upsert, :validate => :boolean, :default => false
 
-  # The number of times Elasticsearch should internally retry an update/upserted document
-  # See the https://www.elastic.co/guide/en/elasticsearch/guide/current/partial-updates.html[partial updates]
-  # for more info
+  # The number of times OpenSearch should internally retry an update/upserted document
   config :retry_on_conflict, :validate => :number, :default => 1
 
   # Set which ingest pipeline you wish to execute for an event. You can also use event dependent configuration
@@ -248,7 +215,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
 
     check_action_validity
 
-    @logger.info("New Elasticsearch output", :class => self.class.name, :hosts => @hosts.map(&:sanitized).map(&:to_s))
+    @logger.info("New OpenSearch output", :class => self.class.name, :hosts => @hosts.map(&:sanitized).map(&:to_s))
 
     @client = build_client
 
@@ -274,7 +241,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     @document_level_metrics = metric.namespace(:documents)
   end
 
-  # @override post-register when ES connection established
+  # @override post-register when OpenSearch connection established
   def finish_register
     discover_cluster_uuid
     install_template
@@ -315,7 +282,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     status = @after_successful_connection_thread && @after_successful_connection_thread.value
     if status.is_a?(Exception) # check if thread 'halted' with an error
       # keep logging that something isn't right (from every #multi_receive)
-      @logger.error "Elasticsearch setup did not complete normally, please review previously logged errors",
+      @logger.error "OpenSearch setup did not complete normally, please review previously logged errors",
                     message: status.message, exception: status.class
     else
       @after_successful_connection_done = nil # do not execute __method__ again if all went well
@@ -392,7 +359,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
       value = event.sprintf(@pipeline)
       # convention: empty string equates to not using a pipeline
       # this is useful when using a field reference in the pipeline setting, e.g.
-      #      elasticsearch {
+      #      opensearch {
       #        pipeline => "%{[@metadata][pipeline]}"
       #      }
       params[:pipeline] = value unless value.empty?
