@@ -41,7 +41,7 @@ module LogStash; module PluginMixins; module OpenSearch
     def setup_hosts
       @hosts = Array(@hosts)
       if @hosts.empty?
-        @logger.info("No 'host' set in elasticsearch output. Defaulting to localhost")
+        @logger.info("No 'host' set in opensearch output. Defaulting to localhost")
         @hosts.replace(["localhost"])
       end
     end

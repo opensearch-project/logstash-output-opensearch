@@ -93,7 +93,7 @@ module LogStash; module Outputs; class OpenSearch;
 
       raise(
         LogStash::ConfigurationError,
-        "External versioning is not supported by the update action. See https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html."
+        "External versioning is not supported by the update action."
       ) if params['action'] == 'update' and external_version_types.include?(params.fetch('version_type', ''))
 
       # Update API setup
@@ -141,7 +141,7 @@ module LogStash; module Outputs; class OpenSearch;
       end
       if !params["ssl_certificate_verification"]
         logger.warn [
-                       "** WARNING ** Detected UNSAFE options in elasticsearch output configuration!",
+                       "** WARNING ** Detected UNSAFE options in opensearch output configuration!",
                        "** WARNING ** You have enabled encryption but DISABLED certificate verification.",
                        "** WARNING ** To make sure your data is secure change :ssl_certificate_verification to true"
                      ].join("\n")

@@ -19,7 +19,7 @@ module LogStash; module Outputs; class OpenSearch;
   # there really isn't a good reason to configure it.
   #
   # The criteria used are:
-  # 1. We need a number that's less than 100MiB because ES
+  # 1. We need a number that's less than 100MiB because OpenSearch
   #    won't accept bulks larger than that.
   # 2. It must be large enough to amortize the connection constant
   #    across multiple requests.
@@ -424,7 +424,7 @@ module LogStash; module Outputs; class OpenSearch;
       end
     end
 
-    # Build a bulk item for an elasticsearch update action
+    # Build a bulk item for an opensearch update action
     def update_action_builder(args, source)
       args = args.clone()
       if args[:_script]

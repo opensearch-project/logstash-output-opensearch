@@ -14,7 +14,7 @@ require 'concurrent/atomic/count_down_latch'
 require "logstash/outputs/opensearch"
 
 describe LogStash::Outputs::OpenSearch do
-  subject(:elasticsearch_output_instance) { described_class.new(options) }
+  subject(:opensearch_output_instance) { described_class.new(options) }
   let(:options) { {} }
   let(:maximum_seen_major_version) { [7].sample }
 
@@ -331,12 +331,12 @@ describe LogStash::Outputs::OpenSearch do
     let(:logger_stub) { double("logger").as_null_object }
 
     before(:each) do
-      allow(elasticsearch_output_instance.client).to receive(:logger).and_return(logger_stub)
+      allow(opensearch_output_instance.client).to receive(:logger).and_return(logger_stub)
 
-      allow(elasticsearch_output_instance.client).to receive(:bulk).and_call_original
+      allow(opensearch_output_instance.client).to receive(:bulk).and_call_original
 
       max_bytes = payload_size * 3 / 4 # ensure a failure first attempt
-      allow(elasticsearch_output_instance.client.pool).to receive(:post) do |path, params, body|
+      allow(opensearch_output_instance.client.pool).to receive(:post) do |path, params, body|
         if body.length > max_bytes
           max_bytes *= 2 # ensure a successful retry
           double("Response", :code => 413, :body => "")
@@ -347,13 +347,13 @@ describe LogStash::Outputs::OpenSearch do
     end
 
     it 'retries the 413 until it goes away' do
-      elasticsearch_output_instance.multi_receive([event])
+      opensearch_output_instance.multi_receive([event])
 
-      expect(elasticsearch_output_instance.client).to have_received(:bulk).twice
+      expect(opensearch_output_instance.client).to have_received(:bulk).twice
     end
 
     it 'logs about payload quantity and size' do
-      elasticsearch_output_instance.multi_receive([event])
+      opensearch_output_instance.multi_receive([event])
 
       expect(logger_stub).to have_received(:warn)
                                  .with(a_string_matching(/413 Payload Too Large/),
