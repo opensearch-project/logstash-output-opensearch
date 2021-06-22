@@ -12,7 +12,7 @@ require "logstash/outputs/opensearch/template_manager"
 module LogStash; module PluginMixins; module OpenSearch
   module Common
 
-    # This module defines common methods that can be reused by alternate elasticsearch output plugins such as the OpenSearch_data_streams output.
+    # This module defines common methods that can be reused by alternate opensearch output plugins.
 
     attr_reader :hosts
 
