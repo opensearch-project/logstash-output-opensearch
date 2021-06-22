@@ -18,8 +18,8 @@ wait_for_es() {
 if [[ "$INTEGRATION" != "true" ]]; then
   bundle exec rspec -fd spec/unit -t ~integration
 else
-  echo "Waiting for elasticsearch to respond..."
-  ES_VERSION=$(wait_for_es)
-  echo "Elasticsearch $VERSION is Up!"
+  echo "Waiting for cluster to respond..."
+  VERSION=$(wait_for_es)
+  echo "Integration test cluster $VERSION is Up!"
   bundle exec rspec -fd --tag integration --tag update_tests:painless --tag version:$VERSION spec/integration
 fi

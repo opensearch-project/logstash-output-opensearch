@@ -49,8 +49,8 @@ describe "pool sniffer", :integration => true do
 
   describe("Complex sniff parsing") do
     before(:each) do
-      response_double = double("_nodes/http", body: File.read("spec/fixtures/_nodes/7x.json"))
-      allow(subject).to receive(:perform_request).and_return([nil, { version: "7.0" }, response_double])
+      response_double = double("_nodes/http", body: File.read("spec/fixtures/_nodes/nodes.json"))
+      allow(subject).to receive(:perform_request).and_return([nil, { version: "any" }, response_double])
       subject.start
     end
 

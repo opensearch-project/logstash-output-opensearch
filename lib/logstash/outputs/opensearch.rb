@@ -137,7 +137,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
 
   config :document_type,
     :validate => :string,
-    :deprecated => "Document types are being deprecated in OpenSearch 6.0, and removed entirely in 7.0. You should avoid this feature"
+    :deprecated => "Document types are removed entirely. You should avoid this feature"
 
   # From Logstash 1.3 onwards, a template is applied to Elasticsearch during
   # Logstash's startup if one with the name `template_name` does not already exist.

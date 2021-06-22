@@ -10,7 +10,7 @@
 module LogStash; module PluginMixins; module OpenSearch
   module APIConfigs
 
-    # This module defines common options that can be reused by alternate OpenSearch output plugins such as the OpenSearch_data_streams output.
+    # This module defines common options that can be reused by alternate OpenSearch output plugins.
 
     DEFAULT_HOST = ::LogStash::Util::SafeURI.new("//127.0.0.1")
 
@@ -129,7 +129,7 @@ module LogStash; module PluginMixins; module OpenSearch
         # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
         :validate_after_inactivity => { :validate => :number, :default => 10000 },
 
-        # Enable gzip compression on requests. Note that response compression is on by default for OpenSearch v5.0 and beyond
+        # Enable gzip compression on requests.
         :http_compression => { :validate => :boolean, :default => false },
 
         # Custom Headers to send on each request to OpenSearch nodes
