@@ -16,7 +16,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger) }
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://localhost:9200")] }
   let(:options) { {:resurrect_delay => 2, :url_normalizer => proc {|u| u}} } # Shorten the delay a bit to speed up tests
-  let(:es_node_versions) { [ "0.0.0" ] }
+  let(:node_versions) { [ "0.0.0" ] }
 
   subject { described_class.new(logger, adapter, initial_urls, options) }
 
@@ -30,7 +30,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
 
     allow(::Manticore::Client).to receive(:new).and_return(manticore_double)
 
-    allow(subject).to receive(:get_es_version).with(any_args).and_return(*es_node_versions)
+    allow(subject).to receive(:get_version).with(any_args).and_return(*node_versions)
   end
 
   after do
@@ -214,7 +214,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
     end
 
     context "if there are nodes with multiple major versions" do
-      let(:es_node_versions) { [ "0.0.0", "6.0.0" ] }
+      let(:node_versions) { [ "0.0.0", "6.0.0" ] }
       it "picks the largest major version" do
         expect(subject.maximum_seen_major_version).to eq(6)
       end

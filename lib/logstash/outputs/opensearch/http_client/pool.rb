@@ -77,7 +77,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @url_info = {}
       @stopping = false
 
-      @last_es_version = Concurrent::AtomicReference.new
+      @last_version = Concurrent::AtomicReference.new
     end
 
     def start
@@ -233,10 +233,10 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           # If no exception was raised it must have succeeded!
           logger.warn("Restored connection to ES instance", url: url.sanitized.to_s)
           # We reconnected to this node, check its ES version
-          es_version = get_es_version(url)
+          version = get_version(url)
           @state_mutex.synchronize do
-            meta[:version] = es_version
-            set_last_es_version(es_version, url)
+            meta[:version] = version
+            set_last_version(version, url)
             meta[:state] = :alive
           end
         rescue HostUnreachableError, BadResponseCodeError => e
@@ -412,14 +412,13 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       end
     end
 
-    def get_es_version(url)
+    def get_version(url)
       request = perform_request_to_url(url, :get, ROOT_URI_PATH)
       LogStash::Json.load(request.body)["version"]["number"] # e.g. "7.10.0"
-      #return "7.10.2"
     end
 
-    def last_es_version
-      @last_es_version.get
+    def last_version
+      @last_version.get
     end
 
     def maximum_seen_major_version
@@ -429,12 +428,12 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     private
 
     # @private executing within @state_mutex
-    def set_last_es_version(version, url)
-      @last_es_version.set(version)
+    def set_last_version(version, url)
+      @last_version.set(version)
 
       major = major_version(version)
       if @maximum_seen_major_version.nil?
-        @logger.info("OpenSearch version determined (#{version})", es_version: major)
+        @logger.info("OpenSearch version determined (#{version})", version: major)
         set_maximum_seen_major_version(major)
       elsif major > @maximum_seen_major_version
         warn_on_higher_major_version(major, url)

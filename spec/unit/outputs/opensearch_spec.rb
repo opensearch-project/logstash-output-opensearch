@@ -279,7 +279,7 @@ describe LogStash::Outputs::OpenSearch do
       let(:events) { [ ::LogStash::Event.new("foo" => "bar1"), ::LogStash::Event.new("foo" => "bar2") ] }
 
       let(:bulk_response) do
-        # shouldn't really happen but we've seen this happen - here ES returns more items than were sent
+        # shouldn't really happen but we've seen this happen - here OpenSearch returns more items than were sent
         { "took"=>1, "ingest_took"=>9, "errors"=>true,
           "items"=>[{"index"=>{"_index"=>"bar1", "_type"=>"_doc", "_id"=>nil, "status"=>500,
                               "error"=>{"type" => "illegal_state_exception",
@@ -752,7 +752,7 @@ describe LogStash::Outputs::OpenSearch do
   end
 
 
-  describe "post-register ES setup" do
+  describe "post-register OpenSearch setup" do
     let(:do_register) { false }
     let(:version) { '7.10.0' }
     let(:options) { { 'hosts' => '127.0.0.1:9999' } }
@@ -761,7 +761,7 @@ describe LogStash::Outputs::OpenSearch do
     before do
       allow(logger).to receive(:error) # expect tracking
 
-      allow(subject).to receive(:last_es_version).and_return version
+      allow(subject).to receive(:last_version).and_return version
       # make successful_connection? return true:
       allow(subject).to receive(:maximum_seen_major_version).and_return Integer(version.split('.').first)
       allow(subject).to receive(:stop_after_successful_connection_thread)

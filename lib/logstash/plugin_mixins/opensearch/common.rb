@@ -58,8 +58,8 @@ module LogStash; module PluginMixins; module OpenSearch
     end
     protected :finish_register
 
-    def last_es_version
-      client.last_es_version
+    def last_version
+      client.last_version
     end
 
     def maximum_seen_major_version
