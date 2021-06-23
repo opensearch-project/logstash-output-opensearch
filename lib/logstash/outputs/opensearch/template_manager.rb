@@ -9,7 +9,7 @@
 
 module LogStash; module Outputs; class OpenSearch
   class TemplateManager
-    # To be mixed into the elasticsearch plugin base
+    # To be mixed into the opensearch plugin base
     def self.install_template(plugin)
       return unless plugin.manage_template
       if plugin.template
@@ -26,11 +26,11 @@ module LogStash; module Outputs; class OpenSearch
     end
 
     private
-    def self.load_default_template(es_major_version, ecs_compatibility)
-      template_path = default_template_path(es_major_version, ecs_compatibility)
+    def self.load_default_template(major_version, ecs_compatibility)
+      template_path = default_template_path(major_version, ecs_compatibility)
       read_template_file(template_path)
     rescue => e
-      fail "Failed to load default template for Elasticsearch v#{es_major_version} with ECS #{ecs_compatibility}; caused by: #{e.inspect}"
+      fail "Failed to load default template for OpenSearch v#{major_version} with ECS #{ecs_compatibility}; caused by: #{e.inspect}"
     end
 
     def self.install(client, template_name, template, template_overwrite)
@@ -45,9 +45,9 @@ module LogStash; module Outputs; class OpenSearch
       plugin.template_name
     end
 
-    def self.default_template_path(es_major_version, ecs_compatibility=:disabled)
-      template_version = es_major_version
-      default_template_name = "templates/ecs-#{ecs_compatibility}/elasticsearch-#{template_version}x.json"
+    def self.default_template_path(major_version, ecs_compatibility=:disabled)
+      template_version = major_version
+      default_template_name = "templates/ecs-#{ecs_compatibility}/#{template_version}x.json"
       ::File.expand_path(default_template_name, ::File.dirname(__FILE__))
     end
 

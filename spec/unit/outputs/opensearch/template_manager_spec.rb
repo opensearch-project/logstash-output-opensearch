@@ -15,7 +15,7 @@ describe LogStash::Outputs::OpenSearch::TemplateManager do
   describe ".default_template_path" do
     context 'when ECS v1 is requested' do
       it 'resolves' do
-        expect(described_class.default_template_path(7, :v1)).to end_with("/templates/ecs-v1/elasticsearch-7x.json")
+        expect(described_class.default_template_path(7, :v1)).to end_with("/templates/ecs-v1/7x.json")
       end
     end
   end

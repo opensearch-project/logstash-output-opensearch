@@ -40,7 +40,7 @@ describe "SSL option" do
       subject.close
     end
     
-    it "should pass the flag to the ES client" do
+    it "should pass the flag to the OpenSearch client" do
       expect(::Manticore::Client).to receive(:new) do |args|
         expect(args[:ssl]).to eq(:enabled => true, :verify => false)
       end.and_return(manticore_double)
@@ -79,7 +79,7 @@ describe "SSL option" do
       next LogStash::Outputs::OpenSearch.new(settings)
     end
 
-    it "should pass the keystore parameters to the ES client" do
+    it "should pass the keystore parameters to the OpenSearch client" do
       expect(::Manticore::Client).to receive(:new) do |args|
         expect(args[:ssl]).to include(:keystore => keystore_path, :keystore_password => "test")
       end.and_call_original
