@@ -1,5 +1,4 @@
-ARG LOGSTASH_VERSION
-FROM docker.elastic.co/logstash/logstash-oss:$LOGSTASH_VERSION
+FROM docker.elastic.co/logstash/logstash-oss:${LOGSTASH_VERSION:-7.13.2}
 USER logstash
 COPY --chown=logstash:logstash Gemfile /usr/share/plugins/plugin/Gemfile
 COPY --chown=logstash:logstash *.gemspec VERSION* version* /usr/share/plugins/plugin/
