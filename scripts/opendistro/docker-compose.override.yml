@@ -4,9 +4,6 @@ services:
 
   logstash:
     command: /usr/share/plugins/plugin/scripts/logstash-run.sh
-    build:
-      args:
-        - LOGSTASH_VERSION=$LOGSTASH_VERSION
     environment:
       - INTEGRATION=${INTEGRATION:-false}
 
