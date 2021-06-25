@@ -34,7 +34,7 @@ describe LogStash::Outputs::OpenSearch do
 
       allow(subject).to receive(:finish_register) # stub-out thread completion (to avoid error log entries)
 
-      # emulate 'successful' ES connection on the same thread
+      # emulate 'successful' OpenSearch connection on the same thread
       allow(subject).to receive(:after_successful_connection) { |&block| block.call }.
           and_return after_successful_connection_thread_mock
       allow(subject).to receive(:stop_after_successful_connection_thread)

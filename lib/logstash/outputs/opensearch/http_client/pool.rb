@@ -168,8 +168,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       update_urls(check_sniff)
     end
 
-    ES1_SNIFF_RE_URL  = /\[([^\/]*)?\/?([^:]*):([0-9]+)\]/
-    ES2_AND_ABOVE_SNIFF_RE_URL  = /([^\/]*)?\/?([^:]*):([0-9]+)/
+    SNIFF_RE_URL  = /([^\/]*)?\/?([^:]*):([0-9]+)/
     # Sniffs and returns the results. Does not update internal URLs!
     def check_sniff
       _, url_meta, resp = perform_request(:get, @sniffing_path)
@@ -197,7 +196,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def address_str_to_uri(addr_str)
-      matches = addr_str.match(ES1_SNIFF_RE_URL) || addr_str.match(ES2_AND_ABOVE_SNIFF_RE_URL)
+      matches = addr_str.match(SNIFF_RE_URL)
       if matches
         host = matches[1].empty? ? matches[2] : matches[1]
         ::LogStash::Util::SafeURI.new("#{host}:#{matches[3]}")
@@ -221,7 +220,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def health_check_request(url)
-      logger.debug("Running health check to see if an ES connection is working", url: url.sanitized.to_s, path: @healthcheck_path)
+      logger.debug("Running health check to see if an OpenSearch connection is working", url: url.sanitized.to_s, path: @healthcheck_path)
       perform_request_to_url(url, :head, @healthcheck_path)
     end
 
@@ -231,8 +230,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         begin
           health_check_request(url)
           # If no exception was raised it must have succeeded!
-          logger.warn("Restored connection to ES instance", url: url.sanitized.to_s)
-          # We reconnected to this node, check its ES version
+          logger.warn("Restored connection to OpenSearch instance", url: url.sanitized.to_s)
+          # We reconnected to this node, check its version
           version = get_version(url)
           @state_mutex.synchronize do
             meta[:version] = version
@@ -240,7 +239,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
             meta[:state] = :alive
           end
         rescue HostUnreachableError, BadResponseCodeError => e
-          logger.warn("Attempted to resurrect connection to dead ES instance, but got an error", url: url.sanitized.to_s, exception: e.class, message: e.message)
+          logger.warn("Attempted to resurrect connection to dead OpenSearch instance, but got an error", url: url.sanitized.to_s, exception: e.class, message: e.message)
         end
       end
     end
@@ -312,7 +311,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         logger.info? && logger.info("OpenSearch pool URLs updated", :changes => state_changes)
       end
       
-      # Run an inline healthcheck anytime URLs are updated
+      # Run an inline health check anytime URLs are updated
       # This guarantees that during startup / post-startup
       # sniffing we don't have idle periods waiting for the
       # periodic sniffer to allow new hosts to come online
