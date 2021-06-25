@@ -17,7 +17,7 @@ describe "Versioned indexing", :integration => true do
 
   before :each do
     # Delete all templates first.
-    # Clean ES of data before we start.
+    # Clean OpenSearch of data before we start.
     es.indices.delete_template(:name => "*")
     # This can fail if there are no indexes, ignore failure.
     es.indices.delete(:index => "*") rescue nil
@@ -44,7 +44,7 @@ describe "Versioned indexing", :integration => true do
         }
       end
 
-      it "should default to ES version" do
+      it "should default to OpenSearch version" do
         subject.multi_receive([LogStash::Event.new("my_id" => "123", "message" => "foo")])
         r = es.get(:index => 'logstash-index', :type => doc_type, :id => "123", :refresh => true)
         expect(r["_version"]).to eq(1)

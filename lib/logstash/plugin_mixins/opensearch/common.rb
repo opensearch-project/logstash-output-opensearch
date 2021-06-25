@@ -21,7 +21,7 @@ module LogStash; module PluginMixins; module OpenSearch
     DOC_SUCCESS_CODES = [200, 201]
     DOC_CONFLICT_CODE = 409
 
-    # Perform some ES options validations and Build the HttpClient.
+    # Perform some OpenSearch options validations and Build the HttpClient.
     # Note that this methods may sets the @user, @password, @hosts and @client ivars as a side effect.
     # @return [HttpClient] the new http client
     def build_client
@@ -53,7 +53,7 @@ module LogStash; module PluginMixins; module OpenSearch
     private :hosts_default?
 
 
-    # Plugin initialization extension point (after a successful ES connection).
+    # Plugin initialization extension point (after a successful OpenSearch connection).
     def finish_register
     end
     protected :finish_register
@@ -70,7 +70,7 @@ module LogStash; module PluginMixins; module OpenSearch
       !!maximum_seen_major_version
     end
 
-    # launch a thread that waits for an initial successful connection to the ES cluster to call the given block
+    # launch a thread that waits for an initial successful connection to the OpenSearch cluster to call the given block
     # @param block [Proc] the block to execute upon initial successful connection
     # @return [Thread] the successful connection wait thread
     def after_successful_connection(&block)
@@ -253,7 +253,7 @@ module LogStash; module PluginMixins; module OpenSearch
         message = "Encountered a retryable error (will retry with exponential backoff)"
 
         # We treat 429s as a special case because these really aren't errors, but
-        # rather just ES telling us to back off a bit, which we do.
+        # rather just OpenSearch telling us to back off a bit, which we do.
         # The other retryable code is 503, which are true errors
         # Even though we retry the user should be made aware of these
         if e.response_code == 429

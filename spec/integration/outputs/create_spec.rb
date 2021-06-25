@@ -29,7 +29,7 @@ describe "client create actions", :integration => true do
   before :each do
     @es = get_client
     # Delete all templates first.
-    # Clean ES of data before we start.
+    # Clean OpenSearch of data before we start.
     @es.indices.delete_template(:name => "*")
     # This can fail if there are no indexes, ignore failure.
     @es.indices.delete(:index => "*") rescue nil

@@ -26,7 +26,7 @@ describe "metrics", :integration => true do
   before :each do
     require "elasticsearch"
 
-    # Clean ES of data before we start.
+    # Clean OpenSearch of data before we start.
     @es = get_client
     clean(@es)
     subject.register
