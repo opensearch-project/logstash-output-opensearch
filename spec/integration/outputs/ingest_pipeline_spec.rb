@@ -40,11 +40,11 @@ describe "Ingest pipeline execution behavior", :integration => true do
     require "elasticsearch"
 
     # Clean OpenSearch of data before we start.
-    @es = get_client
-    @es.indices.delete_template(:name => "*")
+    @client = get_client
+    @client.indices.delete_template(:name => "*")
 
     # This can fail if there are no indexes, ignore failure.
-    @es.indices.delete(:index => "*") rescue nil
+    @client.indices.delete(:index => "*") rescue nil
 
     # delete existing ingest pipeline
     http_client.delete(ingest_url).call
@@ -53,22 +53,22 @@ describe "Ingest pipeline execution behavior", :integration => true do
     http_client.put(ingest_url, :body => apache_logs_pipeline, :headers => {"Content-Type" => "application/json" }).call
 
     #TODO: Use esclient
-    #@es.ingest.put_pipeline :id => 'apache_pipeline', :body => pipeline_defintion
+    #@client.ingest.put_pipeline :id => 'apache_pipeline', :body => pipeline_defintion
 
     subject.register
     subject.multi_receive([LogStash::Event.new("message" => '183.60.215.50 - - [01/Jun/2015:18:00:00 +0000] "GET /scripts/netcat-webserver HTTP/1.1" 200 182 "-" "Mozilla/5.0 (compatible; EasouSpider; +http://www.easou.com/search/spider.html)"')])
-    @es.indices.refresh
+    @client.indices.refresh
 
     #Wait or fail until everything's indexed.
     Stud::try(10.times) do
-      r = @es.search(index: 'logstash-*')
+      r = @client.search(index: 'logstash-*')
       expect(r).to have_hits(1)
       sleep(0.1)
     end
   end
 
   it "indexes using the proper pipeline" do
-    results = @es.search(:index => 'logstash-*', :q => "message:\"netcat\"")
+    results = @client.search(:index => 'logstash-*', :q => "message:\"netcat\"")
     expect(results).to have_hits(1)
     expect(results["hits"]["hits"][0]["_source"]["response"]).to eq("200")
     expect(results["hits"]["hits"][0]["_source"]["bytes"]).to eq("182")

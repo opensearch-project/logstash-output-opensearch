@@ -27,12 +27,12 @@ describe "client create actions", :integration => true do
   end
 
   before :each do
-    @es = get_client
+    @client = get_client
     # Delete all templates first.
     # Clean OpenSearch of data before we start.
-    @es.indices.delete_template(:name => "*")
+    @client.indices.delete_template(:name => "*")
     # This can fail if there are no indexes, ignore failure.
-    @es.indices.delete(:index => "*") rescue nil
+    @client.indices.delete(:index => "*") rescue nil
   end
 
   context "when action => create" do
@@ -40,10 +40,10 @@ describe "client create actions", :integration => true do
       subject = get_es_output("create", "id123")
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
-      @es.indices.refresh
+      @client.indices.refresh
       # Wait or fail until everything's indexed.
       Stud::try(3.times) do
-        r = @es.search(index: 'logstash-*')
+        r = @client.search(index: 'logstash-*')
         expect(r).to have_hits(1)
       end
     end

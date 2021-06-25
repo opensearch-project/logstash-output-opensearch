@@ -36,7 +36,7 @@ module OpenSearchHelper
   end
 
   def field_properties_from_template(template_name, field)
-    template = get_template(@es, template_name)
+    template = get_template(@client, template_name)
     mappings = get_template_mappings(template)
     mappings["properties"][field]["properties"]
   end
