@@ -57,10 +57,10 @@ describe "failures in bulk class expected behavior", :integration => true do
     allow(Stud).to receive(:stoppable_sleep)
 
     # Clean OpenSearch of data before we start.
-    @es = get_client
-    @es.indices.delete_template(:name => "*")
-    @es.indices.delete(:index => "*")
-    @es.indices.refresh
+    @client = get_client
+    @client.indices.delete_template(:name => "*")
+    @client.indices.delete(:index => "*")
+    @client.indices.refresh
   end
 
   after :each do
@@ -154,8 +154,8 @@ describe "failures in bulk class expected behavior", :integration => true do
     subject.multi_receive([invalid_event])
     subject.close
 
-    @es.indices.refresh
-    r = @es.search(index: 'logstash-*')
+    @client.indices.refresh
+    r = @client.search(index: 'logstash-*')
     expect(r).to have_hits(0)
   end
 
@@ -165,8 +165,8 @@ describe "failures in bulk class expected behavior", :integration => true do
     subject.register
     subject.multi_receive([event1])
     subject.close
-    @es.indices.refresh
-    r = @es.search(index: 'logstash-*')
+    @client.indices.refresh
+    r = @client.search(index: 'logstash-*')
     expect(r).to have_hits(1)
   end
 
@@ -175,8 +175,8 @@ describe "failures in bulk class expected behavior", :integration => true do
     subject.multi_receive([invalid_event, event1])
     subject.close
 
-    @es.indices.refresh
-    r = @es.search(index: 'logstash-*')
+    @client.indices.refresh
+    r = @client.search(index: 'logstash-*')
     expect(r).to have_hits(1)
   end
 end

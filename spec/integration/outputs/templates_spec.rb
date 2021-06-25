@@ -25,11 +25,11 @@ describe "index template expected behavior", :integration => true do
     require "elasticsearch"
 
     # Clean OpenSearch of data before we start.
-    @es = get_client
-    @es.indices.delete_template(:name => "*")
+    @client = get_client
+    @client.indices.delete_template(:name => "*")
 
     # This can fail if there are no indexes, ignore failure.
-    @es.indices.delete(:index => "*") rescue nil
+    @client.indices.delete(:index => "*") rescue nil
 
     subject.register
 
@@ -44,23 +44,23 @@ describe "index template expected behavior", :integration => true do
       LogStash::Event.new("geoip" => { "location" => [ 0.0, 0.0 ] })
     ])
 
-    @es.indices.refresh
+    @client.indices.refresh
 
     # Wait or fail until everything's indexed.
     Stud::try(20.times) do
-      r = @es.search(index: 'logstash-*')
+      r = @client.search(index: 'logstash-*')
       expect(r).to have_hits(8)
     end
   end
 
   it "permits phrase searching on string fields" do
-    results = @es.search(:q => "message:\"sample message\"")
+    results = @client.search(:q => "message:\"sample message\"")
     expect(results).to have_hits(1)
     expect(results["hits"]["hits"][0]["_source"]["message"]).to eq("sample message here")
   end
 
   it "numbers dynamically map to a numeric type and permit range queries" do
-    results = @es.search(:q => "somevalue:[5 TO 105]")
+    results = @client.search(:q => "somevalue:[5 TO 105]")
     expect(results).to have_hits(2)
 
     values = results["hits"]["hits"].collect { |r| r["_source"]["somevalue"] }
@@ -70,22 +70,22 @@ describe "index template expected behavior", :integration => true do
   end
 
   it "does not create .keyword field for top-level message field" do
-    results = @es.search(:q => "message.keyword:\"sample message here\"")
+    results = @client.search(:q => "message.keyword:\"sample message here\"")
     expect(results).to have_hits(0)
   end
 
   it "creates .keyword field for nested message fields" do
-    results = @es.search(:q => "somemessage.message.keyword:\"sample nested message here\"")
+    results = @client.search(:q => "somemessage.message.keyword:\"sample nested message here\"")
     expect(results).to have_hits(1)
   end
 
   it "creates .keyword field from any string field which is not_analyzed" do
-    results = @es.search(:q => "country.keyword:\"us\"")
+    results = @client.search(:q => "country.keyword:\"us\"")
     expect(results).to have_hits(1)
     expect(results["hits"]["hits"][0]["_source"]["country"]).to eq("us")
 
     # partial or terms should not work.
-    results = @es.search(:q => "country.keyword:\"u\"")
+    results = @client.search(:q => "country.keyword:\"u\"")
     expect(results).to have_hits(0)
   end
 
@@ -94,7 +94,7 @@ describe "index template expected behavior", :integration => true do
   end
 
   it "aggregate .keyword results correctly " do
-    results = @es.search(:body => { "aggregations" => { "my_agg" => { "terms" => { "field" => "country.keyword" } } } })["aggregations"]["my_agg"]
+    results = @client.search(:body => { "aggregations" => { "my_agg" => { "terms" => { "field" => "country.keyword" } } } })["aggregations"]["my_agg"]
     terms = results["buckets"].collect { |b| b["key"] }
 
     expect(terms).to include("us")

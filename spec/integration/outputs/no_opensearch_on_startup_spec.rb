@@ -31,10 +31,10 @@ describe "opensearch is down on startup", :integration => true do
     allow(Stud).to receive(:stoppable_sleep)
 
     # Clean OpenSearch of data before we start.
-    @es = get_client
-    @es.indices.delete_template(:name => "*")
-    @es.indices.delete(:index => "*")
-    @es.indices.refresh
+    @client = get_client
+    @client.indices.delete_template(:name => "*")
+    @client.indices.delete(:index => "*")
+    @client.indices.refresh
   end
 
   after :each do
@@ -46,8 +46,8 @@ describe "opensearch is down on startup", :integration => true do
     subject.register
     allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_version).and_return(OpenSearchHelper.version)
     subject.multi_receive([event1, event2])
-    @es.indices.refresh
-    r = @es.search(index: 'logstash-*')
+    @client.indices.refresh
+    r = @client.search(index: 'logstash-*')
     expect(r).to have_hits(2)
   end
 
@@ -59,8 +59,8 @@ describe "opensearch is down on startup", :integration => true do
       allow_any_instance_of(LogStash::Outputs::OpenSearch::HttpClient::Pool).to receive(:get_version).and_return(OpenSearchHelper.version)
     end
     subject.multi_receive([event1, event2])
-    @es.indices.refresh
-    r = @es.search(index: 'logstash-*')
+    @client.indices.refresh
+    r = @client.search(index: 'logstash-*')
     expect(r).to have_hits(2)
   end
 
