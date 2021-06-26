@@ -7,7 +7,7 @@ set -e
 if [ -f Gemfile.lock ]; then
     rm Gemfile.lock
 fi
-cd scripts/opendistro;
 
+cd scripts/unit-test;
 docker-compose down
-docker-compose build
+docker-compose build logstash

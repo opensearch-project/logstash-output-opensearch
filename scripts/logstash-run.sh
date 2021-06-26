@@ -15,11 +15,7 @@ wait_for_es() {
   echo $(curl -s $SERVICE_URL | python -c "import sys, json; print(json.load(sys.stdin)['version']['number'])")
 }
 
-if [[ "$INTEGRATION" != "true" ]]; then
-  bundle exec rspec -fd spec/unit -t ~integration
-else
-  echo "Waiting for cluster to respond..."
-  VERSION=$(wait_for_es)
-  echo "Integration test cluster $VERSION is Up!"
-  bundle exec rspec -fd --tag integration --tag update_tests:painless --tag version:$VERSION spec/integration
-fi
+echo "Waiting for cluster to respond..."
+VERSION=$(wait_for_es)
+echo "Integration test cluster $VERSION is Up!"
+bundle exec rspec -fd --tag integration --tag update_tests:painless --tag version:$VERSION spec/integration

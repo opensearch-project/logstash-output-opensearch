@@ -9,10 +9,5 @@ if [ -f Gemfile.lock ]; then
 fi
 cd scripts/opensearch;
 
-if [ "$INTEGRATION" == "true" ]; then
-    docker-compose down
-    docker-compose build
-else
-    docker-compose down
-    docker-compose build logstash
-fi
+docker-compose down
+docker-compose build
