@@ -19,7 +19,11 @@ Gem::Specification.new do |s|
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   # Special flag to let us know this is actually a logstash plugin
-  s.metadata = { "logstash_plugin" => "true", "logstash_group" => "output" }
+  s.metadata = {
+    "logstash_plugin" => "true",
+    "logstash_group" => "output",
+    "source_code_uri" => "https://github.com/opensearch-project/logstash-output-opensearch"
+  }
 
   s.add_runtime_dependency "manticore", '>= 0.5.4', '< 1.0.0'
   s.add_runtime_dependency 'stud', ['>= 0.0.17', '~> 0.0']
