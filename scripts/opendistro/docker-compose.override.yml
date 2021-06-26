@@ -5,7 +5,7 @@ services:
   logstash:
     command: /usr/share/plugins/plugin/scripts/logstash-run.sh
     environment:
-      - INTEGRATION=${INTEGRATION:-false}
+      - INTEGRATION=true
 
 
   integration:
@@ -13,7 +13,7 @@ services:
       context: ../../
       dockerfile: scripts/opendistro/Dockerfile.opendistro
       args:
-        - INTEGRATION=${INTEGRATION:-false}
+        - INTEGRATION=true
     command: /usr/share/elasticsearch/elasticsearch-run.sh
     ports:
       - "9200:9200"
