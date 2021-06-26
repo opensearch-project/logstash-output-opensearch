@@ -1,0 +1,45 @@
+name: Publish logstash-oss-with-opensearch-plugin
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  Build:
+    name: Build and Install logstash-output-opensearch
+    runs-on: ubuntu-latest
+    env:
+      LOGSTASH_VERSION: "7.13.2"
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v1
+
+      - name: Build plugin
+        run: |
+          gem build logstash-output-opensearch.gemspec
+
+      - name: Download and extract logstash
+        run: |
+          mkdir -p prepare-install;
+          mv logstash-output-opensearch-*.gem prepare-install/logstash-output-opensearch.gem;
+          wget --no-verbose https://artifacts.elastic.co/downloads/logstash/logstash-oss-${{ env.LOGSTASH_VERSION }}-linux-x86_64.tar.gz -P prepare-install/;
+          cd prepare-install;
+          tar xzf logstash-oss-${{ env.LOGSTASH_VERSION }}-linux-x86_64.tar.gz;
+
+
+      - name: Install plugin
+        run: |
+          cd prepare-install;
+          logstash-${{ env.LOGSTASH_VERSION }}/bin/logstash-plugin install logstash-output-opensearch.gem;
+          logstash-${{ env.LOGSTASH_VERSION }}/bin/logstash-plugin list;
+
+      - name: Create artifact to upload
+        run: |
+          cd prepare-install;
+          tar -czf logstash-oss-with-opensearch-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64.tar.gz logstash-${{ env.LOGSTASH_VERSION }}
+
+      - name: Upload logstash-oss-with-opensearch-plugin
+        uses: actions/upload-artifact@v2
+        with:
+          name: logstash-oss-with-opensearch-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64
+          path: prepare-install/logstash-oss-with-opensearch-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64.tar.gz
