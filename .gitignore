@@ -15,3 +15,5 @@ vendor/
 /lib/logstash/outputs/elasticsearch/templates/ecs-v*
 *.iml
 /.idea/
+/dockerfiles/bin/
+/dockerfiles/.env
