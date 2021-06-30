@@ -55,13 +55,26 @@ gem install bundler
 Unit tests and integration tests are executed inside Docker environment. 
 Perform the following from your project root directory eg: `~/workspace/logstash-output-opensearch`
 
+#### Run Unit Tests
+
+```bash
+# Set up Environment variable for docker to pull your test environment
+export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
+
+# Set up docker ( this will build, install into Logstash )
+scripts/unit-test/docker-setup.sh
+
+# Run tests
+scripts/unit-test/docker-run.sh
+```
+
+#### Run Integration Tests
 1. Tests against OpenSearch clusters.
 
 ```bash
 # Set up Environment variable for Docker to pull your test environment
 export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
 export OPENSEARCH_VERSION=1.0.0-rc1 # will use latest if not specified.
-export INTEGRATION=true
 
 # Set up docker ( this will build, install into Logstash )
 scripts/opensearch/docker-setup.sh
@@ -70,16 +83,12 @@ scripts/opensearch/docker-setup.sh
 scripts/opensearch/docker-run.sh
 ```
 
-To perform unit tests, set `INTEGRATION=false` and re-run the `docker-run.sh`.
-You don't have to set up Docker again.
-
 2. Tests against OpenDistro clusters.
 
 ```bash
 # Set up Environment variable for docker to pull your test environment
-export LOGSTASH_VERSION=7.13.2 # mandatory 
+export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
 export OPENDISTRO_VERSION=1.13.2 # will use latest if not specified.
-export INTEGRATION=false
 
 # Set up docker ( this will build, install into Logstash )
 scripts/opendistro/docker-setup.sh
@@ -87,8 +96,6 @@ scripts/opendistro/docker-setup.sh
 # Run tests
 scripts/opendistro/docker-run.sh
 ```
-To perform unit tests, set `INTEGRATION=false` and re-run the `docker-run.sh`.
-You don't have to set up Docker again.
 
 ### Run plugin in Logstash
 
@@ -167,10 +174,10 @@ To run the Logstash Output Opensearch plugin, add following configuration in you
 ```
 output {
     opensearch {
-        hosts => "hostname"
-        user  => "admin"
-        password => "admin"
-        index => "logstash-logs-%{+YYYY.MM.dd}"
+        hosts       => "https://hostname:port"
+        user        => "admin"
+        password    => "admin"
+        index       => "logstash-logs-%{+YYYY.MM.dd}"
     }
 }
 ```
