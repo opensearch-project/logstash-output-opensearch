@@ -1,10 +1,9 @@
 FROM opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
 
 ARG plugin_path=/usr/share/plugins/plugin
-ARG es_path=/usr/share/opensearch
-ARG es_yml=$es_path/config/opensearch.yml
+ARG opensearch_path=/usr/share/opensearch
+ARG opensearch_yml=$opensearch_path/config/opensearch.yml
+ARG SECURE_INTEGRATION
 
-RUN echo "plugins.security.disabled: true" >> $es_yml
-COPY --chown=opensearch:opensearch spec/fixtures/test_certs/* $es_path/config/test_certs/
-COPY --chown=opensearch:opensearch scripts/opensearch/opensearch-run.sh $es_path/
-
+RUN if [ "$SECURE_INTEGRATION" != "true" ] ; then echo "plugins.security.disabled: true" >> $opensearch_yml; fi
+COPY --chown=opensearch:opensearch scripts/opensearch/opensearch-run.sh $opensearch_path/

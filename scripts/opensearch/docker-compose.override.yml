@@ -6,7 +6,7 @@ services:
     command: /usr/share/plugins/plugin/scripts/logstash-run.sh
     environment:
       - INTEGRATION=true
-
+      - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
 
   integration:
     build:
@@ -14,6 +14,7 @@ services:
       dockerfile: scripts/opensearch/Dockerfile.opensearch
       args:
         - INTEGRATION=true
+        - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
     command: /usr/share/opensearch/opensearch-run.sh
     ports:
       - "9200:9200"
