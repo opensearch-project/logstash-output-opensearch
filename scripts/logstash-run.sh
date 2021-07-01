@@ -10,7 +10,7 @@ if [[ "$SECURE_INTEGRATION" == "true" ]]; then
 fi
 
 wait_for_es() {
-  count=120
+  count=5
   while ! curl -s $SERVICE_URL >/dev/null && [[ $count -ne 0 ]]; do
     count=$(( $count - 1 ))
     [[ $count -eq 0 ]] && exit 1
