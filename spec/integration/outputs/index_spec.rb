@@ -133,4 +133,32 @@ describe "indexing" do
     }
     it_behaves_like("an indexer")
   end
+  describe "a secured indexer", :secure_integration => true do
+    let(:user) { "admin" }
+    let(:password) { "admin" }
+    let(:es_url) {"https://integration:9200"}
+    let(:config) do
+      {
+        "hosts" => ["integration:9200"],
+        "user" => user,
+        "password" => password,
+        "ssl" => true,
+        "ssl_certificate_verification" => false,
+        "index" => index
+      }
+    end
+    let(:http_client_options) do
+      {
+        :auth => {
+          :user => user,
+          :password => password
+        },
+        :ssl => {
+          :enabled => true,
+          :verify => false
+        }
+      }
+    end
+    it_behaves_like("an indexer", true)
+  end
 end
