@@ -83,7 +83,21 @@ scripts/opensearch/docker-setup.sh
 scripts/opensearch/docker-run.sh
 ```
 
-2. Tests against OpenDistro clusters.
+2. Tests against Secured OpenSearch clusters
+
+```bash
+# Set up Environment variable for Docker to pull your test environment
+export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
+export OPENSEARCH_VERSION=1.0.0-rc1 # will use latest if not specified.
+export SECURE_INTEGRATION=true # to run against cluster with security plugin
+# Set up docker ( this will build, install into Logstash )
+scripts/opensearch/docker-setup.sh
+
+# Run tests
+scripts/opensearch/docker-run.sh
+```
+
+3. Tests against OpenDistro clusters.
 
 ```bash
 # Set up Environment variable for docker to pull your test environment
