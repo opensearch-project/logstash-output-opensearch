@@ -43,3 +43,15 @@ jobs:
       - name: Run Integration tests against OpenSearch
         run: |
           ./scripts/opensearch/docker-run.sh
+
+      - name: Build and pull docker files for OpenSearch with security
+        env:
+          SECURE_INTEGRATION: true
+        run: |
+          ./scripts/opensearch/docker-setup.sh
+
+      - name: Run Security Integration tests against OpenSearch
+        env:
+          SECURE_INTEGRATION: true
+        run: |
+          ./scripts/opensearch/docker-run.sh
