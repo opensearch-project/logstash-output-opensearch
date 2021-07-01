@@ -3,8 +3,9 @@ FROM amazon/opendistro-for-elasticsearch:${OPENDISTRO_VERSION:-latest}
 ARG plugin_path=/usr/share/plugins/plugin
 ARG es_path=/usr/share/elasticsearch
 ARG es_yml=$es_path/config/elasticsearch.yml
+ARG SECURE_INTEGRATION
 
-RUN /usr/share/elasticsearch/bin/elasticsearch-plugin remove opendistro_security
+RUN if [ "$SECURE_INTEGRATION" != "true" ] ; then /usr/share/elasticsearch/bin/elasticsearch-plugin remove opendistro_security; fi
 COPY --chown=elasticsearch:elasticsearch spec/fixtures/test_certs/* $es_path/config/test_certs/
 COPY --chown=elasticsearch:elasticsearch scripts/opendistro/elasticsearch-run.sh $es_path/
 
