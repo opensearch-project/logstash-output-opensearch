@@ -432,7 +432,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
       major = major_version(version)
       if @maximum_seen_major_version.nil?
-        @logger.info("OpenSearch version determined (#{version})", version: major)
+        @logger.info("Cluster version determined (#{version})", version: major)
         set_maximum_seen_major_version(major)
       elsif major > @maximum_seen_major_version
         warn_on_higher_major_version(major, url)
@@ -441,7 +441,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def set_maximum_seen_major_version(major)
-      @logger.warn("the `type` event field won't be used to determine the document _type")
       @maximum_seen_major_version = major
     end
 
