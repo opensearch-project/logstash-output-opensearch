@@ -119,11 +119,19 @@ module LogStash; module Outputs; class OpenSearch;
 
       return {:ssl => {:enabled => false}} if params["ssl"] == false
 
-      cacert, truststore, truststore_password, keystore, keystore_password =
-        params.values_at('cacert', 'truststore', 'truststore_password', 'keystore', 'keystore_password')
+      cacert, truststore, truststore_password, keystore, keystore_password, tls_client_cert, tls_client_key =
+        params.values_at('cacert', 'truststore', 'truststore_password', 'keystore', 'keystore_password', 'tls_certificate', 'tls_key')
 
       if cacert && truststore
         raise(LogStash::ConfigurationError, "Use either \"cacert\" or \"truststore\" when configuring the CA certificate") if truststore
+      end
+
+      if (tls_client_cert && !tls_client_key)
+        raise(LogStash::ConfigurationError, "\"tls_key\" is missing")
+      end
+
+      if (!tls_client_cert && tls_client_key)
+        raise(LogStash::ConfigurationError, "\"tls_certificate\" is missing")
       end
 
       ssl_options = {:enabled => true}
@@ -138,6 +146,10 @@ module LogStash; module Outputs; class OpenSearch;
       if keystore
         ssl_options[:keystore] = keystore
         ssl_options[:keystore_password] = keystore_password.value if keystore_password
+      end
+      if (tls_client_cert && tls_client_key)
+        ssl_options[:client_cert] = tls_client_cert
+        ssl_options[:client_key] = tls_client_key
       end
       if !params["ssl_certificate_verification"]
         logger.warn [

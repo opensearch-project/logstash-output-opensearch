@@ -66,6 +66,12 @@ module LogStash; module PluginMixins; module OpenSearch
         # Set the keystore password
         :keystore_password => { :validate => :password },
 
+        # Set the TLS Client certificate file
+        :tls_certificate => { :validate => :path },
+
+        # Private key file name
+        :tls_key => { :validate => :path },
+
         # This setting asks OpenSearch for the list of all cluster nodes and adds them to the hosts list.
         # Note: This will return ALL nodes with HTTP enabled (including master nodes!). If you use
         # this with master nodes, you probably want to disable HTTP on them by setting
