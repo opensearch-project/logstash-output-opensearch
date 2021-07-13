@@ -201,7 +201,7 @@ Authentication to a secure OpenSearch cluster is possible by using username/pass
 
 ### Authorization
 
-Authorization to a secure OpenSearch cluster requires read permission at [index level](https://docs-beta.opensearch.org/security-plugin/access-control/default-action-groups/#index-level).
+Authorization to a secure OpenSearch cluster requires read permission at [index level](https://opensearch.org/docs/security-plugin/access-control/default-action-groups/#index-level).
 
 ## Submitting Changes
 

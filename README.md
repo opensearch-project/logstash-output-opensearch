@@ -15,7 +15,7 @@
 ## Project Resources
 
 * [Project Website](https://opensearch.org/)
-* [Documentation](https://docs-beta.opensearch.org/)
+* [Documentation](https://opensearch.org/)
 * Need help? Try [Forums](https://discuss.opendistrocommunity.dev/)
 * [Project Principles](https://opensearch.org/#principles)
 * [Contributing to OpenSearch](CONTRIBUTING.md)
