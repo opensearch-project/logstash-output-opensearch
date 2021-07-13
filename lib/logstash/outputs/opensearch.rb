@@ -68,6 +68,7 @@ require "forwardable"
 class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   declare_threadsafe!
 
+  require "logstash/outputs/opensearch/distribution_checker"
   require "logstash/outputs/opensearch/http_client"
   require "logstash/outputs/opensearch/http_client_builder"
   require "logstash/plugin_mixins/opensearch/api_configs"
@@ -217,7 +218,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
 
     @logger.info("New OpenSearch output", :class => self.class.name, :hosts => @hosts.map(&:sanitized).map(&:to_s))
 
-    @client = build_client
+    @client = build_client(DistributionChecker.new(@logger))
 
     @after_successful_connection_thread = after_successful_connection do
       begin

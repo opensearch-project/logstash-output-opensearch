@@ -24,6 +24,7 @@ module LogStash; module Outputs; class OpenSearch;
       client_settings[:proxy] = params["proxy"] if params["proxy"]
       
       common_options = {
+        :distribution_checker => params["distribution_checker"],
         :client_settings => client_settings,
         :metric => params["metric"],
         :resurrect_delay => params["resurrect_delay"]
