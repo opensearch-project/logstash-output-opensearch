@@ -269,7 +269,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
         end
 
         it 'logs message' do
-          expect(subject.distribution_checker).to receive(:log_incompatible_version).once.and_call_original
+          expect(subject.distribution_checker).to receive(:log_not_supported).once.and_call_original
           subject.update_initial_urls
         end
       end
@@ -283,7 +283,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
         end
 
         it 'does not log message' do
-          expect(subject.distribution_checker).to_not receive(:log_incompatible_version)
+          expect(subject.distribution_checker).to_not receive(:log_not_supported)
           subject.update_initial_urls
         end
       end
@@ -297,7 +297,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
         end
 
         it 'does not log message' do
-          expect(subject.distribution_checker).to_not receive(:log_incompatible_version)
+          expect(subject.distribution_checker).to_not receive(:log_not_supported)
           subject.update_initial_urls
         end
       end
