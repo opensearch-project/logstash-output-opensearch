@@ -20,7 +20,8 @@ module LogStash; module Outputs; class OpenSearch
     # @param major_version OpenSearch major version number
     # @return [Boolean] true if supported
     def is_supported?(pool, url, major_version)
-      case get_distribution(pool, url)
+      distribution = get_distribution(pool, url)
+      case distribution
       when 'opensearch'
         return true
       when 'oss'
@@ -28,7 +29,7 @@ module LogStash; module Outputs; class OpenSearch
           return true
         end
       end
-      log_incompatible_version(url)
+      log_not_supported(url, major_version, distribution)
       false
     end
 
@@ -36,8 +37,8 @@ module LogStash; module Outputs; class OpenSearch
       pool.get_distribution(url)
     end
 
-    def log_incompatible_version(url)
-      @logger.error("Could not connect to cluster: incompatible version", url: url.sanitized.to_s)
+    def log_not_supported(url, major_version, distribution)
+      @logger.error("Could not connect to cluster", url: url.sanitized.to_s, distribution: distribution, major_version: major_version)
     end
   end
 end; end; end
