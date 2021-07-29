@@ -12,13 +12,17 @@
 # Ensure you have Docker installed locally and set the VERSION and BUILD_DATE environment variable.
 set -e
 
+CURR_DIR=`dirname $(realpath $0)`; cd $CURR_DIR
+GIT_ROOT=`git rev-parse --show-toplevel`
+
 echo 'Clear previous gem'
 echo -n "Remove "; rm -rfv logstash-output-opensearch*.gem
 
 echo 'Copy gemspec'
-trap '{ echo -n "Remove "; rm -rfv logstash-output-opensearch.gemspec; }' INT TERM EXIT
-cp -v ../../logstash-output-opensearch.gemspec .
+cd $GIT_ROOT # We need to build the gem in root of this repo so .gemspec file contained locations are resolving correctly
 
 echo 'Building plugin gem'
 gem build logstash-output-opensearch.gemspec
 
+echo 'Move Gem Location'
+mv -v logstash-output-opensearch*.gem $CURR_DIR
