@@ -3,8 +3,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-# This is intended to be run the plugin's root directory. `dockerfiles/run.sh`
-# Ensure you have Docker and docker-compose installed locally
+# This is intended to be run the plugin's root directory. `release/docker`
+# Ensure you have Docker Desktop installed as buildx only support Docker Desktop on macOS and Windows
+
 set -e
 
 # Variables
