@@ -7,6 +7,10 @@
 # Ensure you have Docker and docker-compose installed locally
 set -e
 
+# Variables
+BUILDER_NUM=`date +%s`
+BUILDER_NAME="multiarch_${BUILDER_NUM}"
+
 # Imports and functions
 function cleanup_docker_buildx() {
     # Cleanup docker buildx
@@ -25,8 +29,6 @@ if [[ -z "$version" ]]; then
 fi
 
 # Prepare docker buildx
-BUILDER_NUM=`date +%s`
-BUILDER_NAME="multiarch_${BUILDER_NUM}"
 trap cleanup_docker_buildx TERM INT EXIT
 echo -e "\n* Prepare docker buildx"
 docker buildx use default
