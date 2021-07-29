@@ -12,14 +12,13 @@
 # Ensure you have Docker installed locally and set the VERSION and BUILD_DATE environment variable.
 set -e
 
-if [ -d dockerfiles/bin ]; then
-  rm -rf dockerfiles/bin
-fi
+echo 'Clear previous gem'
+echo -n "Remove "; rm -rfv logstash-output-opensearch*.gem
 
-mkdir -p dockerfiles/bin
+echo 'Copy gemspec'
+trap '{ echo -n "Remove "; rm -rfv logstash-output-opensearch.gemspec; }' INT TERM EXIT
+cp -v ../../logstash-output-opensearch.gemspec .
 
-echo 'Building plugin'
+echo 'Building plugin gem'
 gem build logstash-output-opensearch.gemspec
 
-echo "Moving gem to bin directory"
-mv logstash-output-opensearch*.gem dockerfiles/bin/
