@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   # Tests
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
+  s.cert_chain  = ['certs/opensearch-rubygems.pem']
+
   # Special flag to let us know this is actually a logstash plugin
   s.metadata = {
     "logstash_plugin" => "true",
