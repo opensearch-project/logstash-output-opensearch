@@ -42,5 +42,5 @@ docker buildx ls | grep $BUILDER_NAME
 docker ps | grep $BUILDER_NAME
 
 # Docker Build Images
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg VERSION=$version -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:$version -f Dockerfile --push .
+docker buildx build --platform linux/amd64,linux/arm64 --build-arg VERSION=$version -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:$version -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:latest -f Dockerfile --push .
 
