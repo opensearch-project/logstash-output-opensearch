@@ -21,7 +21,7 @@ function cleanup_docker_buildx() {
 }
 
 # Building plugin
-#bash build-plugin.sh
+bash build-plugin.sh
 
 # Identify Logstash version
 version=${LOGSTASH_VERSION}
