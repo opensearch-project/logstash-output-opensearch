@@ -1,2 +1,9 @@
-logstash-output-opensearch
-Copyright 2021 logstash-output-opensearch Contributors
+OpenSearch (https://opensearch.org/)
+Copyright OpenSearch Contributors
+
+This product includes software developed by
+Elasticsearch (http://www.elastic.co).
+Copyright 2012-2015 Elasticsearch
+
+This product includes software developed by The Apache Software
+Foundation (http://www.apache.org/).
