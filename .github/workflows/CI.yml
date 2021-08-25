@@ -8,19 +8,20 @@ on:
       - "*"
 
 jobs:
-  Build:
-    name: Build and Test logstash-output-opensearch
+  Unit-test:
+    strategy:
+      matrix:
+        logstash: [ "7.13.2" ]
+    name: Unit Test logstash-output-opensearch
     runs-on: ubuntu-latest
     env:
-      LOGSTASH_VERSION: "7.13.2"
-      OPENDISTRO_VERSION: "1.13.2"
-      OPENSEARCH_VERSION: "1.0.0-rc1"
+      LOGSTASH_VERSION: ${{ matrix.logstash }}
 
     steps:
       - name: Checkout plugin
         uses: actions/checkout@v1
 
-      - name: Build and pull docker files for unit tests
+      - name: Build and pull docker files for unit tests with logstash ${{ matrix.logstash }}
         run: |
           ./scripts/unit-test/docker-setup.sh
 
@@ -28,30 +29,53 @@ jobs:
         run: |
           ./scripts/unit-test/docker-run.sh
 
-      - name: Build and pull docker files for OpenDistro
+
+  Integration-Test-OpenSearch:
+    strategy:
+      matrix:
+        logstash: [ "7.13.2" ]
+        opensearch: [ "1.0.0" ]
+        secure: [ true, false ]
+
+    name: Integration Test logstash-output-opensearch against OpenSearch
+    runs-on: ubuntu-latest
+    env:
+      LOGSTASH_VERSION: ${{ matrix.logstash }}
+      OPENSEARCH_VERSION: ${{ matrix.opensearch }}
+      SECURE_INTEGRATION: ${{ matrix.secure }}
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v1
+
+      - name: Build and pull docker files for OpenSearch-${{ matrix.opensearch }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
+        run: |
+          ./scripts/opensearch/docker-setup.sh
+
+      - name: Run Integration tests against OpenSearch-${{ matrix.opensearch }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
+        run: |
+          ./scripts/opensearch/docker-run.sh
+
+  Integration-Test-OpenDistro:
+    strategy:
+      matrix:
+        logstash: [ "7.13.2" ]
+        opendistro: [ "1.13.2" ]
+        secure: [ true, false ]
+
+    name: Integration Test logstash-output-opensearch against OpenDistro
+    runs-on: ubuntu-latest
+    env:
+      LOGSTASH_VERSION: ${{ matrix.logstash }}
+      OPENDISTRO_VERSION: ${{ matrix.opendistro }}
+      SECURE_INTEGRATION: ${{ matrix.secure }}
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v1
+
+      - name: Build and pull docker files for OpenDistro-${{ matrix.opendistro }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
         run: |
           ./scripts/opendistro/docker-setup.sh
 
-      - name: Run Integration tests against OpenDistro
+      - name: Run Integration tests against OpenDistro-${{ matrix.opendistro }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
         run: |
           ./scripts/opendistro/docker-run.sh
-
-      - name: Build and pull docker files for OpenSearch
-        run: |
-          ./scripts/opensearch/docker-setup.sh
-
-      - name: Run Integration tests against OpenSearch
-        run: |
-          ./scripts/opensearch/docker-run.sh
-
-      - name: Build and pull docker files for OpenSearch with security
-        env:
-          SECURE_INTEGRATION: true
-        run: |
-          ./scripts/opensearch/docker-setup.sh
-
-      - name: Run Security Integration tests against OpenSearch
-        env:
-          SECURE_INTEGRATION: true
-        run: |
-          ./scripts/opensearch/docker-run.sh
