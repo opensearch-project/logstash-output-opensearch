@@ -17,7 +17,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://localhost:9200")] }
   let(:options) { {:resurrect_delay => 2, :url_normalizer => proc {|u| u}} } # Shorten the delay a bit to speed up tests
   let(:node_versions) { [ "7.0.0" ] }
-  let(:get_distribution) { "oss" }
+  let(:get_distribution) { "opensearch" }
 
   subject { described_class.new(logger, adapter, initial_urls, options) }
 
@@ -260,38 +260,40 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
 
     context 'when using opensearch' do
 
-      context "if cluster doesn't return a valid distribution" do
+      context "cluster doesn't return a valid distribution" do
         let(:get_distribution) { nil }
+        context "major version is not 7" do
+          let(:node_versions) { [ "6.0.0" ] }
 
-        it 'marks the url as dead' do
-          subject.update_initial_urls
-          expect(subject.alive_urls_count).to eq(0)
+          it 'marks the url as dead' do
+            subject.update_initial_urls
+            expect(subject.alive_urls_count).to eq(0)
+          end
+
+          it 'logs message' do
+            expect(subject.distribution_checker).to receive(:log_not_supported).once.and_call_original
+            subject.update_initial_urls
+          end
         end
+        context "major version is  7" do
+          let(:node_versions) { [ "7.10.2" ] }
 
-        it 'logs message' do
-          expect(subject.distribution_checker).to receive(:log_not_supported).once.and_call_original
-          subject.update_initial_urls
+          it "marks the url as active" do
+            subject.update_initial_urls
+            expect(subject.alive_urls_count).to eq(1)
+          end
+
+          it 'does not log message' do
+            expect(subject.distribution_checker).to_not receive(:log_not_supported)
+            subject.update_initial_urls
+          end
+
         end
       end
-
-      context 'if cluster returns opensearch' do
+      context 'cluster returns valid distribution' do
         let(:get_distribution) { 'opensearch' }
 
         it "marks the url as active" do
-          subject.update_initial_urls
-          expect(subject.alive_urls_count).to eq(1)
-        end
-
-        it 'does not log message' do
-          expect(subject.distribution_checker).to_not receive(:log_not_supported)
-          subject.update_initial_urls
-        end
-      end
-
-      context 'if cluster returns oss' do
-        let(:get_distribution) { 'oss' }
-
-        it 'marks the url as active' do
           subject.update_initial_urls
           expect(subject.alive_urls_count).to eq(1)
         end
