@@ -59,7 +59,7 @@ Perform the following from your project root directory eg: `~/workspace/logstash
 
 ```bash
 # Set up Environment variable for docker to pull your test environment
-export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
+export LOGSTASH_VERSION=7.13.2 # will use 7.13.2 version if not specified.
 
 # Set up docker ( this will build, install into Logstash )
 scripts/unit-test/docker-setup.sh
@@ -73,8 +73,8 @@ scripts/unit-test/docker-run.sh
 
 ```bash
 # Set up Environment variable for Docker to pull your test environment
-export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
-export OPENSEARCH_VERSION=1.0.0-rc1 # will use latest if not specified.
+export LOGSTASH_VERSION=7.13.2 # will use 7.13.2 version if not specified.
+export OPENSEARCH_VERSION=1.0.0 # will use latest if not specified.
 
 # Set up docker ( this will build, install into Logstash )
 scripts/opensearch/docker-setup.sh
@@ -87,8 +87,8 @@ scripts/opensearch/docker-run.sh
 
 ```bash
 # Set up Environment variable for Docker to pull your test environment
-export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
-export OPENSEARCH_VERSION=1.0.0-rc1 # will use latest if not specified.
+export LOGSTASH_VERSION=7.13.2 # will use 7.13.2 version if not specified.
+export OPENSEARCH_VERSION=1.0.0 # will use latest if not specified.
 export SECURE_INTEGRATION=true # to run against cluster with security plugin
 # Set up docker ( this will build, install into Logstash )
 scripts/opensearch/docker-setup.sh
@@ -101,7 +101,7 @@ scripts/opensearch/docker-run.sh
 
 ```bash
 # Set up Environment variable for docker to pull your test environment
-export LOGSTASH_VERSION=7.13.2 # will use latest version if not specified.
+export LOGSTASH_VERSION=7.13.2 # will use 7.13.2 version if not specified.
 export OPENDISTRO_VERSION=1.13.2 # will use latest if not specified.
 
 # Set up docker ( this will build, install into Logstash )

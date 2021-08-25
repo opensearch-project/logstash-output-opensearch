@@ -1,7 +1,7 @@
-FROM amazon/opendistro-for-elasticsearch:${OPENDISTRO_VERSION:-latest}
+ARG OPENDISTRO_VERSION
+FROM amazon/opendistro-for-elasticsearch:${OPENDISTRO_VERSION}
 
 ARG es_path=/usr/share/elasticsearch
-ARG SECURE_INTEGRATION
 
-RUN if [ "$SECURE_INTEGRATION" != "true" ] ; then /usr/share/elasticsearch/bin/elasticsearch-plugin remove opendistro_security; fi
-COPY --chown=elasticsearch:elasticsearch scripts/opendistro/elasticsearch-run.sh $es_path/
+ARG SECURE_INTEGRATION
+RUN if [ "$SECURE_INTEGRATION" != "true" ] ; then $es_path/bin/elasticsearch-plugin remove opendistro_security; fi

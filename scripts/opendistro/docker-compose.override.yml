@@ -15,7 +15,10 @@ services:
       args:
         - INTEGRATION=true
         - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
-    command: /usr/share/elasticsearch/elasticsearch-run.sh
+        - OPENDISTRO_VERSION=${OPENDISTRO_VERSION:-latest}
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
     ports:
       - "9200:9200"
     user: elasticsearch

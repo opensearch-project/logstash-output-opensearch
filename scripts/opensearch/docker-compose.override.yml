@@ -15,7 +15,10 @@ services:
       args:
         - INTEGRATION=true
         - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
-    command: /usr/share/opensearch/opensearch-run.sh
+        - OPENSEARCH_VERSION=${OPENSEARCH_VERSION:-latest}
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
     ports:
       - "9200:9200"
     user: opensearch
