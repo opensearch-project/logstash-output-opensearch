@@ -426,7 +426,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
     def get_distribution(url)
       version_map = get_version_map(url)
-      version_map.has_key?('distribution') ? version_map['distribution'] : version_map['build_flavor'] # e.g. "opensearch or oss"
+      version_map['distribution']
     end
 
     def last_version
