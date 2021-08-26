@@ -21,7 +21,7 @@ module LogStash; module Outputs; class OpenSearch
     # @return [Boolean] true if supported
     def is_supported?(pool, url, major_version)
       distribution = get_distribution(pool, url)
-      if distribution == 'opensearch' || major_version == 7
+      if distribution == 'opensearch' || distribution == 'humio' || major_version == 7
         return true
       end
       log_not_supported(url, major_version, distribution)
