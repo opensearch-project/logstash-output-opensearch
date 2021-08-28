@@ -332,7 +332,6 @@ module LogStash; module Outputs; class OpenSearch;
       adapter = build_adapter(options)
 
       pool_options = {
-        :distribution_checker => options[:distribution_checker],
         :sniffing => sniffing,
         :sniffer_delay => options[:sniffer_delay],
         :sniffing_path => options[:sniffing_path],

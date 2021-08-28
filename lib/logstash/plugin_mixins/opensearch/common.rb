@@ -24,8 +24,8 @@ module LogStash; module PluginMixins; module OpenSearch
     # Perform some OpenSearch options validations and Build the HttpClient.
     # Note that this methods may sets the @user, @password, @hosts and @client ivars as a side effect.
     # @return [HttpClient] the new http client
-    def build_client(distribution_checker=nil)
-      params["distribution_checker"] = distribution_checker
+    def build_client
+
       # the following 3 options validation & setup methods are called inside build_client
       # because they must be executed prior to building the client and logstash
       # monitoring and management rely on directly calling build_client

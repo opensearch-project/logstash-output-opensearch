@@ -16,8 +16,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger) }
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://localhost:9200")] }
   let(:options) { {:resurrect_delay => 2, :url_normalizer => proc {|u| u}} } # Shorten the delay a bit to speed up tests
-  let(:node_versions) { [ "7.0.0" ] }
-  let(:get_distribution) { "opensearch" }
+  let(:node_versions) { [ "0.0.0" ] }
 
   subject { described_class.new(logger, adapter, initial_urls, options) }
 
@@ -32,7 +31,6 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
     allow(::Manticore::Client).to receive(:new).and_return(manticore_double)
 
     allow(subject).to receive(:get_version).with(any_args).and_return(*node_versions)
-    allow(subject.distribution_checker).to receive(:get_distribution).and_return(get_distribution)
   end
 
   after do
@@ -212,96 +210,13 @@ describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
     end
 
     it "picks the largest major version" do
-      expect(subject.maximum_seen_major_version).to eq(7)
+      expect(subject.maximum_seen_major_version).to eq(0)
     end
 
     context "if there are nodes with multiple major versions" do
-      let(:node_versions) { [ "0.0.0", "7.0.0" ] }
+      let(:node_versions) { [ "0.0.0", "6.0.0" ] }
       it "picks the largest major version" do
-        expect(subject.maximum_seen_major_version).to eq(7)
-      end
-    end
-  end
-  describe "distribution checking" do
-    before(:each) do
-      allow(subject).to receive(:health_check_request)
-    end
-
-    let(:options) do
-      super().merge(:distribution_checker => distribution_checker)
-    end
-
-    context 'when DistributionChecker#is_supported? returns false' do
-      let(:distribution_checker) { double('DistributionChecker', :is_supported? => false) }
-
-      it 'does not mark the URL as active' do
-        subject.update_initial_urls
-        expect(subject.alive_urls_count).to eq(0)
-      end
-    end
-
-    context 'when DistributionChecker#is_supported? returns true' do
-      let(:distribution_checker) { double('DistributionChecker', :is_supported? => true) }
-
-      it 'marks the URL as active' do
-        subject.update_initial_urls
-        expect(subject.alive_urls_count).to eq(1)
-      end
-    end
-  end
-  describe 'distribution checking with cluster output' do
-    let(:options) do
-      super().merge(:distribution_checker => LogStash::Outputs::OpenSearch::DistributionChecker.new(logger))
-    end
-
-    before(:each) do
-      allow(subject).to receive(:health_check_request)
-    end
-
-    context 'when using opensearch' do
-
-      context "cluster doesn't return a valid distribution" do
-        let(:get_distribution) { nil }
-        context "major version is not 7" do
-          let(:node_versions) { [ "6.0.0" ] }
-
-          it 'marks the url as dead' do
-            subject.update_initial_urls
-            expect(subject.alive_urls_count).to eq(0)
-          end
-
-          it 'logs message' do
-            expect(subject.distribution_checker).to receive(:log_not_supported).once.and_call_original
-            subject.update_initial_urls
-          end
-        end
-        context "major version is  7" do
-          let(:node_versions) { [ "7.10.2" ] }
-
-          it "marks the url as active" do
-            subject.update_initial_urls
-            expect(subject.alive_urls_count).to eq(1)
-          end
-
-          it 'does not log message' do
-            expect(subject.distribution_checker).to_not receive(:log_not_supported)
-            subject.update_initial_urls
-          end
-
-        end
-      end
-      context 'cluster returns valid distribution' do
-        let(:get_distribution) { 'opensearch' }
-
-        it "marks the url as active" do
-          subject.update_initial_urls
-          expect(subject.alive_urls_count).to eq(1)
-        end
-
-        it 'does not log message' do
-          expect(subject.distribution_checker).to_not receive(:log_not_supported)
-          subject.update_initial_urls
-        end
+        expect(subject.maximum_seen_major_version).to eq(6)
       end
     end
   end
