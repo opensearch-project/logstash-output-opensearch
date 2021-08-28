@@ -8,7 +8,6 @@
 #  GitHub history for details.
 
 require "concurrent/atomic/atomic_reference"
-require "logstash/plugin_mixins/opensearch/noop_distribution_checker"
 
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
   class Pool
@@ -41,7 +40,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     attr_reader :logger, :adapter, :sniffing, :sniffer_delay, :resurrect_delay, :healthcheck_path, :sniffing_path, :bulk_path
-    attr_reader :distribution_checker
 
     ROOT_URI_PATH = '/'.freeze
 
@@ -80,7 +78,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @stopping = false
 
       @last_version = Concurrent::AtomicReference.new
-      @distribution_checker = options[:distribution_checker] || LogStash::PluginMixins::OpenSearch::NoopDistributionChecker::INSTANCE
     end
 
     def start
@@ -239,8 +236,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           @state_mutex.synchronize do
             meta[:version] = version
             set_last_version(version, url)
-            alive = @distribution_checker.is_supported?(self, url, @maximum_seen_major_version)
-            meta[:state] = alive ? :alive : :dead
+            meta[:state] = :alive
           end
         rescue HostUnreachableError, BadResponseCodeError => e
           logger.warn("Attempted to resurrect connection to dead OpenSearch instance, but got an error", url: url.sanitized.to_s, exception: e.class, message: e.message)
@@ -415,18 +411,9 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       end
     end
 
-    def get_version_map(url)
-      request = perform_request_to_url(url, :get, ROOT_URI_PATH)
-      LogStash::Json.load(request.body)['version']
-    end
-
     def get_version(url)
-      get_version_map(url)['number'] # e.g. "7.10.0"
-    end
-
-    def get_distribution(url)
-      version_map = get_version_map(url)
-      version_map['distribution']
+      request = perform_request_to_url(url, :get, ROOT_URI_PATH)
+      LogStash::Json.load(request.body)["version"]["number"] # e.g. "7.10.0"
     end
 
     def last_version
