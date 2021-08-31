@@ -15,7 +15,11 @@ require "logstash/outputs/opensearch"
 
 describe LogStash::Outputs::OpenSearch do
   subject(:opensearch_output_instance) { described_class.new(options) }
-  let(:options) { {} }
+  let(:options) { {"auth_type" => {
+    "type"=>"aws_iam",
+    "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+    "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }} }
   let(:maximum_seen_major_version) { [7].sample }
 
   let(:do_register) { true }
@@ -58,7 +62,12 @@ describe LogStash::Outputs::OpenSearch do
         "index" => "my-index",
         "hosts" => ["localhost","localhost:9202"],
         "path" => "some-path",
-        "manage_template" => false
+        "manage_template" => false,
+        "auth_type" => {
+          "type"=>"aws_iam",
+          "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+          "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
       }
     }
 
@@ -160,6 +169,11 @@ describe LogStash::Outputs::OpenSearch do
           o = super()
           o.delete("path")
           o["hosts"] = ["http://localhost:9200/mypath/"]
+          o["auth_type"] = {
+            "type"=>"aws_iam",
+            "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+            "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
           o
         end
         let(:client_host_path) { manticore_url.path }
@@ -177,6 +191,11 @@ describe LogStash::Outputs::OpenSearch do
             o = super()
             o["path"] = "/override/"
             o["hosts"] = ["http://localhost:9200"]
+            o["auth_type"] = {
+              "type"=>"aws_iam",
+              "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+              "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
             o
           end
 
@@ -369,6 +388,11 @@ describe LogStash::Outputs::OpenSearch do
         "manage_template" => false,
         "hosts" => "localhost:#{port}",
         "timeout" => 0.1, # fast timeout
+        "auth_type" => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
       }
     end
 
@@ -390,7 +414,11 @@ describe LogStash::Outputs::OpenSearch do
   describe "the action option" do
 
     context "with a sprintf action" do
-      let(:options) { {"action" => "%{myactionfield}" } }
+      let(:options) { {"action" => "%{myactionfield}" , "auth_type" => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }} }
 
       let(:event) { LogStash::Event.new("myactionfield" => "update", "message" => "blah") }
 
@@ -400,7 +428,11 @@ describe LogStash::Outputs::OpenSearch do
     end
 
     context "with a sprintf action equals to update" do
-      let(:options) { {"action" => "%{myactionfield}", "upsert" => '{"message": "some text"}' } }
+      let(:options) { {"action" => "%{myactionfield}", "upsert" => '{"message": "some text"}' , "auth_type" => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      } } }
 
       let(:event) { LogStash::Event.new("myactionfield" => "update", "message" => "blah") }
 
@@ -410,7 +442,11 @@ describe LogStash::Outputs::OpenSearch do
     end
 
     context "with an invalid action" do
-      let(:options) { {"action" => "SOME Garbaaage"} }
+      let(:options) { {"action" => "SOME Garbaaage", "auth_type" => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }} }
       let(:do_register) { false } # this is what we want to test, so we disable the before(:each) call
 
       before { allow(subject).to receive(:finish_register) }
@@ -460,13 +496,23 @@ describe LogStash::Outputs::OpenSearch do
 
 
     context "With the 'ssl' option" do
-      let(:options) { {"ssl" => true}}
+      let(:options) { {"ssl" => true,
+                       "auth_type" => {
+                         "type"=>"aws_iam",
+                         "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                         "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                       }}}
 
       include_examples("an encrypted client connection")
     end
 
     context "With an https host" do
-      let(:options) { {"hosts" => "https://localhost"} }
+      let(:options) { {"hosts" => "https://localhost",
+                       "auth_type" => {
+                         "type"=>"aws_iam",
+                         "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                         "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                       }} }
       include_examples("an encrypted client connection")
     end
   end
@@ -474,7 +520,12 @@ describe LogStash::Outputs::OpenSearch do
   describe "retry_on_conflict" do
     let(:num_retries) { 123 }
     let(:event) { LogStash::Event.new("myactionfield" => "update", "message" => "blah") }
-    let(:options) { { 'retry_on_conflict' => num_retries } }
+    let(:options) { { 'retry_on_conflict' => num_retries,
+                      "auth_type" => {
+                        "type"=>"aws_iam",
+                        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                      }} }
 
     context "with a regular index" do
       let(:options) { super().merge("action" => "index") }
@@ -508,7 +559,12 @@ describe LogStash::Outputs::OpenSearch do
 
   describe "sleep interval calculation" do
     let(:retry_max_interval) { 64 }
-    let(:options) { { "retry_max_interval" => retry_max_interval } }
+    let(:options) { { "retry_max_interval" => retry_max_interval,
+                      "auth_type" => {
+                        "type"=>"aws_iam",
+                        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                      }} }
 
     it "should double the given value" do
       expect(subject.next_sleep_interval(2)).to eql(4)
@@ -526,7 +582,12 @@ describe LogStash::Outputs::OpenSearch do
 
   describe "stale connection check" do
     let(:validate_after_inactivity) { 123 }
-    let(:options) { { "validate_after_inactivity" => validate_after_inactivity } }
+    let(:options) { { "validate_after_inactivity" => validate_after_inactivity,
+                      "auth_type" => {
+                        "type"=>"aws_iam",
+                        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                      }} }
     let(:do_register) { false }
 
     before :each do
@@ -568,7 +629,12 @@ describe LogStash::Outputs::OpenSearch do
           "index" => "my-index",
           "hosts" => ["localhost:9202"],
           "path" => "some-path",
-          "parameters" => custom_parameters_hash
+          "parameters" => custom_parameters_hash,
+          "auth_type" => {
+            "type"=>"aws_iam",
+            "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+            "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
         }
       }
 
@@ -585,7 +651,13 @@ describe LogStash::Outputs::OpenSearch do
 
       context "with embedded query parameters" do
         let(:options) {
-          { "hosts" => ["http://localhost:9202/path?#{custom_parameters_query}"] }
+          { "hosts" => ["http://localhost:9202/path?#{custom_parameters_query}"],
+            "auth_type" => {
+              "type"=>"aws_iam",
+              "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+              "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
+          }
         }
 
         it "sets the query string on the HTTP client" do
@@ -597,7 +669,12 @@ describe LogStash::Outputs::OpenSearch do
         let(:options) {
           {
             "hosts" => ["http://localhost:9202/path"],
-            "parameters" => custom_parameters_hash
+            "parameters" => custom_parameters_hash,
+            "auth_type" => {
+              "type"=>"aws_iam",
+              "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+              "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
           }
         }
 
@@ -611,7 +688,12 @@ describe LogStash::Outputs::OpenSearch do
         let(:options) {
           {
             "hosts" => ["http://localhost:9202/path?#{existing_query_string}"],
-            "parameters" => custom_parameters_hash
+            "parameters" => custom_parameters_hash,
+            "auth_type" => {
+              "type"=>"aws_iam",
+              "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+              "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
           }
         }
 
@@ -632,7 +714,12 @@ describe LogStash::Outputs::OpenSearch do
 
 
   context 'handling elasticsearch document-level status meant for the DLQ' do
-    let(:options) { { "manage_template" => false } }
+    let(:options) { { "manage_template" => false ,
+      "auth_type" => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }}}
 
     context 'when @dlq_writer is nil' do
       before { subject.instance_variable_set '@dlq_writer', nil }
@@ -738,7 +825,12 @@ describe LogStash::Outputs::OpenSearch do
 
     context "when set" do
       let(:headers) { { "X-Thing" => "Test" } }
-      let(:options) { { "custom_headers" => headers } }
+      let(:options) { { "custom_headers" => headers,
+                        "auth_type" => {
+                          "type"=>"aws_iam",
+                          "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                          "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                        }} }
       it "should use the custom headers in the adapter options" do
         expect(manticore_options[:headers]).to eq(headers)
       end

@@ -9,10 +9,21 @@
 
 require 'manticore'
 require 'cgi'
+require 'aws-sdk-core'
+require 'uri'
 
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
   DEFAULT_HEADERS = { "content-type" => "application/json" }
-  
+
+  CredentialConfig = Struct.new(
+    :access_key_id,
+    :secret_access_key,
+    :session_token,
+    :profile,
+    :instance_profile_credentials_retries,
+    :instance_profile_credentials_timeout,
+    :region)
+
   class ManticoreAdapter
     attr_reader :manticore, :logger
 
@@ -27,12 +38,35 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       options[:cookies] = false
 
       @client_params = {:headers => DEFAULT_HEADERS.merge(options[:headers] || {})}
-      
+
+      if options[:auth_type] != nil && options[:auth_type]["type"] == "aws_iam"
+        aws_iam_auth_initialization(options)
+      end
+
       if options[:proxy]
         options[:proxy] = manticore_proxy_hash(options[:proxy])
       end
       
       @manticore = ::Manticore::Client.new(options)
+    end
+
+    def aws_iam_auth_initialization(options)
+      @aws_default_port = 443
+      @aws_default_protocol = 'https'
+      @aws_default_region = 'us-east-1'
+      @aws_default_profile = 'default'
+
+      aws_access_key_id =  options[:auth_type]["aws_access_key_id"] || nil
+      aws_secret_access_key = options[:auth_type]["aws_secret_access_key"] || nil
+      session_token = options[:session_token] || nil
+      profile = options[:profile] || @aws_default_profile
+      instance_cred_retries = options[:instance_profile_credentials_retries] || 0
+      instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
+      @region = options[:auth_type]["region"] || @aws_default_region
+      @type = options[:auth_type]["type"]
+
+      credential_config = CredentialConfig.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, @region)
+      @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
     end
     
     # Transform the proxy option to a hash. Manticore's support for non-hash
@@ -61,6 +95,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       params = (params || {}).merge(@client_params) { |key, oldval, newval|
         (oldval.is_a?(Hash) && newval.is_a?(Hash)) ? oldval.merge(newval) : newval
       }
+
+      params[:headers] = params[:headers].clone
       params[:body] = body if body
 
       if url.user
@@ -74,6 +110,21 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       end
 
       request_uri = format_url(url, path)
+
+      if @type == "aws_iam"
+       if @aws_default_protocol == "https"
+         url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>@aws_default_port.to_s, :path=>path})
+       else
+         url = URI::HTTP.build({:host=>URI(request_uri.to_s).host, :port=>@aws_default_port.to_s, :path=>path})
+       end
+
+       key = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
+                                                         :headers => params[:headers],:body => params[:body]})
+       aws_signer = Aws::Signers::V4.new(@credentials, 'es', @region )
+       signed_key =  aws_signer.sign(key)
+       params[:headers] =  params[:headers].merge(signed_key.headers)
+      end
+
       request_uri_as_string = remove_double_escaping(request_uri.to_s)
       resp = @manticore.send(method.downcase, request_uri_as_string, params)
 

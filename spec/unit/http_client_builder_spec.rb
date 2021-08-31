@@ -37,7 +37,11 @@ describe LogStash::Outputs::OpenSearch::HttpClientBuilder do
 
   describe "customizing action paths" do
     let(:hosts) { [ ::LogStash::Util::SafeURI.new("http://localhost:9200") ] }
-    let(:options) { {"hosts" => hosts } }
+    let(:options) { {"hosts" => hosts,
+                     "auth_type" => {
+                       "type"=>"aws_iam",
+                       "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+                       "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}} }
     let(:logger) { double("logger") }
     before :each do
       [:debug, :debug?, :info?, :info, :warn].each do |level|

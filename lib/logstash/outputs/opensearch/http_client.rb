@@ -41,13 +41,14 @@ module LogStash; module Outputs; class OpenSearch;
     # The `options` is a hash where the following symbol keys have meaning:
     #
     # * `:hosts` - array of String. Set a list of hosts to use for communication.
-    # * `:port` - number. set the port to use to communicate with OpenSearch
     # * `:user` - String. The user to use for authentication.
     # * `:password` - String. The password to use for authentication.
     # * `:timeout` - Float. A duration value, in seconds, after which a socket
     #    operation or request will be aborted if not yet successfull
+    # * `:auth_type` - hash of String. It contains the type of authentication
+    #     and it's respective credentials
     # * `:client_settings` - a hash; see below for keys.
-    #
+
     # The `client_settings` key is a has that can contain other settings:
     #
     # * `:ssl` - Boolean. Enable or disable SSL/TLS.
@@ -323,6 +324,8 @@ module LogStash; module Outputs; class OpenSearch;
       adapter_options[:ssl] = ssl_options if self.scheme == 'https'
 
       adapter_options[:headers] = client_settings[:headers] if client_settings[:headers]
+
+      adapter_options[:auth_type] = options[:auth_type]
 
       adapter_class = ::LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter
       adapter = adapter_class.new(@logger, adapter_options)
