@@ -95,10 +95,10 @@ describe "indexing" do
     end
     
     it "sets the correct content-type header" do
-      expected_manticore_opts = {:headers => {"Content-Type" => "application/json"}, :body => anything}
+      expected_manticore_opts = {:headers => {"content-type" => "application/json"}, :body => anything}
       if secure
         expected_manticore_opts = {
-          :headers => {"Content-Type" => "application/json"}, 
+          :headers => {"content-type" => "application/json"},
           :body => anything, 
           :auth => {
             :user => user,

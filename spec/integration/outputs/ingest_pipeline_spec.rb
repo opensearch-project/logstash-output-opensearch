@@ -50,7 +50,7 @@ describe "Ingest pipeline execution behavior", :integration => true do
     http_client.delete(ingest_url).call
 
     # register pipeline
-    http_client.put(ingest_url, :body => apache_logs_pipeline, :headers => {"Content-Type" => "application/json" }).call
+    http_client.put(ingest_url, :body => apache_logs_pipeline, :headers => {"content-type" => "application/json" }).call
 
     #TODO: Use esclient
     #@client.ingest.put_pipeline :id => 'apache_pipeline', :body => pipeline_defintion

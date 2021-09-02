@@ -11,7 +11,7 @@ require 'manticore'
 require 'cgi'
 
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
-  DEFAULT_HEADERS = { "Content-Type" => "application/json" }
+  DEFAULT_HEADERS = { "content-type" => "application/json" }
   
   class ManticoreAdapter
     attr_reader :manticore, :logger
