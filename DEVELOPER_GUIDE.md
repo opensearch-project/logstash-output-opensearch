@@ -69,7 +69,7 @@ scripts/unit-test/docker-run.sh
 ```
 
 #### Run Integration Tests
-1. Tests against OpenSearch
+1. Tests against OpenSearch clusters.
 
 ```bash
 # Set up Environment variable for Docker to pull your test environment
