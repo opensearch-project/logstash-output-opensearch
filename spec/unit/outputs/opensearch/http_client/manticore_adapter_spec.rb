@@ -42,7 +42,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
       
       expect(subject.manticore).to receive(:get).
         with(expected_uri.to_s, {
-          :headers => {"Content-Type" => "application/json"},
+          :headers => {"content-type" => "application/json"},
           :auth => {
             :user => user,
             :password => password,

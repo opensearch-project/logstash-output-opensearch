@@ -25,7 +25,7 @@ context "join field tests", :integration => true do
     let(:parent_relation) { "parent_type" }
     let(:child_relation) { "child_type" }
     let(:default_headers) {
-      {"Content-Type" => "application/json"}
+      {"content-type" => "application/json"}
     }
     subject { LogStash::Outputs::OpenSearch.new(config) }
 

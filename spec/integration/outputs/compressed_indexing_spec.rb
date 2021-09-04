@@ -67,7 +67,7 @@ describe "indexing with http_compression turned on", :integration => true do
 
   it "sets the correct content-encoding header and body is compressed" do
     expect(subject.client.pool.adapter.client).to receive(:send).
-      with(anything, anything, {:headers=>{"Content-Encoding"=>"gzip", "Content-Type"=>"application/json"}, :body => a_valid_gzip_encoded_string}).
+      with(anything, anything, {:headers=>{"Content-Encoding"=>"gzip", "content-type"=>"application/json"}, :body => a_valid_gzip_encoded_string}).
       and_call_original
     subject.multi_receive(events)
   end
