@@ -35,17 +35,13 @@ If you've upgraded to the latest version and you can't find it in our open issue
 
 If you've thought of a way that logstash-output-opensearch could be better, we want to hear about it.  We track feature requests using GitHub, so please feel free to open an issue which describes the feature you would like to see, why you need it, and how it should work.
 
-### Documentation Changes
-
-//TODO
-
 ### Contributing Code
 
 As with other types of contributions, the first step is to [**open an issue on GitHub**](https://github.com/opensearch-project/logstash-output-opensearch/issues/new/choose).  Opening an issue before you make changes makes sure that someone else isn't already working on that particular problem.  It also lets us all work together to find the right approach before you spend a bunch of time on a PR.  So again, when in doubt, open an issue.
 
 ## Developer Certificate of Origin
 
-logstash-output-opensearch is an open source product released under the Apache 2.0 license (see either [the Apache site](https://www.apache.org/licenses/LICENSE-2.0) or the [LICENSE.txt file](./LICENSE.txt)).  The Apache 2.0 license allows you to freely use, modify, distribute, and sell your own products that include Apache 2.0 licensed software.
+logstash-output-opensearch is an open source product released under the Apache 2.0 license (see either [the Apache site](https://www.apache.org/licenses/LICENSE-2.0) or the [LICENSE file](./LICENSE)).  The Apache 2.0 license allows you to freely use, modify, distribute, and sell your own products that include Apache 2.0 licensed software.
 
 We respect intellectual property rights of others and we want to make sure all incoming contributions are correctly attributed and licensed. A Developer Certificate of Origin (DCO) is a lightweight mechanism to do that.
 

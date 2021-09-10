@@ -10,7 +10,7 @@
 
 ## Welcome!
 
-**logstash-output-opensearch** is a community-driven, open source fork logstash-output-elasticsearch licensed under the [Apache v2.0 License](LICENSE.txt). For more information, see [opensearch.org](https://opensearch.org/).
+**logstash-output-opensearch** is a community-driven, open source fork logstash-output-elasticsearch licensed under the [Apache v2.0 License](LICENSE). For more information, see [opensearch.org](https://opensearch.org/).
 
 ## Project Resources
 
