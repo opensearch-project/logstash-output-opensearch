@@ -188,7 +188,7 @@ To run the Logstash Output Opensearch plugin, add following configuration in you
 ```
 output {
     opensearch {
-        hosts       => "https://hostname:port"
+        hosts       => ["hostname:port"]
         user        => "admin"
         password    => "admin"
         index       => "logstash-logs-%{+YYYY.MM.dd}"
