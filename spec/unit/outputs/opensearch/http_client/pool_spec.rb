@@ -13,12 +13,7 @@ require 'cabin'
 
 describe LogStash::Outputs::OpenSearch::HttpClient::Pool do
   let(:logger) { Cabin::Channel.get }
-  let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger,
-                                                                                  { :auth_type => {
-                                                                                             "type"=>"aws_iam",
-                                                                                             "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
-                                                                                             "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                                                                                           }}) }
+  let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger) }
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://localhost:9200")] }
   let(:options) { {:resurrect_delay => 2, :url_normalizer => proc {|u| u}} } # Shorten the delay a bit to speed up tests
   let(:node_versions) { [ "7.0.0" ] }

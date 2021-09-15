@@ -17,12 +17,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
     opts = {
       :hosts => [::LogStash::Util::SafeURI.new("127.0.0.1")],
       :logger => Cabin::Channel.get,
-      :metric => ::LogStash::Instrument::NullMetric.new(:dummy).namespace(:alsodummy),
-      :auth_type => {
-        "type"=>"aws_iam",
-        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
-        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      }
+      :metric => ::LogStash::Instrument::NullMetric.new(:dummy).namespace(:alsodummy)
     }
 
     if !ssl.nil? # Shortcut to set this
