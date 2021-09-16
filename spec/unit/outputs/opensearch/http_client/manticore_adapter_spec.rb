@@ -25,13 +25,13 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
   it "should implement host unreachable exceptions" do
     expect(subject.host_unreachable_exceptions).to be_a(Array)
   end
-  
+
   describe "auth" do
     let(:user) { "myuser" }
     let(:password) { "mypassword" }
     let(:noauth_uri) { clone = uri.clone; clone.user=nil; clone.password=nil; clone }
     let(:uri) { ::LogStash::Util::SafeURI.new("http://#{user}:#{password}@localhost:9200") }
-    
+
     it "should convert the auth to params" do
       resp = double("response")
       allow(resp).to receive(:call)
@@ -39,7 +39,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
       
       expected_uri = noauth_uri.clone
       expected_uri.path = "/"
-      
+
       expect(subject.manticore).to receive(:get).
         with(expected_uri.to_s, {
           :headers => {"content-type" => "application/json"},

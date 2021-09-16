@@ -7,12 +7,28 @@
 #  Modifications Copyright OpenSearch Contributors. See
 #  GitHub history for details.
 
-require 'manticore'
+require 'aws-sdk-core'
 require 'cgi'
+require 'manticore'
+require 'uri'
 
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
+  AWS_DEFAULT_PORT = 443
+  AWS_DEFAULT_PROFILE = 'default'
+  AWS_DEFAULT_REGION = 'us-east-1'
+  AWS_IAM_AUTH_TYPE = "aws_iam"
+  AWS_SERVICE = 'es'
   DEFAULT_HEADERS = { "content-type" => "application/json" }
-  
+
+  AWSIAMCredential = Struct.new(
+    :access_key_id,
+    :secret_access_key,
+    :session_token,
+    :profile,
+    :instance_profile_credentials_retries,
+    :instance_profile_credentials_timeout,
+    :region)
+
   class ManticoreAdapter
     attr_reader :manticore, :logger
 
@@ -27,12 +43,45 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       options[:cookies] = false
 
       @client_params = {:headers => DEFAULT_HEADERS.merge(options[:headers] || {})}
-      
+      @type = get_auth_type(options) || nil
+
+      if @type == AWS_IAM_AUTH_TYPE
+        aws_iam_auth_initialization(options)
+      end
+
       if options[:proxy]
         options[:proxy] = manticore_proxy_hash(options[:proxy])
       end
       
       @manticore = ::Manticore::Client.new(options)
+    end
+
+    def get_auth_type(options)
+      if options[:auth_type] != nil
+        options[:auth_type]["type"]
+      end
+    end
+
+    def aws_iam_auth_initialization(options)
+      aws_access_key_id =  options[:auth_type]["aws_access_key_id"] || nil
+      aws_secret_access_key = options[:auth_type]["aws_secret_access_key"] || nil
+      session_token = options[:session_token] || nil
+      profile = options[:profile] || AWS_DEFAULT_PROFILE
+      instance_cred_retries = options[:instance_profile_credentials_retries] || 0
+      instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
+      region = options[:auth_type]["region"] || AWS_DEFAULT_REGION
+      set_aws_region(region)
+
+      credential_config = AWSIAMCredential.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, region)
+      @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
+    end
+
+    def set_aws_region(region)
+      @region = region
+    end
+
+    def get_aws_region()
+      @region
     end
     
     # Transform the proxy option to a hash. Manticore's support for non-hash
@@ -61,6 +110,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       params = (params || {}).merge(@client_params) { |key, oldval, newval|
         (oldval.is_a?(Hash) && newval.is_a?(Hash)) ? oldval.merge(newval) : newval
       }
+
+      params[:headers] = params[:headers].clone
       params[:body] = body if body
 
       if url.user
@@ -74,6 +125,11 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       end
 
       request_uri = format_url(url, path)
+
+      if @type == AWS_IAM_AUTH_TYPE
+        sign_aws_request(request_uri, path, method, params)
+      end
+
       request_uri_as_string = remove_double_escaping(request_uri.to_s)
       resp = @manticore.send(method.downcase, request_uri_as_string, params)
 
@@ -90,6 +146,15 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       end
 
       resp
+    end
+
+    def sign_aws_request(request_uri, path, method, params)
+      url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>AWS_DEFAULT_PORT.to_s, :path=>path})
+      key = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
+                                                         :headers => params[:headers],:body => params[:body]})
+      aws_signer = Aws::Signers::V4.new(@credentials,  AWS_SERVICE, get_aws_region )
+      signed_key =  aws_signer.sign(key)
+      params[:headers] =  params[:headers].merge(signed_key.headers)
     end
 
     # Returned urls from this method should be checked for double escaping.

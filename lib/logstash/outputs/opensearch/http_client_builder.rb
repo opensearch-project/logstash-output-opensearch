@@ -106,7 +106,10 @@ module LogStash; module Outputs; class OpenSearch;
       }
       common_options.merge! update_options if params["action"] == 'update'
 
-      create_http_client(common_options.merge(:hosts => hosts, :logger => logger))
+      create_http_client(common_options.merge(:hosts => hosts,
+                                              :logger => logger,
+                                              :auth_type => params["auth_type"]
+                                              ))
     end
 
     def self.create_http_client(options)
