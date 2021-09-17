@@ -89,6 +89,41 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
     end
   end
 
+  describe "basic_auth" do
+    let(:options) { {
+      :auth_type => {
+        "type"=>"basic",
+        "user" => "myuser",
+        "password" => "mypassword"}
+    } }
+    subject { described_class.new(logger, options) }
+    let(:user) {options[:auth_type]["user"]}
+    let(:password) {options[:auth_type]["password"]}
+    let(:noauth_uri) { clone = uri.clone; clone.user=nil; clone.password=nil; clone }
+    let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
+
+    it "should validate master credentials with type as 'basic_auth'" do
+      resp = double("response")
+      allow(resp).to receive(:call)
+      allow(resp).to receive(:code).and_return(200)
+
+      expected_uri = noauth_uri.clone
+      expected_uri.path = "/"
+
+      expect(subject.manticore).to receive(:get).
+        with(expected_uri.to_s, {
+          :headers => {"content-type" => "application/json"},
+          :auth => {
+            :user => user,
+            :password => password,
+            :eager => true
+          }
+        }).and_return resp
+
+      subject.perform_request(uri, :get, "/")
+    end
+  end
+
   describe "bad response codes" do
     let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
 

@@ -161,4 +161,41 @@ describe "indexing" do
     end
     it_behaves_like("an indexer", true)
   end
+
+  describe "a basic auth secured indexer", :secure_integration => true do
+    let(:options) { {
+      :auth_type => {
+        "type"=>"basic",
+        "user" => "admin",
+        "password" => "admin"}
+    } }
+    let(:user) {options[:auth_type]["user"]}
+    let(:password) {options[:auth_type]["password"]}
+    let(:es_url) {"https://integration:9200"}
+    let(:config) do
+      {
+        "hosts" => ["integration:9200"],
+        "auth_type" => {
+          "type"=>"basic",
+          "user" => user,
+          "password" => password},
+        "ssl" => true,
+        "ssl_certificate_verification" => false,
+        "index" => index
+      }
+    end
+    let(:http_client_options) do
+      {
+        :auth => {
+          :user => user,
+          :password => password
+        },
+        :ssl => {
+          :enabled => true,
+          :verify => false
+        }
+      }
+    end
+    it_behaves_like("an indexer", true)
+  end
 end
