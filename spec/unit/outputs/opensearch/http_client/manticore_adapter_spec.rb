@@ -54,6 +54,41 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
     end
   end
 
+  describe "aws_iam" do
+    let(:options) { {
+      :auth_type => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+    } }
+    subject { described_class.new(logger, options) }
+    let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
+    let(:sign_aws_request) {  }
+
+    it "should validate AWS IAM credentials initialization" do
+      expect(subject.aws_iam_auth_initialization(options)).not_to be_nil
+    end
+
+    it "should validate signing aws request" do
+      resp = double("response")
+      allow(resp).to receive(:call)
+      allow(resp).to receive(:code).and_return(200)
+      allow(subject).to receive(:sign_aws_request).with(any_args).and_return(sign_aws_request)
+
+      expected_uri = uri.clone
+      expected_uri.path = "/"
+
+      expect(subject.manticore).to receive(:get).
+        with(expected_uri.to_s, {
+          :headers => {"content-type"=> "application/json"}
+        }
+        ).and_return resp
+
+      expect(subject).to receive(:sign_aws_request)
+      subject.perform_request(uri, :get, "/")
+    end
+  end
+
   describe "bad response codes" do
     let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
 
