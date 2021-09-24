@@ -95,7 +95,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # - A sprintf style string to change the action based on the content of the event. The value `%{[foo]}`
   #   would use the foo field for the action
   #
-  # For more details on actions, check out the https://docs-beta.opensearch.org/opensearch/rest-api/bulk/[OpenSearch bulk API documentation]
+  # For more details on actions, check out the https://opensearch.org/docs/opensearch/rest-api/document-apis/bulk/[OpenSearch bulk API documentation]
   config :action, :validate => :string, :default => "index"
 
   # The index to write events to. This can be dynamic using the `%{foo}` syntax.
