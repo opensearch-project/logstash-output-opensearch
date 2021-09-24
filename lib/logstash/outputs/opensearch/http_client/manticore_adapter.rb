@@ -15,6 +15,8 @@ require 'uri'
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
   AWS_DEFAULT_PORT = 443
   AWS_DEFAULT_PROFILE = 'default'
+  AWS_DEFAULT_PROFILE_CREDENTIAL_RETRY = 0
+  AWS_DEFAULT_PROFILE_CREDENTIAL_TIMEOUT = 1
   AWS_DEFAULT_REGION = 'us-east-1'
   AWS_IAM_AUTH_TYPE = "aws_iam"
   AWS_SERVICE = 'es'
@@ -65,10 +67,10 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     def aws_iam_auth_initialization(options)
       aws_access_key_id =  options[:auth_type]["aws_access_key_id"] || nil
       aws_secret_access_key = options[:auth_type]["aws_secret_access_key"] || nil
-      session_token = options[:session_token] || nil
-      profile = options[:profile] || AWS_DEFAULT_PROFILE
-      instance_cred_retries = options[:instance_profile_credentials_retries] || 0
-      instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
+      session_token = options[:auth_type]["session_token"] || nil
+      profile = options[:auth_type]["profile"] || AWS_DEFAULT_PROFILE
+      instance_cred_retries = options[:auth_type]["instance_profile_credentials_retries"] || AWS_DEFAULT_PROFILE_CREDENTIAL_RETRY
+      instance_cred_timeout = options[:auth_type]["instance_profile_credentials_timeout"] || AWS_DEFAULT_PROFILE_CREDENTIAL_TIMEOUT
       region = options[:auth_type]["region"] || AWS_DEFAULT_REGION
       set_aws_region(region)
 
