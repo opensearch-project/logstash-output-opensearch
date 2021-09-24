@@ -17,6 +17,7 @@
 * [Project Website](https://opensearch.org/)
 * [Documentation](https://opensearch.org/docs/clients/logstash/index/)
 * [Developer Guide](DEVELOPER_GUIDE.md)
+* [User Guide](USER_GUIDE.md)
 * Need help? Try [Forums](https://discuss.opendistrocommunity.dev/)
 * [Project Principles](https://opensearch.org/#principles)
 * [Contributing to OpenSearch](CONTRIBUTING.md)
