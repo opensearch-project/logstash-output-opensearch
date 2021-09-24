@@ -403,7 +403,7 @@ module LogStash; module Outputs; class OpenSearch;
 
     def template_endpoint
       # TODO: Check Version < 7.8 and use index template for >= 7.8 & OpenSearch
-      # https://docs-beta.opensearch.org/opensearch/index-templates/
+      # https://opensearch.org/docs/opensearch/index-templates/
       '_template'
     end
 
