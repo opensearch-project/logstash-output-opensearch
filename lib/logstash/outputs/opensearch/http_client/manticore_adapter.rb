@@ -20,6 +20,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
   AWS_DEFAULT_REGION = 'us-east-1'
   AWS_IAM_AUTH_TYPE = "aws_iam"
   AWS_SERVICE = 'es'
+  BASIC_AUTH_TYPE = 'basic'
   DEFAULT_HEADERS = { "content-type" => "application/json" }
 
   AWSIAMCredential = Struct.new(
@@ -49,6 +50,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
       if @type == AWS_IAM_AUTH_TYPE
         aws_iam_auth_initialization(options)
+      elsif @type == BASIC_AUTH_TYPE
+        basic_auth_initialization(options)
       end
 
       if options[:proxy]
@@ -78,12 +81,29 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
     end
 
+    def basic_auth_initialization(options)
+      set_user_password(options)
+    end
+
     def set_aws_region(region)
       @region = region
     end
 
     def get_aws_region()
       @region
+    end
+
+    def set_user_password(options)
+      @user = options[:auth_type]["user"]
+      @password = options[:auth_type]["password"]
+    end
+
+    def get_user()
+      @user
+    end
+
+    def get_password()
+      @password
     end
     
     # Transform the proxy option to a hash. Manticore's support for non-hash
@@ -124,6 +144,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           :password => CGI.unescape(url.password), 
           :eager => true 
         }
+      elsif @type == BASIC_AUTH_TYPE
+        add_basic_auth_to_params(params)
       end
 
       request_uri = format_url(url, path)
@@ -157,6 +179,14 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       aws_signer = Aws::Signers::V4.new(@credentials,  AWS_SERVICE, get_aws_region )
       signed_key =  aws_signer.sign(key)
       params[:headers] =  params[:headers].merge(signed_key.headers)
+    end
+
+    def add_basic_auth_to_params(params)
+      params[:auth] = {
+        :user => get_user(),
+        :password => get_password(),
+        :eager => true
+      }
     end
 
     # Returned urls from this method should be checked for double escaping.
