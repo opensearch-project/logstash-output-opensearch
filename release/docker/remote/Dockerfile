@@ -9,11 +9,10 @@
 
 
 # Build arguments:
-#   VERSION: Optional. Specify the label for image. Defaults to 7.13.2
+#   VERSION: Required. Specify the label for image.
 
 ARG VERSION
 FROM docker.elastic.co/logstash/logstash-oss:${VERSION}
 USER logstash
-COPY --chown=logstash:logstash ./logstash-output-opensearch-*.gem /tmp/logstash-output-opensearch.gem
 COPY --chown=logstash:logstash ./logstash-opensearch-sample.conf /usr/share/logstash/config/
-RUN /usr/share/logstash/bin/logstash-plugin install /tmp/logstash-output-opensearch.gem && rm -vf /tmp/logstash-output-opensearch.gem
+RUN /usr/share/logstash/bin/logstash-plugin install logstash-output-opensearch
