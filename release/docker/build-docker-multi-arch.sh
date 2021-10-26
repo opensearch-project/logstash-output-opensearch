@@ -12,6 +12,23 @@ set -e
 BUILDER_NUM=`date +%s`
 BUILDER_NAME="multiarch_${BUILDER_NUM}"
 
+
+function usage() {
+    echo ""
+    echo "This script is used to build the Logstash Docker image by installing logstash output opensearch plugin."
+    echo "--------------------------------------------------------------------------"
+    echo "Usage: $0 [args]"
+    echo ""
+    echo "Required arguments:"
+    echo -e "-v VERSION          \tSpecify the Logstash OSS version that you are building, e.g. '7.13.2'. This will be used to label the Docker image."
+    echo -e "-t INSTALLATION TYPE\tSpecify the installation type t, e.g. local will build and install from github, while remote, will download latest ruby gems and install."
+    echo -e "-h                   \tPrint this message."
+    echo ""
+    echo "--------------------------------------------------------------------------"
+}
+
+
+
 # Imports and functions
 function cleanup_docker_buildx() {
     # Cleanup docker buildx
@@ -20,14 +37,51 @@ function cleanup_docker_buildx() {
     docker buildx rm $BUILDER_NAME > /dev/null 2>&1
 }
 
-# Building plugin
-bash build-plugin.sh
+while getopts ":hv:t:" arg; do
+    case $arg in
+        h)
+            usage
+            exit 1
+            ;;
+        v)
+            VERSION=$OPTARG
+            ;;
+        t)
+            INSTALL_TYPE=$OPTARG
+            ;;
+        :)
+            echo "-${OPTARG} requires an argument"
+            usage
+            exit 1
+            ;;
+        ?)
+            echo "Invalid option: -${arg}"
+            exit 1
+            ;;
+    esac
+done
 
-# Identify Logstash version
-version=${LOGSTASH_VERSION}
-if [[ -z "$version" ]]; then
-  version=7.13.2
+# Validate the required parameters to present
+if [ -z "$VERSION" ] || [ -z "$INSTALL_TYPE" ]; then
+  echo "You must specify '-v VERSION', '-t INSTALLATION TYPE'"
+  usage
+  exit 1
 fi
+
+# Validate value for installation type
+if [ "$INSTALL_TYPE" != "local" ] && [ "$INSTALL_TYPE" != "remote" ]; then
+    echo "Enter either 'local' or 'remote' as INSTALLATION TYPE for -t parameter"
+    exit 1
+fi
+
+DOCKER_FOLDER_PATH=$INSTALL_TYPE
+
+if [ "$INSTALL_TYPE" = "local" ]; then
+    # Build plugin to generate gem
+    bash "${DOCKER_FOLDER_PATH}/build-plugin.sh"
+fi
+
+DOCKER_FILE_PATH="${DOCKER_FOLDER_PATH}/Dockerfile"
 
 # Prepare docker buildx
 trap cleanup_docker_buildx TERM INT EXIT
@@ -41,6 +95,7 @@ echo -e "\n* Check buildx status"
 docker buildx ls | grep $BUILDER_NAME
 docker ps | grep $BUILDER_NAME
 
+
 # Docker Build Images
-docker buildx build --platform linux/amd64,linux/arm64 --build-arg VERSION=$version -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:$version -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:latest -f Dockerfile --push .
+docker buildx build --platform linux/amd64 --build-arg VERSION=$VERSION -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:$VERSION -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:latest -f $DOCKER_FILE_PATH --push .
 
