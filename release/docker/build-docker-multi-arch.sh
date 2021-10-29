@@ -8,6 +8,10 @@
 
 set -e
 
+ROOT=`dirname $(realpath $0)`
+echo $ROOT
+cd $ROOT
+
 # Variables
 BUILDER_NUM=`date +%s`
 BUILDER_NAME="multiarch_${BUILDER_NUM}"
@@ -22,6 +26,7 @@ function usage() {
     echo "Required arguments:"
     echo -e "-v VERSION          \tSpecify the Logstash OSS version that you are building, e.g. '7.13.2'. This will be used to label the Docker image."
     echo -e "-t INSTALLATION TYPE\tSpecify the installation type t, e.g. local will build and install from github, while remote, will download latest ruby gems and install."
+    echo -e "-r REPOSITORY        \tSpecify the Docker Hub Repository name, due to multi-arch image either save in cache or directly upload to Docker Hub Repo, no local copies. The tag name will be pointed to '-v' value and 'latest'"
     echo -e "-h                   \tPrint this message."
     echo ""
     echo "--------------------------------------------------------------------------"
@@ -37,7 +42,7 @@ function cleanup_docker_buildx() {
     docker buildx rm $BUILDER_NAME > /dev/null 2>&1
 }
 
-while getopts ":hv:t:" arg; do
+while getopts ":hv:t:r:" arg; do
     case $arg in
         h)
             usage
@@ -48,6 +53,9 @@ while getopts ":hv:t:" arg; do
             ;;
         t)
             INSTALL_TYPE=$OPTARG
+            ;;
+        r)
+            REPOSITORY_NAME=$OPTARG
             ;;
         :)
             echo "-${OPTARG} requires an argument"
@@ -81,7 +89,7 @@ if [ "$INSTALL_TYPE" = "local" ]; then
     bash "${DOCKER_FOLDER_PATH}/build-plugin.sh"
 fi
 
-DOCKER_FILE_PATH="${DOCKER_FOLDER_PATH}/Dockerfile"
+DOCKER_FILE_PATH="${ROOT}/${DOCKER_FOLDER_PATH}/Dockerfile"
 
 # Prepare docker buildx
 trap cleanup_docker_buildx TERM INT EXIT
@@ -97,5 +105,5 @@ docker ps | grep $BUILDER_NAME
 
 
 # Docker Build Images
-docker buildx build --platform linux/amd64 --build-arg VERSION=$VERSION -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:$VERSION -t opensearchstaging/logstash-oss-with-opensearch-output-plugin:latest -f $DOCKER_FILE_PATH --push .
+docker buildx build --platform linux/amd64,linux/arm64 --build-arg VERSION=$VERSION -t $REPOSITORY_NAME/logstash-oss-with-opensearch-output-plugin:$VERSION -t $REPOSITORY_NAME/logstash-oss-with-opensearch-output-plugin:latest -f $DOCKER_FILE_PATH --push .
 
