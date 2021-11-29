@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         logstash: [ "7.13.2", "7.13.4" ]
-        opensearch: [ "1.0.0" ]
+        opensearch: [ "1.2.0" ]
         secure: [ true, false ]
 
     name: Integration Test logstash-output-opensearch against OpenSearch
