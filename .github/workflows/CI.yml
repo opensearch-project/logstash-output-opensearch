@@ -33,7 +33,7 @@ jobs:
   Integration-Test-OpenSearch:
     strategy:
       matrix:
-        logstash: [ "7.13.2", "7.13.4" ]
+        logstash: [ "7.15.2", "7.14.2" ]
         opensearch: [ "1.2.0" ]
         secure: [ true, false ]
 
