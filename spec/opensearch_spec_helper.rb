@@ -9,7 +9,7 @@
 
 require_relative './spec_helper'
 
-require 'elasticsearch'
+require 'opensearch'
 
 require 'json'
 require 'cabin'
@@ -24,7 +24,7 @@ module OpenSearchHelper
   end
 
   def get_client
-    Elasticsearch::Client.new(:hosts => [get_host_port])
+    OpenSearch::Client.new(:hosts => [get_host_port])
   end
 
   def doc_type

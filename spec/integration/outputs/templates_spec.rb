@@ -21,8 +21,6 @@ describe "index template expected behavior", :integration => true do
   end
 
   before :each do
-    # Delete all templates first.
-    require "elasticsearch"
 
     # Clean OpenSearch of data before we start.
     @client = get_client

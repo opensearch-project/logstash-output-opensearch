@@ -27,7 +27,6 @@ describe "opensearch is down on startup", :integration => true do
 
   before :each do
     # Delete all templates first.
-    require "elasticsearch"
     allow(Stud).to receive(:stoppable_sleep)
 
     # Clean OpenSearch of data before we start.
