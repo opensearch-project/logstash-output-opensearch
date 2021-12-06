@@ -49,7 +49,7 @@ describe "Update actions without scripts", :integration => true do
       subject = get_es_output({ 'document_id' => "456" } )
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
-      expect {@client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+      expect {@client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)}.to raise_error(OpenSearch::Transport::Transport::Errors::NotFound)
     end
 
     it "should update existing document" do

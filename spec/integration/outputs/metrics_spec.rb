@@ -24,8 +24,6 @@ describe "metrics", :integration => true do
   let(:document_level_metrics) { subject.instance_variable_get(:@document_level_metrics) }
 
   before :each do
-    require "elasticsearch"
-
     # Clean OpenSearch of data before we start.
     @client = get_client
     clean(@client)

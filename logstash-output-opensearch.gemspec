@@ -1,3 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# The OpenSearch Contributors require contributions made to
+# this file be licensed under the Apache-2.0 license or a
+# compatible open source license.
+#
+# Modifications Copyright OpenSearch Contributors. See
+# GitHub history for details.
+
 Gem::Specification.new do |s|
   s.name            = 'logstash-output-opensearch'
   s.version         = '1.2.0'
@@ -37,4 +46,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'logstash-devutils'
   s.add_development_dependency 'flores'
   s.add_development_dependency 'cabin', ['~> 0.6']
+  s.add_development_dependency 'opensearch-ruby'
 end

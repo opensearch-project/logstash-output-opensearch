@@ -66,7 +66,7 @@ describe "Versioned delete", :integration => true do
       expect(r['_source']['message']).to eq('foo')
 
       subject.multi_receive([LogStash::Event.new("my_id" => id, "my_action" => "delete", "message" => "foo", "my_version" => 100)])
-      expect { es.get(:index => 'logstash-delete', :type => doc_type, :id => id, :refresh => true) }.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+      expect { es.get(:index => 'logstash-delete', :type => doc_type, :id => id, :refresh => true) }.to raise_error(OpenSearch::Transport::Transport::Errors::NotFound)
     end
   end
 end

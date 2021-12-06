@@ -37,8 +37,6 @@ describe "Ingest pipeline execution behavior", :integration => true do
 
   before :each do
     # Delete all templates first.
-    require "elasticsearch"
-
     # Clean OpenSearch of data before we start.
     @client = get_client
     @client.indices.delete_template(:name => "*")
