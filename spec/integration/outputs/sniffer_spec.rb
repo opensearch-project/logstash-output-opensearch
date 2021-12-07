@@ -15,9 +15,9 @@ require "socket"
 describe "pool sniffer", :integration => true do
   let(:logger) { Cabin::Channel.get }
   let(:adapter) { LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter.new(logger) }
-  let(:es_host) { get_host_port.split(":").first }
+  let(:opensearch_host) { get_host_port.split(":").first }
   let(:es_port) { get_host_port.split(":").last }
-  let(:es_ip) { IPSocket.getaddress(es_host) }
+  let(:opensearch_ip) { IPSocket.getaddress(opensearch_host) }
   let(:initial_urls) { [::LogStash::Util::SafeURI.new("http://#{get_host_port}")] }
   let(:options) do
     {

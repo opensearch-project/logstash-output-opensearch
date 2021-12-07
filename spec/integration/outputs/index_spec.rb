@@ -62,8 +62,8 @@ describe "indexing" do
   let(:events) { event_count.times.map { event }.to_a }
   subject { LogStash::Outputs::OpenSearch.new(config) }
   
-  let(:es_url) { "http://#{get_host_port}" }
-  let(:index_url) {"#{es_url}/#{index}"}
+  let(:opensearch_url) { "http://#{get_host_port}" }
+  let(:index_url) {"#{opensearch_url}/#{index}"}
   let(:http_client_options) { {} }
   let(:http_client) do
     Manticore::Client.new(http_client_options)
@@ -78,7 +78,7 @@ describe "indexing" do
     it "ships events" do
       subject.multi_receive(events)
 
-      http_client.post("#{es_url}/_refresh").call
+      http_client.post("#{opensearch_url}/_refresh").call
 
       response = http_client.get("#{index_url}/_count?q=*")
       result = LogStash::Json.load(response.body)
@@ -135,7 +135,7 @@ describe "indexing" do
   describe "a secured indexer", :secure_integration => true do
     let(:user) { "admin" }
     let(:password) { "admin" }
-    let(:es_url) {"https://integration:9200"}
+    let(:opensearch_url) {"https://integration:9200"}
     let(:config) do
       {
         "hosts" => ["integration:9200"],
@@ -170,7 +170,7 @@ describe "indexing" do
     } }
     let(:user) {options[:auth_type]["user"]}
     let(:password) {options[:auth_type]["password"]}
-    let(:es_url) {"https://integration:9200"}
+    let(:opensearch_url) {"https://integration:9200"}
     let(:config) do
       {
         "hosts" => ["integration:9200"],

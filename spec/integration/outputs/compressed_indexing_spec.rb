@@ -33,8 +33,8 @@ describe "indexing with http_compression turned on", :integration => true do
   }
   subject { LogStash::Outputs::OpenSearch.new(config) }
 
-  let(:es_url) { "http://#{get_host_port}" }
-  let(:index_url) {"#{es_url}/#{index}"}
+  let(:opensearch_url) { "http://#{get_host_port}" }
+  let(:index_url) {"#{opensearch_url}/#{index}"}
   let(:http_client_options) { {} }
   let(:http_client) do
     Manticore::Client.new(http_client_options)
@@ -49,7 +49,7 @@ describe "indexing with http_compression turned on", :integration => true do
     it "ships events" do
       subject.multi_receive(events)
 
-      http_client.post("#{es_url}/_refresh").call
+      http_client.post("#{opensearch_url}/_refresh").call
 
       response = http_client.get("#{index_url}/_count?q=*")
       result = LogStash::Json.load(response.body)

@@ -12,7 +12,7 @@ require_relative "../../../spec/opensearch_spec_helper"
 describe "Update actions using painless scripts", :integration => true, :update_tests => 'painless' do
   require "logstash/outputs/opensearch"
 
-  def get_es_output( options={} )
+  def get_output( options={} )
     settings = {
       "manage_template" => true,
       "index" => "logstash-update",
@@ -42,7 +42,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
   context "scripted updates" do
 
     it "should increment a counter with event/doc 'count' variable with inline script" do
-      subject = get_es_output({
+      subject = get_output({
         'document_id' => "123",
         'script' => 'ctx._source.counter += params.event.counter',
         'script_type' => 'inline'
@@ -54,7 +54,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
     end
 
     it "should increment a counter with event/doc 'count' variable with event/doc as upsert and inline script" do
-      subject = get_es_output({
+      subject = get_output({
         'document_id' => "123",
         'doc_as_upsert' => true,
         'script' => 'if( ctx._source.containsKey("counter") ){ ctx._source.counter += params.event.counter; } else { ctx._source.counter = params.event.counter; }',
@@ -67,7 +67,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
     end
 
     it "should, with new doc, set a counter with event/doc 'count' variable with event/doc as upsert and inline script" do
-      subject = get_es_output({
+      subject = get_output({
         'document_id' => "456",
         'doc_as_upsert' => true,
         'script' => 'if( ctx._source.containsKey("counter") ){ ctx._source.counter += params.event.counter; } else { ctx._source.counter = params.event.counter; }',
@@ -90,7 +90,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
 
         plugin_parameters.merge!('script_lang' => '')
 
-        subject = get_es_output(plugin_parameters)
+        subject = get_output(plugin_parameters)
         subject.register
         subject.multi_receive([LogStash::Event.new("count" => 4 )])
         r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "123", :refresh => true)
@@ -101,7 +101,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
 
   context "when update with upsert" do
     it "should create new documents with provided upsert" do
-      subject = get_es_output({ 'document_id' => "456", 'upsert' => '{"message": "upsert message"}' })
+      subject = get_output({ 'document_id' => "456", 'upsert' => '{"message": "upsert message"}' })
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)
@@ -109,7 +109,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
     end
 
     it "should create new documents with event/doc as upsert" do
-      subject = get_es_output({ 'document_id' => "456", 'doc_as_upsert' => true })
+      subject = get_output({ 'document_id' => "456", 'doc_as_upsert' => true })
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)
@@ -117,7 +117,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
     end
 
     it "should fail on documents with event/doc as upsert at external version" do
-      subject = get_es_output({ 'document_id' => "456", 'doc_as_upsert' => true, 'version' => 999, "version_type" => "external" })
+      subject = get_output({ 'document_id' => "456", 'doc_as_upsert' => true, 'version' => 999, "version_type" => "external" })
       expect { subject.register }.to raise_error(LogStash::ConfigurationError)
     end
   end
@@ -126,7 +126,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
 
     context 'with an inline script' do
       it "should create new documents with upsert content" do
-        subject = get_es_output({ 'document_id' => "456", 'script' => 'ctx._source.counter = params.event.counter', 'upsert' => '{"message": "upsert message"}', 'script_type' => 'inline' })
+        subject = get_output({ 'document_id' => "456", 'script' => 'ctx._source.counter = params.event.counter', 'upsert' => '{"message": "upsert message"}', 'script_type' => 'inline' })
         subject.register
 
         subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
@@ -135,7 +135,7 @@ describe "Update actions using painless scripts", :integration => true, :update_
       end
 
       it "should create new documents with event/doc as script params" do
-        subject = get_es_output({ 'document_id' => "456", 'script' => 'ctx._source.counter = params.event.counter', 'scripted_upsert' => true, 'script_type' => 'inline' })
+        subject = get_output({ 'document_id' => "456", 'script' => 'ctx._source.counter = params.event.counter', 'scripted_upsert' => true, 'script_type' => 'inline' })
         subject.register
         subject.multi_receive([LogStash::Event.new("counter" => 1)])
         @client.indices.refresh
