@@ -12,7 +12,7 @@ require_relative "../../../spec/opensearch_spec_helper"
 describe "Update actions without scripts", :integration => true do
   require "logstash/outputs/opensearch"
 
-  def get_es_output( options={} )
+  def get_output( options={} )
     settings = {
       "manage_template" => true,
       "index" => "logstash-update",
@@ -40,20 +40,20 @@ describe "Update actions without scripts", :integration => true do
   end
 
   it "should fail without a document_id" do
-    subject = get_es_output
+    subject = get_output
     expect { subject.register }.to raise_error(LogStash::ConfigurationError)
   end
 
   context "when update only" do
     it "should not create new document" do
-      subject = get_es_output({ 'document_id' => "456" } )
+      subject = get_output({ 'document_id' => "456" } )
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
       expect {@client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)}.to raise_error(OpenSearch::Transport::Transport::Errors::NotFound)
     end
 
     it "should update existing document" do
-      subject = get_es_output({ 'document_id' => "123" })
+      subject = get_output({ 'document_id' => "123" })
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "updated message here")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "123", :refresh => true)
@@ -63,7 +63,7 @@ describe "Update actions without scripts", :integration => true do
     # The es ruby client treats the data field differently. Make sure this doesn't
     # raise an exception
     it "should update an existing document that has a 'data' field" do
-      subject = get_es_output({ 'document_id' => "123" })
+      subject = get_output({ 'document_id' => "123" })
       subject.register
       subject.multi_receive([LogStash::Event.new("data" => "updated message here", "message" => "foo")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "123", :refresh => true)
@@ -72,27 +72,27 @@ describe "Update actions without scripts", :integration => true do
     end
 
     it "should allow default (internal) version" do
-      subject = get_es_output({ 'document_id' => "123", "version" => "99" })
+      subject = get_output({ 'document_id' => "123", "version" => "99" })
       subject.register
     end
 
     it "should allow internal version" do
-      subject = get_es_output({ 'document_id' => "123", "version" => "99", "version_type" => "internal" })
+      subject = get_output({ 'document_id' => "123", "version" => "99", "version_type" => "internal" })
       subject.register
     end
 
     it "should not allow external version" do
-      subject = get_es_output({ 'document_id' => "123", "version" => "99", "version_type" => "external" })
+      subject = get_output({ 'document_id' => "123", "version" => "99", "version_type" => "external" })
       expect { subject.register }.to raise_error(LogStash::ConfigurationError)
     end
 
     it "should not allow external_gt version" do
-      subject = get_es_output({ 'document_id' => "123", "version" => "99", "version_type" => "external_gt" })
+      subject = get_output({ 'document_id' => "123", "version" => "99", "version_type" => "external_gt" })
       expect { subject.register }.to raise_error(LogStash::ConfigurationError)
     end
 
     it "should not allow external_gte version" do
-      subject = get_es_output({ 'document_id' => "123", "version" => "99", "version_type" => "external_gte" })
+      subject = get_output({ 'document_id' => "123", "version" => "99", "version_type" => "external_gte" })
       expect { subject.register }.to raise_error(LogStash::ConfigurationError)
     end
 
@@ -100,7 +100,7 @@ describe "Update actions without scripts", :integration => true do
 
   context "when update with upsert" do
     it "should create new documents with provided upsert" do
-      subject = get_es_output({ 'document_id' => "456", 'upsert' => '{"message": "upsert message"}' })
+      subject = get_output({ 'document_id' => "456", 'upsert' => '{"message": "upsert message"}' })
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)
@@ -108,7 +108,7 @@ describe "Update actions without scripts", :integration => true do
     end
 
     it "should create new documents with event/doc as upsert" do
-      subject = get_es_output({ 'document_id' => "456", 'doc_as_upsert' => true })
+      subject = get_output({ 'document_id' => "456", 'doc_as_upsert' => true })
       subject.register
       subject.multi_receive([LogStash::Event.new("message" => "sample message here")])
       r = @client.get(:index => 'logstash-update', :type => doc_type, :id => "456", :refresh => true)
@@ -116,7 +116,7 @@ describe "Update actions without scripts", :integration => true do
     end
 
     it "should fail on documents with event/doc as upsert at external version" do
-      subject = get_es_output({ 'document_id' => "456", 'doc_as_upsert' => true, 'version' => 999, "version_type" => "external" })
+      subject = get_output({ 'document_id' => "456", 'doc_as_upsert' => true, 'version' => 999, "version_type" => "external" })
       expect { subject.register }.to raise_error(LogStash::ConfigurationError)
     end
   end
