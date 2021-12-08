@@ -7,6 +7,8 @@
 # Modifications Copyright OpenSearch Contributors. See
 # GitHub history for details.
 
+signing_key_path = "gem-private_key.pem"
+
 Gem::Specification.new do |s|
   s.name            = 'logstash-output-opensearch'
   s.version         = '1.2.0'
@@ -27,7 +29,10 @@ Gem::Specification.new do |s|
   # Tests
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
-  s.cert_chain  = ['certs/opensearch-rubygems.pem']
+  if $PROGRAM_NAME.end_with?("gem") && ARGV == ["build", __FILE__] && File.exist?(signing_key_path)
+    s.signing_key = signing_key_path
+    s.cert_chain  = ['certs/opensearch-rubygems.pem']
+  end
 
   # Special flag to let us know this is actually a logstash plugin
   s.metadata = {

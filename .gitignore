@@ -17,3 +17,5 @@ vendor/
 /.idea/
 /dockerfiles/bin/
 /dockerfiles/.env
+gem-private_key.pem
+
