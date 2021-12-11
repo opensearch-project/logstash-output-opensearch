@@ -22,6 +22,8 @@ Compatible with OpenSearch 1.2.0
 * Add support for code owners to repo ([#93](https://github.com/opensearch-project/logstash-output-opensearch/pull/93))
 * Update version on main to 1.2.0 ([#97](https://github.com/opensearch-project/logstash-output-opensearch/pull/97))
 * Run integration tests against the latest version ([#99](https://github.com/opensearch-project/logstash-output-opensearch/pull/99))
+* Add signing key path to gemspec ([#101](https://github.com/opensearch-project/logstash-output-opensearch/pull/101))
+* Add dependency to opensearch-ruby ([#104](https://github.com/opensearch-project/logstash-output-opensearch/pull/104))
 
 ### Documentation
 
