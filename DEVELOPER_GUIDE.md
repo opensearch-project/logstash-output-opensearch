@@ -8,6 +8,7 @@
         - [Run plugin](#run-plugin-in-logstash)
         - [Configuration for Logstash Output OpenSearch Plugin](#configuration-for-logstash-output-opensearch-plugin)
     - [Submitting Changes](#submitting-changes)
+    - [Backports](#backports) 
 
 # Developer Guide
 
@@ -206,3 +207,11 @@ Authorization to a secure OpenSearch cluster requires read permission at [index 
 ## Submitting Changes
 
 See [CONTRIBUTING](CONTRIBUTING.md).
+
+## Backports
+
+The Github workflow in [`backport.yml`](.github/workflows/backport.yml) creates backport PRs automatically when the
+original PR with an appropriate label `backport <backport-branch-name>` is merged to main with the backport workflow
+run successfully on the PR. For example, if a PR on main needs to be backported to `1.x` branch, add a label
+`backport 1.x` to the PR and make sure the backport workflow runs on the PR along with other checks. Once this PR is
+merged to main, the workflow will create a backport PR to the `1.x` branch.
