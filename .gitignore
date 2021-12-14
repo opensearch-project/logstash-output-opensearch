@@ -18,4 +18,5 @@ vendor/
 /dockerfiles/bin/
 /dockerfiles/.env
 gem-private_key.pem
+builds/
 
