@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         logstash: [ "7.15.2", "7.16.1" ]
-        opensearch: [ "1.2.0" ]
+        opensearch: [ "1.2.1" ]
         secure: [ true, false ]
 
     name: Integration Test logstash-output-opensearch against OpenSearch
@@ -59,7 +59,7 @@ jobs:
     strategy:
       matrix:
         logstash: [ "7.15.2", "7.16.1" ]
-        opendistro: [ "1.13.2" ]
+        opendistro: [ "1.13.3" ]
         secure: [ true, false ]
 
     name: Integration Test logstash-output-opensearch against OpenDistro
