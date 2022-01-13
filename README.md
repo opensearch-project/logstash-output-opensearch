@@ -1,9 +1,10 @@
 [![Build and Test logstash-output-opensearch plugin](https://github.com/opensearch-project/logstash-output-opensearch/actions/workflows/CI.yml/badge.svg)](https://github.com/opensearch-project/logstash-output-opensearch/actions/workflows/CI.yml)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
-# Logstash Plugin
+# Logstash Output OpenSearch
 
 - [Welcome!](#welcome)
 - [Project Resources](#project-resources)
+- [Configuration for Logstash Output Opensearch Plugin](#configuration-for-logstash-output-opensearch-plugin)
 - [Code of Conduct](#code-of-conduct)
 - [License](#license)
 - [Copyright](#copyright)
@@ -11,6 +12,8 @@
 ## Welcome!
 
 **logstash-output-opensearch** is a community-driven, open source fork logstash-output-elasticsearch licensed under the [Apache v2.0 License](LICENSE). For more information, see [opensearch.org](https://opensearch.org/).
+
+The logstash-output-opensearch plugin helps to ship events from Logstash to OpenSearch cluster.
 
 ## Project Resources
 
@@ -24,6 +27,72 @@
 * [Release Management](RELEASING.md)
 * [Admin Responsibilities](ADMINS.md)
 * [Security](SECURITY.md)
+
+## Configuration for Logstash Output Opensearch Plugin
+
+To run the Logstash Output Opensearch plugin, add following configuration in your logstash.conf file.
+```
+output {
+    opensearch {
+        hosts       => ["hostname:port"]
+        user        => "admin"
+        password    => "admin"
+        index       => "logstash-logs-%{+YYYY.MM.dd}"
+    }
+}
+```
+
+To run the Logstash Output Opensearch plugin using aws_iam authentication, refer to the sample configuration shown below:
+```
+output {        
+   opensearch {     
+          hosts => ["hostname:port"]              
+          auth_type => {    
+              type => 'aws_iam'     
+              aws_access_key_id => 'ACCESS_KEY'     
+              aws_secret_access_key => 'SECRET_KEY'     
+              region => 'us-west-2'         
+          }         
+          index  => "logstash-logs-%{+YYYY.MM.dd}"      
+   }            
+}
+```
+
+In addition to the existing authentication mechanisms, if we want to add new authentication then we will be adding them in the configuration by using auth_type.
+
+Example Configuration for basic authentication:
+```
+output {    
+    opensearch {        
+          hosts  => ["hostname:port"]     
+          auth_type => {            
+              type => 'basic'           
+              user => 'admin'           
+              password => 'admin'           
+          }             
+          index => "logstash-logs-%{+YYYY.MM.dd}"       
+   }            
+}  
+```
+
+To ingest data into a `data stream` through logstash, we need to create the data stream and specify the name of data stream and the `op_type` of `create` in the output configuration. The sample configuration is shown below:
+
+```yml
+output {    
+    opensearch {        
+          hosts  => ["https://hostname:port"]     
+          auth_type => {            
+              type => 'basic'           
+              user => 'admin'           
+              password => 'admin'           
+          }
+          index => "my-data-stream"
+          action => "create"
+   }            
+}               
+```
+
+For more details refer to this [documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
 
 ## Code of Conduct
 
