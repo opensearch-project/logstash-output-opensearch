@@ -74,6 +74,10 @@ module LogStash; module Outputs; class OpenSearch;
       }
     end
 
+    def legacy_template
+      client_settings.fetch(:legacy)
+    end
+    
     def template_install(name, template, force=false)
       if template_exists?(name) && !force
         @logger.debug("Found existing OpenSearch template, skipping template management", name: name)
@@ -379,11 +383,19 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def template_exists?(name)
-      exists?("/#{template_endpoint}/#{name}")
+      if legacy_template
+        exists?("/_template/#{name}")
+      else
+        exists?("/_index_template/#{name}")
+      end
     end
 
     def template_put(name, template)
-      path = "#{template_endpoint}/#{name}"
+      if legacy_template
+        path = "_template/#{name}"
+      else
+        path = "_index_template/#{name}"
+      end
       logger.info("Installing OpenSearch template", name: name)
       @pool.put(path, nil, LogStash::Json.dump(template))
     end
