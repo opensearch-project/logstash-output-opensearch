@@ -150,6 +150,12 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # the "logstash" template (i.e. removing all customized settings)
   config :template_overwrite, :validate => :boolean, :default => false
 
+  # The legacy_template option will use the old /_template
+      # path for creating index templates.
+      # It will also construct the ilm configurations for the template in a manner
+      # which is compatible with legacy templates
+      mod.config :legacy_template, :validate => :boolean, :default => true
+    
   # The version to use for indexing. Use sprintf syntax like `%{my_version}` to use a field value here.
   config :version, :validate => :string
 
