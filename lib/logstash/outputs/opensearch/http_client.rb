@@ -75,7 +75,7 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def legacy_template
-      client_settings.fetch(:legacy)
+      client_settings.fetch(:legacy_template)
     end
     
     def template_install(name, template, force=false)
