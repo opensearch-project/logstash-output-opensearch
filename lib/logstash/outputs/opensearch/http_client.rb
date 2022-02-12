@@ -379,7 +379,7 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def template_exists?(name)
-      exists?("/#{template_endpoint}/#{name}")
+      exists?("#{template_endpoint}/#{name}")
     end
 
     def template_put(name, template)
@@ -391,7 +391,7 @@ module LogStash; module Outputs; class OpenSearch;
     def template_endpoint
       # TODO: Check Version < 7.8 and use index template for >= 7.8 & OpenSearch
       # https://opensearch.org/docs/opensearch/index-templates/
-      '_template'
+      '/_template'
     end
 
     # check whether rollover alias already exists
