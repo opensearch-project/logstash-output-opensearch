@@ -11,7 +11,7 @@ jobs:
   Unit-test:
     strategy:
       matrix:
-        logstash: [ "7.15.2", "7.16.3" ]
+        logstash: [ "7.16.3", "7.17.1" ]
     name: Unit Test logstash-output-opensearch
     runs-on: ubuntu-latest
     env:
@@ -33,7 +33,7 @@ jobs:
   Integration-Test-OpenSearch:
     strategy:
       matrix:
-        logstash: [ "7.15.2", "7.16.3" ]
+        logstash: [ "7.16.3", "7.17.1" ]
         opensearch: [ "1.2.1" ]
         secure: [ true, false ]
 
@@ -58,7 +58,7 @@ jobs:
   Integration-Test-OpenDistro:
     strategy:
       matrix:
-        logstash: [ "7.15.2", "7.16.3" ]
+        logstash: [ "7.16.3", "7.17.1" ]
         opendistro: [ "1.13.3" ]
         secure: [ true, false ]
 
