@@ -157,7 +157,7 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
     }
 
     it "should call index template" do
-      expect(subject.pool).to receive(:put).with("_template/#{template_name}", nil, anything).and_return(get_response)
+      expect(subject.pool).to receive(:put).with("/_template/#{template_name}", nil, anything).and_return(get_response)
       subject.template_put(template_name, template)
     end
   end

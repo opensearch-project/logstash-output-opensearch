@@ -383,7 +383,7 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def template_put(name, template)
-      path = "#{template_endpoint}/#{name}"
+      path = "/#{template_endpoint}/#{name}"
       logger.info("Installing OpenSearch template", name: name)
       @pool.put(path, nil, LogStash::Json.dump(template))
     end
