@@ -52,5 +52,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'logstash-devutils'
   s.add_development_dependency 'flores'
   s.add_development_dependency 'cabin', ['~> 0.6']
-  s.add_development_dependency 'opensearch-ruby'
+  s.add_development_dependency 'opensearch-ruby', '~> 1'
 end
