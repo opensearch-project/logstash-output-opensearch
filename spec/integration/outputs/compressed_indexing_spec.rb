@@ -59,7 +59,11 @@ describe "indexing with http_compression turned on", :integration => true do
       response = http_client.get("#{index_url}/_search?q=*&size=1000")
       result = LogStash::Json.load(response.body)
       result["hits"]["hits"].each do |doc|
-        expect(doc["_type"]).to eq(type)
+        if OpenSearchHelper.check_version?("< 2")
+          expect(doc["_type"]).to eq(type)
+        else
+          expect(doc).not_to include("_type")
+        end
         expect(doc["_index"]).to eq(index)
       end
     end
