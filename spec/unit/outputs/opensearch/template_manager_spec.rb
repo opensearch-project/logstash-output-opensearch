@@ -13,9 +13,25 @@ require "logstash/outputs/opensearch/template_manager"
 describe LogStash::Outputs::OpenSearch::TemplateManager do
 
   describe ".default_template_path" do
-    context 'when ECS v1 is requested' do
-      it 'resolves' do
-        expect(described_class.default_template_path(7, :v1)).to end_with("/templates/ecs-v1/7x.json")
+    [1, 2].each do |major_version|
+      context "when ECS is disabled with OpenSearch #{major_version}.x" do
+        it 'resolves' do
+          expect(described_class.default_template_path(major_version)).to end_with("/templates/ecs-disabled/#{major_version}x.json")
+        end
+      end
+    end
+    [7, 1, 2].each do |major_version|
+      context "when ECS v1 is requested with OpenSearch #{major_version}.x" do
+        it 'resolves' do
+          expect(described_class.default_template_path(major_version, :v1)).to end_with("/templates/ecs-v1/#{major_version}x.json")
+        end
+      end
+    end
+    [1, 2].each do |major_version|
+      context "when ECS v8 is requested with OpenSearch #{major_version}.x" do
+        it 'resolves' do
+          expect(described_class.default_template_path(major_version, :v8)).to end_with("/templates/ecs-v8/#{major_version}x.json")
+        end
       end
     end
   end
