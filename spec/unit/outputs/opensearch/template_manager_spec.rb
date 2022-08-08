@@ -18,6 +18,9 @@ describe LogStash::Outputs::OpenSearch::TemplateManager do
         it 'resolves' do
           expect(described_class.default_template_path(major_version)).to end_with("/templates/ecs-disabled/#{major_version}x.json")
         end
+        it 'resolves' do
+          expect(described_class.default_template_path(major_version, :disabled)).to end_with("/templates/ecs-disabled/#{major_version}x.json")
+        end
       end
     end
     [7, 1, 2].each do |major_version|
