@@ -10,7 +10,7 @@
 require "logstash/devutils/rake"
 
 ECS_VERSIONS = {
-    v1: 'v1.5.0'
+    v1: 'v1.9.0'
 }
 
 ECS_LOGSTASH_INDEX_PATTERNS = %w(
@@ -18,11 +18,13 @@ ECS_LOGSTASH_INDEX_PATTERNS = %w(
 )
 
 task :'vendor-ecs-schemata' do
-  download_ecs_schema(:v1)
+  download_ecs_schema(:v1, 1)
+  download_ecs_schema(:v1, 2)
+  download_ecs_schema(:v1, 7)
 end
 task :vendor => :'vendor-ecs-schemata'
 
-def download_ecs_schema(ecs_major_version)
+def download_ecs_schema(ecs_major_version, opensearch_major_version)
   $stderr.puts("Vendoring ECS #{ecs_major_version} template")
   require 'net/http'
   require 'json'
@@ -32,8 +34,9 @@ def download_ecs_schema(ecs_major_version)
     fail "#{response.code} #{response.message}" unless (200...300).cover?(response.code.to_i)
     template_directory = File.expand_path("../lib/logstash/outputs/opensearch/templates/ecs-#{ecs_major_version}", __FILE__)
     Dir.mkdir(template_directory) unless File.exists?(template_directory)
-    File.open(File.join(template_directory, "/template.json"), "w") do |handle|
-      handle.write(replace_index_patterns(response.body, ECS_LOGSTASH_INDEX_PATTERNS))
+    template_file = File.join(template_directory, "/#{opensearch_major_version}x.json")
+    File.open(template_file, "w") do |handle|
+        handle.write(replace_index_patterns(response.body, ECS_LOGSTASH_INDEX_PATTERNS))
     end
   end
 end

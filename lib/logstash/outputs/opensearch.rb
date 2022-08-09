@@ -78,7 +78,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   include(LogStash::PluginMixins::OpenSearch::Common)
 
   # ecs_compatibility option, provided by Logstash core or the support adapter.
-  include(LogStash::PluginMixins::ECSCompatibilitySupport)
+  include(LogStash::PluginMixins::ECSCompatibilitySupport(:disabled, :v1, :v8))
 
   # Generic/API config options that any document indexer output needs
   include(LogStash::PluginMixins::OpenSearch::APIConfigs)
@@ -419,7 +419,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     when :disabled
       @default_index = "logstash-%{+yyyy.MM.dd}"
       @default_template_name = 'logstash'
-    when :v1
+    when :v1, :v8
       @default_index = "ecs-logstash-%{+yyyy.MM.dd}"
       @default_template_name = 'ecs-logstash'
     else

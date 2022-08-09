@@ -12,6 +12,7 @@ require "base64"
 require "flores/random"
 require 'concurrent/atomic/count_down_latch'
 require "logstash/outputs/opensearch"
+require 'logstash/plugin_mixins/ecs_compatibility_support/spec_helper'
 
 describe LogStash::Outputs::OpenSearch do
   subject(:opensearch_output_instance) { described_class.new(options) }
@@ -784,6 +785,21 @@ describe LogStash::Outputs::OpenSearch do
     end
   end
 
+  describe 'ecs_compatibility support', :ecs_compatibility_support do
+    [:disabled, :v1, :v8].each do |ecs_compatibility|
+      context "when `ecs_compatibility => #{ecs_compatibility}`" do
+        let(:options) { Hash.new }
+        subject(:output) { described_class.new(options.merge("ecs_compatibility" => "#{ecs_compatibility}")) }
+        context 'when registered' do
+          before(:each) { output.register }
+          it 'has the correct effective ECS compatibility setting' do
+            expect(output.ecs_compatibility).to eq(ecs_compatibility)
+          end
+        end
+      end
+    end
+  end
+  
   @private
 
   def stub_manticore_client!(manticore_double = nil)

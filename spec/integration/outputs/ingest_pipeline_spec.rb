@@ -14,7 +14,8 @@ describe "Ingest pipeline execution behavior", :integration => true do
     require "logstash/outputs/opensearch"
     settings = {
       "hosts" => "#{get_host_port()}",
-      "pipeline" => "apache-logs"
+      "pipeline" => "apache-logs",
+      "ecs_compatibility" => "disabled" # specs are tightly tied to non-ECS defaults
     }
     next LogStash::Outputs::OpenSearch.new(settings)
   end
