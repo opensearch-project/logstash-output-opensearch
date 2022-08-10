@@ -7,7 +7,7 @@ services:
       context: ../../
       dockerfile: scripts/Dockerfile
       args:
-        - LOGSTASH_VERSION=${LOGSTASH_VERSION:-7.13.2}
+        - LOGSTASH_VERSION=${LOGSTASH_VERSION:-8.3.2}
     command: /usr/share/plugins/plugin/scripts/unit-test/logstash-run.sh
     env_file: ../docker.env
     environment:
