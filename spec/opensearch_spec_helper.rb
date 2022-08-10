@@ -49,6 +49,16 @@ module OpenSearchHelper
     RSpec.configuration.filter[:version]
   end
 
+  def self.check_version?(*requirement)
+    version = self.version
+    if version.nil? || version.empty?
+      puts "version tag isn't set. Returning false from 'check_version?`."
+      return false
+    end
+    release_version = Gem::Version.new(version).release
+    Gem::Requirement.new(requirement).satisfied_by?(release_version)
+  end
+
   RSpec::Matchers.define :have_hits do |expected|
     match do |actual|
       expected == actual['hits']['total']['value']

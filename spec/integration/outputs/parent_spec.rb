@@ -10,7 +10,7 @@
 require_relative "../../../spec/opensearch_spec_helper"
 require "logstash/outputs/opensearch"
 
-context "join field tests", :integration => true do
+context "join field tests", :integration => true && OpenSearchHelper.check_version?("<2") do
 
   shared_examples "a join field based parent indexer" do
     let(:index) { 10.times.collect { rand(10).to_s }.join("") }
