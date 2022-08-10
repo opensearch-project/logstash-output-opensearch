@@ -22,6 +22,9 @@ This document explains who the maintainers are (see below), what they do in this
 | Jack Mazanec             | [jmazanec15](https://github.com/jmazanec15) | Amazon |
 | Vamshi Vijay Nakkirtha   | [vamshin](https://github.com/vamshin)   |   Amazon    |
 | Vijayan Balasubramanian  | [VijayanB](https://github.com/VijayanB) |   Amazon    |
+| Deep Datta               | [deepdatta](https://github.com/deepdatta) | Amazon    |
+| David Venable            | [dlvenable](https://github.com/dlvenable) | Amazon    |
+| Shivani Shukla           | [sshivanii](https://github.com/sshivanii) | Amazon    |
 
 ## Maintainer Responsibilities
 
