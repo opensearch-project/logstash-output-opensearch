@@ -11,7 +11,7 @@ signing_key_path = "gem-private_key.pem"
 
 Gem::Specification.new do |s|
   s.name            = 'logstash-output-opensearch'
-  s.version         = '1.2.0'
+  s.version         = '1.3.0'
 
   s.licenses        = ['Apache-2.0']
   s.summary         = "Stores logs in OpenSearch"
