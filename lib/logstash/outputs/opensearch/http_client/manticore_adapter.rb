@@ -76,6 +76,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       instance_cred_timeout = options[:auth_type]["instance_profile_credentials_timeout"] || AWS_DEFAULT_PROFILE_CREDENTIAL_TIMEOUT
       region = options[:auth_type]["region"] || AWS_DEFAULT_REGION
       set_aws_region(region)
+      set_service_name(options[:auth_type]["service_name"] || AWS_SERVICE)
 
       credential_config = AWSIAMCredential.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, region)
       @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
@@ -91,6 +92,14 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
     def get_aws_region()
       @region
+    end
+
+    def set_service_name(service_name)
+      @service_name = service_name
+    end
+
+    def get_service_name()
+      @service_name
     end
 
     def set_user_password(options)
@@ -176,7 +185,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>AWS_DEFAULT_PORT.to_s, :path=>path})
       key = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
                                                          :headers => params[:headers],:body => params[:body]})
-      aws_signer = Aws::Signers::V4.new(@credentials,  AWS_SERVICE, get_aws_region )
+      aws_signer = Aws::Signers::V4.new(@credentials, get_service_name, get_aws_region )
       signed_key =  aws_signer.sign(key)
       params[:headers] =  params[:headers].merge(signed_key.headers)
     end
