@@ -40,6 +40,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     attr_reader :logger, :adapter, :sniffing, :sniffer_delay, :resurrect_delay, :healthcheck_path, :sniffing_path, :bulk_path
+    attr_reader :skip_healthcheck, :default_server_major_version
 
     ROOT_URI_PATH = '/'.freeze
 
@@ -51,6 +52,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       :resurrect_delay => 5,
       :sniffing => false,
       :sniffer_delay => 10,
+      :skip_healthcheck => false,
+      :default_server_major_version => 2
     }.freeze
 
     def initialize(logger, adapter, initial_urls=[], options={})
@@ -68,6 +71,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         @resurrect_delay = merged[:resurrect_delay]
         @sniffing = merged[:sniffing]
         @sniffer_delay = merged[:sniffer_delay]
+        @skip_healthcheck = merged[:skip_healthcheck]
+        @default_server_major_version = merged[:default_server_major_version]
       end
 
       # Used for all concurrent operations in this class
@@ -232,7 +237,11 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           # If no exception was raised it must have succeeded!
           logger.warn("Restored connection to OpenSearch instance", url: url.sanitized.to_s)
           # We reconnected to this node, check its version
-          version = get_version(url)
+          if skip_healthcheck == false
+            version = get_version(url)
+          else
+            version = "#{default_server_major_version}.0.0"
+          end
           @state_mutex.synchronize do
             meta[:version] = version
             set_last_version(version, url)
