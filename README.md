@@ -91,7 +91,10 @@ output {
    }            
 }               
 ```
+### ecs_compatibility
+ECS compatibility for V8 was added in 1.3.0. For more details on ECS support refer to this [documentation](docs/ecs_compatibility.md).
 
+## Detailed Documentation   
 For more details refer to this [documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
 
 ## Code of Conduct
