@@ -18,7 +18,8 @@ The logstash-output-opensearch plugin helps to ship events from Logstash to Open
 ## Project Resources
 
 * [Project Website](https://opensearch.org/)
-* [Documentation](https://opensearch.org/docs/clients/logstash/index/)
+* [Detailed Documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
+* [Logstash Overview](https://opensearch.org/docs/clients/logstash/index/)
 * [Developer Guide](DEVELOPER_GUIDE.md)
 * Need help? Try [Forums](https://discuss.opendistrocommunity.dev/)
 * [Project Principles](https://opensearch.org/#principles)
@@ -91,11 +92,9 @@ output {
    }            
 }               
 ```
-### ecs_compatibility
-ECS compatibility for V8 was added in 1.3.0. For more details on ECS support refer to this [documentation](docs/ecs_compatibility.md).
+## ECS Compatibility
+[Elastic Common Schema(ECS)](https://www.elastic.co/guide/en/ecs/current/index.html]) compatibility for V8 was added in 1.3.0. For more details on ECS support refer to this [documentation](docs/ecs_compatibility.md).
 
-## Detailed Documentation   
-For more details refer to this [documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
 
 ## Code of Conduct
 

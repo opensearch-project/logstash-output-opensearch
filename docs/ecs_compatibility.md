@@ -27,14 +27,14 @@ Error received from OpenSearch in the Logstash logs
 ```
 [2022-08-23T00:01:53,366][WARN ][logstash.outputs.opensearch][main][a36555c6fad3f301db8efff2dfbed768fd85e0b6f4ee35626abe62432f83b95d] Could not index event to OpenSearch. {:status=>400, :action=>["index", {:_id=>nil, :_index=>"ecs-logstash-2022.08.23", :routing=>nil}, {"@timestamp"=>2022-08-22T15:39:18.142175244Z, "@version"=>"1", "server"=>"remoteserver.com", "message"=>"Doc1"}], :response=>{"index"=>{"_index"=>"ecs-logstash-2022.08.23", "_id"=>"CAEUyYIBQM7JQrwxF5NR", "status"=>400, "error"=>{"type"=>"mapper_parsing_exception", "reason"=>"object mapping for [server] tried to parse field [server] as object, but found a concrete value"}}}}
 ```
-## How to make things compatible
-* As mentioned at the beginning, the plugins in the pipeline that create the events like the `input` and `codec` plugins should all use ECS defined fields. 
+## How to ensure ECS compatibility
+* The plugins in the pipeline that create the events like the `input` and `codec` plugins should all use ECS defined fields. 
 * Filter plugins like [mutate](https://github.com/logstash-plugins/logstash-filter-mutate/blob/main/docs/index.asciidoc) can be used to map incompatible fields into ECS compatible ones.  
-In the above example the `server` field can be mapped to the `server.domain` field.  
+In the above example the `server` field can be mapped to the `server.domain` field to make it compatible.  
 * You can use your own custom template in the plugin using the `template` and `template_name` configs.  
  [According to this](https://www.elastic.co/guide/en/ecs/current/ecs-faq.html#type-interop) some field types can be changed while staying compatible.
 
-As a last resort the `ecs_compatibility` of the logstash-output-opensearch can be set to `disabled`.
+As a last resort the `ecs_compatibility` config for the logstash-output-opensearch can be set to `disabled`.
      
 
 _______________
