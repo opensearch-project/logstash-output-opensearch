@@ -200,6 +200,10 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # here like `pipeline => "%{INGEST_PIPELINE}"`
   config :pipeline, :validate => :string, :default => nil
 
+  # When set to true, use legacy templates via the _template API
+  # When false, use index templates using the _index_template API
+  config :legacy_template, :validate => :boolean, :default => true
+
   attr_reader :client
   attr_reader :default_index
   attr_reader :default_template_name

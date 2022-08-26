@@ -162,6 +162,19 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
     end
   end
 
+  describe "legacy_template" do
+    [true, false].each do |legacy_template|
+      context "when legacy_template => #{legacy_template}" do
+        let(:base_options) { super().merge(:client_settings => {:legacy_template => legacy_template}) }
+        subject { described_class.new(base_options) }
+        endpoint = legacy_template ? "_template" : "_index_template"
+        it "should have template_endpoint #{endpoint}" do
+          expect(subject.template_endpoint).to eq(endpoint)
+        end
+      end
+    end
+  end
+
   describe "join_bulk_responses" do
     subject { described_class.new(base_options) }
 

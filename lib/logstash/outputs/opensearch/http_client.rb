@@ -388,10 +388,16 @@ module LogStash; module Outputs; class OpenSearch;
       @pool.put(path, nil, LogStash::Json.dump(template))
     end
 
+    def legacy_template?()
+      # TODO: Also check Version and return true for < 7.8 even if :legacy_template=false
+      # Need to figure a way to distinguish between OpenSearch, OpenDistro and other 
+      # variants, since they have version numbers in different ranges.
+      client_settings.fetch(:legacy_template, true)
+    end
+
     def template_endpoint
-      # TODO: Check Version < 7.8 and use index template for >= 7.8 & OpenSearch
       # https://opensearch.org/docs/opensearch/index-templates/
-      '_template'
+      legacy_template?() ? '_template' : '_index_template'
     end
 
     # check whether rollover alias already exists
