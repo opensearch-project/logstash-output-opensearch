@@ -44,17 +44,17 @@ output {
 
 To run the Logstash Output Opensearch plugin using aws_iam authentication, refer to the sample configuration shown below:
 ```
-output {        
-   opensearch {     
-          hosts => ["hostname:port"]              
-          auth_type => {    
-              type => 'aws_iam'     
-              aws_access_key_id => 'ACCESS_KEY'     
-              aws_secret_access_key => 'SECRET_KEY'     
-              region => 'us-west-2'         
-          }         
-          index  => "logstash-logs-%{+YYYY.MM.dd}"      
-   }            
+output {
+   opensearch {
+          hosts => ["hostname:port"]
+          auth_type => {
+              type => 'aws_iam'
+              aws_access_key_id => 'ACCESS_KEY'
+              aws_secret_access_key => 'SECRET_KEY'
+              region => 'us-west-2'
+          }
+          index  => "logstash-logs-%{+YYYY.MM.dd}"
+   }
 }
 ```
 
@@ -62,34 +62,49 @@ In addition to the existing authentication mechanisms, if we want to add new aut
 
 Example Configuration for basic authentication:
 ```
-output {    
-    opensearch {        
-          hosts  => ["hostname:port"]     
-          auth_type => {            
-              type => 'basic'           
-              user => 'admin'           
-              password => 'admin'           
-          }             
-          index => "logstash-logs-%{+YYYY.MM.dd}"       
-   }            
-}  
+output {
+    opensearch {
+          hosts  => ["hostname:port"]
+          auth_type => {
+              type => 'basic'
+              user => 'admin'
+              password => 'admin'
+          }
+          index => "logstash-logs-%{+YYYY.MM.dd}"
+   }
+}
 ```
 
 To ingest data into a `data stream` through logstash, we need to create the data stream and specify the name of data stream and the `op_type` of `create` in the output configuration. The sample configuration is shown below:
 
 ```yml
-output {    
-    opensearch {        
-          hosts  => ["https://hostname:port"]     
-          auth_type => {            
-              type => 'basic'           
-              user => 'admin'           
-              password => 'admin'           
+output {
+    opensearch {
+          hosts  => ["https://hostname:port"]
+          auth_type => {
+              type => 'basic'
+              user => 'admin'
+              password => 'admin'
           }
           index => "my-data-stream"
           action => "create"
-   }            
-}               
+   }
+}
+```
+
+Starting in 2.0.0, the aws sdk version is bumped to v3. In order for all other AWS plugins to work together, please remove pre-installed aws plugins and install logstash-integration-aws plugin as follows. See also https://github.com/logstash-plugins/logstash-mixin-aws/issues/38
+```
+# Remove existing logstash aws plugins and install logstash-integration-aws to keep sdk dependency the same
+# https://github.com/logstash-plugins/logstash-mixin-aws/issues/38
+/usr/share/logstash/bin/logstash-plugin remove logstash-input-s3
+/usr/share/logstash/bin/logstash-plugin remove logstash-input-sqs
+/usr/share/logstash/bin/logstash-plugin remove logstash-output-s3
+/usr/share/logstash/bin/logstash-plugin remove logstash-output-sns
+/usr/share/logstash/bin/logstash-plugin remove logstash-output-sqs
+/usr/share/logstash/bin/logstash-plugin remove logstash-output-cloudwatch
+
+/usr/share/logstash/bin/logstash-plugin install --version 0.1.0.pre logstash-integration-aws
+bin/logstash-plugin install --version 2.0.0 logstash-output-opensearch
 ```
 
 For more details refer to this [documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
