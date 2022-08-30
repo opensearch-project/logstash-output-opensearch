@@ -7,8 +7,6 @@
 #  Modifications Copyright OpenSearch Contributors. See
 #  GitHub history for details.
 
-#require "logstash/devutils/rake"
-
 ECS_VERSIONS = {
     v1: 'v1.9.0'
 }
