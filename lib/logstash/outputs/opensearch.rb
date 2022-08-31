@@ -200,12 +200,8 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # here like `pipeline => "%{INGEST_PIPELINE}"`
   config :pipeline, :validate => :string, :default => nil
 
-  # If enabled, skip the GET request to the Healthcheck endpoint to get the server version.
-  # The HEAD request is still done to check if the server is alive. 
-  config :skip_healthcheck, :validate => :boolean, :default => false
-
   # The OpenSearch server major version to use when it's not available from the Healthcheck endpoint.
-  config :default_server_major_version, :validate => :number, :default => 2
+  config :default_server_major_version, :validate => :number
 
   attr_reader :client
   attr_reader :default_index

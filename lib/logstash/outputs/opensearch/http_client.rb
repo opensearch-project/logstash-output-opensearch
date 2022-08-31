@@ -329,7 +329,6 @@ module LogStash; module Outputs; class OpenSearch;
         :resurrect_delay => options[:resurrect_delay],
         :url_normalizer => self.method(:host_to_url),
         :metric => options[:metric],
-        :skip_healthcheck => options[:skip_healthcheck],
         :default_server_major_version => options[:default_server_major_version]
       }
       pool_options[:scheme] = self.scheme if self.scheme

@@ -40,7 +40,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     attr_reader :logger, :adapter, :sniffing, :sniffer_delay, :resurrect_delay, :healthcheck_path, :sniffing_path, :bulk_path
-    attr_reader :skip_healthcheck, :default_server_major_version
+    attr_reader :default_server_major_version
 
     ROOT_URI_PATH = '/'.freeze
 
@@ -52,8 +52,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       :resurrect_delay => 5,
       :sniffing => false,
       :sniffer_delay => 10,
-      :skip_healthcheck => false,
-      :default_server_major_version => 2
     }.freeze
 
     def initialize(logger, adapter, initial_urls=[], options={})
@@ -71,7 +69,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         @resurrect_delay = merged[:resurrect_delay]
         @sniffing = merged[:sniffing]
         @sniffer_delay = merged[:sniffer_delay]
-        @skip_healthcheck = merged[:skip_healthcheck]
         @default_server_major_version = merged[:default_server_major_version]
       end
 
@@ -237,11 +234,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           # If no exception was raised it must have succeeded!
           logger.warn("Restored connection to OpenSearch instance", url: url.sanitized.to_s)
           # We reconnected to this node, check its version
-          if skip_healthcheck == false
-            version = get_version(url)
-          else
-            version = "#{default_server_major_version}.0.0"
-          end
+          version = get_version(url)
           @state_mutex.synchronize do
             meta[:version] = version
             set_last_version(version, url)
@@ -421,8 +414,15 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def get_version(url)
-      request = perform_request_to_url(url, :get, ROOT_URI_PATH)
-      LogStash::Json.load(request.body)["version"]["number"] # e.g. "7.10.0"
+      response = perform_request_to_url(url, :get, ROOT_URI_PATH)
+      if response.code != 404 && !response.body.empty?
+        return LogStash::Json.load(response.body)["version"]["number"] # e.g. "7.10.0"
+      end
+      if @default_server_major_version.nil?
+        @logger.error("Failed to get version from health_check endpoint and default_server_major_version is not configured.")
+        raise "get_version failed! no default_server_major_version configured."
+      end
+      "#{default_server_major_version}.0.0"
     end
 
     def last_version

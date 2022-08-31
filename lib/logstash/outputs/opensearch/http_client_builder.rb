@@ -27,7 +27,6 @@ module LogStash; module Outputs; class OpenSearch;
         :client_settings => client_settings,
         :metric => params["metric"],
         :resurrect_delay => params["resurrect_delay"],
-        :skip_healthcheck => params["skip_healthcheck"],
         :default_server_major_version => params["default_server_major_version"]
       }
 
