@@ -162,6 +162,26 @@ describe LogStash::Outputs::OpenSearch::HttpClient do
     end
   end
 
+  describe "legacy_template" do
+    let(:template_name) { "logstash" }
+    let(:template) { {} }
+    let(:get_response) {
+      double("response", :body => {}, :code => 404)
+    }
+    [true, false].each do |legacy_template|
+      context "when legacy_template => #{legacy_template}" do
+        let(:base_options) { super().merge(:client_settings => {:legacy_template => legacy_template}) }
+        subject { described_class.new(base_options) }
+        endpoint = legacy_template ? "_template" : "_index_template"
+        it "should call template_endpoint #{endpoint}" do
+          expect(subject.pool).to receive(:head).with("/#{endpoint}/#{template_name}").and_return(get_response)
+          expect(subject.pool).to receive(:put).with("/#{endpoint}/#{template_name}", nil, anything).and_return(get_response)  
+          subject.template_install(template_name, template)
+        end
+      end
+    end
+  end
+
   describe "join_bulk_responses" do
     subject { described_class.new(base_options) }
 

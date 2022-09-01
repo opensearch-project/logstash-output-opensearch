@@ -7,8 +7,6 @@
 #  Modifications Copyright OpenSearch Contributors. See
 #  GitHub history for details.
 
-require "logstash/devutils/rake"
-
 ECS_VERSIONS = {
     v1: 'v1.9.0'
 }
@@ -35,8 +33,14 @@ def download_ecs_schema(ecs_major_version, opensearch_major_version)
     template_directory = File.expand_path("../lib/logstash/outputs/opensearch/templates/ecs-#{ecs_major_version}", __FILE__)
     Dir.mkdir(template_directory) unless File.exists?(template_directory)
     template_file = File.join(template_directory, "/#{opensearch_major_version}x.json")
+    template = replace_index_patterns(response.body, ECS_LOGSTASH_INDEX_PATTERNS)
     File.open(template_file, "w") do |handle|
-        handle.write(replace_index_patterns(response.body, ECS_LOGSTASH_INDEX_PATTERNS))
+        handle.write(JSON.pretty_generate(template))
+    end
+    index_template_file = File.join(template_directory, "/#{opensearch_major_version}x_index.json")
+    template = transform_to_index_template(template)
+    File.open(index_template_file, "w") do |handle|
+        handle.write(JSON.pretty_generate(template))
     end
   end
 end
@@ -44,5 +48,22 @@ end
 def replace_index_patterns(template_json, replacement_index_patterns)
   template_obj = JSON.load(template_json)
   template_obj.update('index_patterns' => replacement_index_patterns)
-  JSON.pretty_generate(template_obj)
+  template_obj
 end
+
+def transform_to_index_template(template)
+  if !template.key?("template")
+
+    # `order` is replaced with `priority`
+    template.delete("order")
+    template["priority"] = 10   
+
+    # index_templates have `settings` and `mappings` under `template`
+    template["template"] = {
+      "settings" => template.delete("settings"),
+      "mappings" => template.delete("mappings")
+    }
+  end
+  template
+end
+
