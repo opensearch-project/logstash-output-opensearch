@@ -18,7 +18,7 @@ module LogStash; module Outputs; class OpenSearch
       else
         plugin.logger.info("Using a default mapping template", :version => plugin.maximum_seen_major_version,
                                                                :ecs_compatibility => plugin.ecs_compatibility)
-        template = load_default_template(plugin.maximum_seen_major_version, plugin.ecs_compatibility)
+        template = load_default_template(plugin.maximum_seen_major_version, plugin.ecs_compatibility, plugin.client.legacy_template?)
       end
 
       plugin.logger.debug("Attempting to install template", template: template)
@@ -26,8 +26,8 @@ module LogStash; module Outputs; class OpenSearch
     end
 
     private
-    def self.load_default_template(major_version, ecs_compatibility)
-      template_path = default_template_path(major_version, ecs_compatibility)
+    def self.load_default_template(major_version, ecs_compatibility, legacy_template)
+      template_path = default_template_path(major_version, ecs_compatibility, legacy_template)
       read_template_file(template_path)
     rescue => e
       fail "Failed to load default template for OpenSearch v#{major_version} with ECS #{ecs_compatibility}; caused by: #{e.inspect}"
@@ -45,9 +45,10 @@ module LogStash; module Outputs; class OpenSearch
       plugin.template_name
     end
 
-    def self.default_template_path(major_version, ecs_compatibility=:disabled)
+    def self.default_template_path(major_version, ecs_compatibility=:disabled, legacy_template=true)
       template_version = major_version
-      default_template_name = "templates/ecs-#{ecs_compatibility}/#{template_version}x.json"
+      suffix = legacy_template ? "" : "_index"
+      default_template_name = "templates/ecs-#{ecs_compatibility}/#{template_version}x#{suffix}.json"
       ::File.expand_path(default_template_name, ::File.dirname(__FILE__))
     end
 

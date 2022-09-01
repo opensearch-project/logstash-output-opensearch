@@ -57,7 +57,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       if options[:proxy]
         options[:proxy] = manticore_proxy_hash(options[:proxy])
       end
-      
+
       @manticore = ::Manticore::Client.new(options)
     end
 
@@ -76,6 +76,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       instance_cred_timeout = options[:auth_type]["instance_profile_credentials_timeout"] || AWS_DEFAULT_PROFILE_CREDENTIAL_TIMEOUT
       region = options[:auth_type]["region"] || AWS_DEFAULT_REGION
       set_aws_region(region)
+      set_service_name(options[:auth_type]["service_name"] || AWS_SERVICE)
 
       credential_config = AWSIAMCredential.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, region)
       @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
@@ -93,6 +94,14 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @region
     end
 
+    def set_service_name(service_name)
+      @service_name = service_name
+    end
+
+    def get_service_name()
+      @service_name
+    end
+
     def set_user_password(options)
       @user = options[:auth_type]["user"]
       @password = options[:auth_type]["password"]
@@ -105,7 +114,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     def get_password()
       @password
     end
-    
+
     # Transform the proxy option to a hash. Manticore's support for non-hash
     # proxy options is broken. This was fixed in https://github.com/cheald/manticore/commit/34a00cee57a56148629ed0a47c329181e7319af5
     # but this is not yet released
@@ -137,12 +146,12 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       params[:body] = body if body
 
       if url.user
-        params[:auth] = { 
+        params[:auth] = {
           :user => CGI.unescape(url.user),
           # We have to unescape the password here since manticore won't do it
           # for us unless its part of the URL
-          :password => CGI.unescape(url.password), 
-          :eager => true 
+          :password => CGI.unescape(url.password),
+          :eager => true
         }
       elsif @type == BASIC_AUTH_TYPE
         add_basic_auth_to_params(params)
@@ -174,11 +183,17 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
     def sign_aws_request(request_uri, path, method, params)
       url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>AWS_DEFAULT_PORT.to_s, :path=>path})
-      key = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
-                                                         :headers => params[:headers],:body => params[:body]})
-      aws_signer = Aws::Signers::V4.new(@credentials,  AWS_SERVICE, get_aws_region )
-      signed_key =  aws_signer.sign(key)
-      params[:headers] =  params[:headers].merge(signed_key.headers)
+      request = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
+        :headers => params[:headers],:body => params[:body]})
+
+      aws_signer = Aws::Sigv4::Signer.new(service: @service_name, region: @region, credentials_provider: @credentials)
+      signed_key = aws_signer.sign_request(
+        http_method: request.http_method,
+        url: url,
+        headers: params[:headers],
+        body: params[:body]
+      )
+      params[:headers] = params[:headers].merge(signed_key.headers)
     end
 
     def add_basic_auth_to_params(params)
@@ -192,7 +207,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     # Returned urls from this method should be checked for double escaping.
     def format_url(url, path_and_query=nil)
       request_uri = url.clone
-      
+
       # We excise auth info from the URL in case manticore itself tries to stick
       # sensitive data in a thrown exception or log data
       request_uri.user = nil
@@ -208,7 +223,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       new_query_parts = [request_uri.query, parsed_path_and_query.query].select do |part|
         part && !part.empty? # Skip empty nil and ""
       end
-      
+
       request_uri.query = new_query_parts.join("&") unless new_query_parts.empty?
 
       # use `raw_path`` as `path` will unescape any escaped '/' in the path

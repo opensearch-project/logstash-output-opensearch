@@ -199,6 +199,10 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # Set which ingest pipeline you wish to execute for an event. You can also use event dependent configuration
   # here like `pipeline => "%{INGEST_PIPELINE}"`
   config :pipeline, :validate => :string, :default => nil
+  
+  # When set to true, use legacy templates via the _template API
+  # When false, use index templates using the _index_template API
+  config :legacy_template, :validate => :boolean, :default => true
 
   # The OpenSearch server major version to use when it's not available from the Healthcheck endpoint.
   config :default_server_major_version, :validate => :number

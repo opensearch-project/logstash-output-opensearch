@@ -61,12 +61,25 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
         "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
         "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
     } }
+    let(:options_svc) { {
+      :auth_type => {
+        "type"=>"aws_iam",
+        "aws_access_key_id"=>"AAAAAAAAAAAAAAAAAAAA",
+        "aws_secret_access_key"=>"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "service_name"=>"svc_test"}
+    } }
     subject { described_class.new(logger, options) }
     let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
     let(:sign_aws_request) {  }
 
     it "should validate AWS IAM credentials initialization" do
       expect(subject.aws_iam_auth_initialization(options)).not_to be_nil
+      expect(subject.get_service_name).to eq("es") 
+    end
+
+    it "should validate AWS IAM service_name config" do
+      expect(subject.aws_iam_auth_initialization(options_svc)).not_to be_nil
+      expect(subject.get_service_name).to eq("svc_test") 
     end
 
     it "should validate signing aws request" do

@@ -13,27 +13,15 @@ require "logstash/outputs/opensearch/template_manager"
 describe LogStash::Outputs::OpenSearch::TemplateManager do
 
   describe ".default_template_path" do
-    [1, 2].each do |major_version|
-      context "when ECS is disabled with OpenSearch #{major_version}.x" do
-        it 'resolves' do
-          expect(described_class.default_template_path(major_version)).to end_with("/templates/ecs-disabled/#{major_version}x.json")
-        end
-        it 'resolves' do
-          expect(described_class.default_template_path(major_version, :disabled)).to end_with("/templates/ecs-disabled/#{major_version}x.json")
-        end
-      end
-    end
     [7, 1, 2].each do |major_version|
-      context "when ECS v1 is requested with OpenSearch #{major_version}.x" do
-        it 'resolves' do
-          expect(described_class.default_template_path(major_version, :v1)).to end_with("/templates/ecs-v1/#{major_version}x.json")
-        end
-      end
-    end
-    [1, 2].each do |major_version|
-      context "when ECS v8 is requested with OpenSearch #{major_version}.x" do
-        it 'resolves' do
-          expect(described_class.default_template_path(major_version, :v8)).to end_with("/templates/ecs-v8/#{major_version}x.json")
+      [:disabled, :v1, :v8].each do |ecs_ver|
+        [true, false].each do |legacy_template|
+          context "when ECS is #{ecs_ver} with OpenSearch #{major_version}.x legacy_template:#{legacy_template}" do
+            suffix = legacy_template ? "" : "_index"
+            it 'resolves' do
+              expect(described_class.default_template_path(major_version, ecs_ver, legacy_template)).to end_with("/templates/ecs-#{ecs_ver}/#{major_version}x#{suffix}.json")
+            end
+          end
         end
       end
     end
