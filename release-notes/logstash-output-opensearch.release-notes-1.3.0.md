@@ -7,7 +7,7 @@ Compatible with OpenSearch 1.3.4, 2.1.0
 
 ### Enhancements
 
-* Support for Logstash 8.x ([#152](https://github.com/opensearch-project/logstash-output-opensearch/pull/152)) 
+* Support for Logstash 8.x and ECS V8 compatibility [#152](https://github.com/opensearch-project/logstash-output-opensearch/pull/152)) 
  
 
 ### Bugfixes
