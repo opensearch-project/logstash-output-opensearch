@@ -40,6 +40,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     attr_reader :logger, :adapter, :sniffing, :sniffer_delay, :resurrect_delay, :healthcheck_path, :sniffing_path, :bulk_path
+    attr_reader :default_server_major_version
 
     ROOT_URI_PATH = '/'.freeze
 
@@ -68,6 +69,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         @resurrect_delay = merged[:resurrect_delay]
         @sniffing = merged[:sniffing]
         @sniffer_delay = merged[:sniffer_delay]
+        @default_server_major_version = merged[:default_server_major_version]
       end
 
       # Used for all concurrent operations in this class
@@ -412,8 +414,15 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def get_version(url)
-      request = perform_request_to_url(url, :get, ROOT_URI_PATH)
-      LogStash::Json.load(request.body)["version"]["number"] # e.g. "7.10.0"
+      response = perform_request_to_url(url, :get, ROOT_URI_PATH)
+      if response.code != 404 && !response.body.empty?
+        return LogStash::Json.load(response.body)["version"]["number"] # e.g. "7.10.0"
+      end
+      if @default_server_major_version.nil?
+        @logger.error("Failed to get version from health_check endpoint and default_server_major_version is not configured.")
+        raise "get_version failed! no default_server_major_version configured."
+      end
+      "#{default_server_major_version}.0.0"
     end
 
     def last_version
