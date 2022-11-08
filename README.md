@@ -18,7 +18,7 @@ The logstash-output-opensearch plugin helps to ship events from Logstash to Open
 ## Project Resources
 
 * [Project Website](https://opensearch.org/)
-* [Detailed Documentation](https://opensearch.org/docs/latest/clients/logstash/ship-to-opensearch/#opensearch-output-plugin)
+* [Detailed Documentation](https://opensearch.org/docs/latest/tools/logstash/ship-to-opensearch/)
 * [Logstash Overview](https://opensearch.org/docs/clients/logstash/index/)
 * [Developer Guide](DEVELOPER_GUIDE.md)
 * Need help? Try [Forums](https://discuss.opendistrocommunity.dev/)
