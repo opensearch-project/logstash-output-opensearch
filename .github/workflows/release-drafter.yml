@@ -2,35 +2,34 @@ name: Draft Release
 
 on:
   push:
-    branches: 
-      - add-release-workflows
+    tags:
+      - "*"
 
 jobs:
   draft_release:
     runs-on: ubuntu-latest
-    # permissions:
-    #   id-token: write
-    #   contents: write
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     role-to-assume: ${{ secrets.GET_SECRET_IAM_ROLE }}
-      #     aws-region: us-east-1
-      # - name: Download signing key
-      #   run: | 
-      #     aws secretsmanager get-secret-value --secret-id jenkins-opensearchproject-rubygems-private-key --query SecretString --output text > gem-private_key.pem
+          ruby-version: jruby
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.GET_SECRET_IAM_ROLE }}
+          aws-region: us-east-1
+      - name: Download signing key
+        run: | 
+          aws secretsmanager get-secret-value --secret-id jenkins-opensearchproject-rubygems-private-key --query SecretString --output text > gem-private_key.pem
       - name: Build and package gem artifact
         run: |
           gem build logstash-output-opensearch.gemspec
-          mkdir dist
-          mv logstash-output-opensearch-*.gem dist/
+          mkdir dist && mv logstash-output-opensearch-*.gem dist/
           tar -cvf artifacts.tar.gz dist
       - name: Draft a release
         uses: softprops/action-gh-release@v1

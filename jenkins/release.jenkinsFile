@@ -1,0 +1,12 @@
+lib = library(identifier: 'jenkins@1.4.2', retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+]))
+
+standardReleasePipelineWithGenericTrigger(
+    tokenIdCredential: 'jenkins-logstash-output-opensearch-generic-webhook-token',
+    causeString: 'A tag was cut on opensearch-project/logstash-output-opensearch repository causing this workflow to run',
+    downloadReleaseAsset: true,
+    publishRelease: true) {
+        publishToRubyGems(apiKeyCredentialId: 'jenkins-logstash-output-opensearch-api-key')
+    }
