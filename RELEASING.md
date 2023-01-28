@@ -35,6 +35,6 @@ The release process is standard across repositories in this org and is run by a 
 
 1. Create a tag, e.g. 1.0.0, and push it to this GitHub repository.
 1. The [release-drafter.yml](.github/workflows/release-drafter.yml) will be automatically kicked off and a draft release will be created.
-1. This draft release triggers the [jenkins release workflow](https://build.ci.opensearch.org/job/spring-data-opensearch-release) as a As a result of which the logstash-output-plugin is released on [rubygems.org](https://rubygems.org/gems/logstash-output-opensearch). Please note that the release workflow is triggered only if created release is in draft state.
+1. This draft release triggers the [jenkins release workflow](https://build.ci.opensearch.org/job/logstash-ouput-opensearch-release) as a As a result of which the logstash-output-plugin is released on [rubygems.org](https://rubygems.org/gems/logstash-output-opensearch). Please note that the release workflow is triggered only if created release is in draft state.
 1. Once the above release workflow is successful, the drafted release on GitHub is published automatically.
 1. Increment "version" in [logstash-output-opensearch.gemspec](./logstash-output-opensearch.gemspec) to the next iteration, e.g. 1.0.1.
