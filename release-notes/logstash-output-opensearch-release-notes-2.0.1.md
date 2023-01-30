@@ -10,7 +10,3 @@ Compatible with OpenSearch 1.3.4, 2.1.0
 
 ### Infrastructure
 * Add release workflows (#188)
-
-### Enhancements
-* AWS SDK dependency updated to 3.0 to work with Logstash 8.4.0 ([#171](https://github.com/opensearch-project/logstash-output-opensearch/pull/171))
-
