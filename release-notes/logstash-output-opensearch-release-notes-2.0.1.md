@@ -1,5 +1,5 @@
 ## Version 2.0.1 Release Notes
-Compatible with OpenSearch 1.3.4, 2.1.0
+Compatible with OpenSearch 1.3+, 2.1.0
 
 ### Bug Fixes
 * Fix a gzip compression issue when sending partial bulk requests (#183)
