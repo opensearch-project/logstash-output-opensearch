@@ -19,4 +19,4 @@ vendor/
 /dockerfiles/.env
 gem-private_key.pem
 builds/
-
+.DS_Store
