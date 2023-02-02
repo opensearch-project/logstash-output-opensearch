@@ -4,9 +4,13 @@ lib = library(identifier: 'jenkins@1.5.4', retriever: modernSCM([
 ]))
 
 standardReleasePipelineWithGenericTrigger(
+    overrideDockerImage: 'opensearchstaging/ci-runner:release-centos7-clients-v2.1',
     tokenIdCredential: 'jenkins-logstash-output-opensearch-generic-webhook-token',
     causeString: 'A tag was cut on opensearch-project/logstash-output-opensearch repository causing this workflow to run',
     downloadReleaseAsset: true,
     publishRelease: true) {
-        publishToRubyGems(apiKeyCredentialId: 'jenkins-logstash-output-opensearch-api-key')
+        publishToRubyGems(
+            rubyVersion: 'jruby-9.3.0.0',
+            apiKeyCredentialId: 'jenkins-logstash-output-opensearch-api-key'
+            )
     }
