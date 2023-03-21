@@ -1,2 +1,4 @@
-# This should match the owning team set up in https://github.com/orgs/opensearch-project/teams
-*   @opensearch-project/logstash-output-opensearch
+# This should match the list of maintainers in MAINTAINERS.md
+* @asifsmohammed
+* @dlvenable
+* @oeyh
