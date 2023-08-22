@@ -70,35 +70,80 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
     } }
     subject { described_class.new(logger, options) }
     let(:uri) { ::LogStash::Util::SafeURI.new("http://localhost:9200") }
-    let(:sign_aws_request) {  }
 
-    it "should validate AWS IAM credentials initialization" do
-      expect(subject.aws_iam_auth_initialization(options)).not_to be_nil
-      expect(subject.get_service_name).to eq("es") 
-    end
+    let(:expected_uri) {
+      expected_uri = uri.clone
+      expected_uri.path = "/"
+      expected_uri
+    }
 
-    it "should validate AWS IAM service_name config" do
-      expect(subject.aws_iam_auth_initialization(options_svc)).not_to be_nil
-      expect(subject.get_service_name).to eq("svc_test") 
-    end
-
-    it "should validate signing aws request" do
+    let(:resp) {
       resp = double("response")
       allow(resp).to receive(:call)
       allow(resp).to receive(:code).and_return(200)
-      allow(subject).to receive(:sign_aws_request).with(any_args).and_return(sign_aws_request)
+      resp
+    }
 
-      expected_uri = uri.clone
-      expected_uri.path = "/"
+    context 'with a signer' do
+      let(:sign_aws_request) {  }
 
-      expect(subject.manticore).to receive(:get).
-        with(expected_uri.to_s, {
-          :headers => {"content-type"=> "application/json"}
-        }
+      it "should validate AWS IAM credentials initialization" do
+        expect(subject.aws_iam_auth_initialization(options)).not_to be_nil
+        expect(subject.get_service_name).to eq("es")
+      end
+
+      it "should validate AWS IAM service_name config" do
+        expect(subject.aws_iam_auth_initialization(options_svc)).not_to be_nil
+        expect(subject.get_service_name).to eq("svc_test")
+      end
+
+      it "should validate signing aws request" do
+        allow(subject).to receive(:sign_aws_request).with(any_args).and_return(sign_aws_request)
+
+        expect(subject.manticore).to receive(:get).
+          with(expected_uri.to_s, {
+            :headers => {"content-type"=> "application/json"}
+          }
+          ).and_return resp
+
+        expect(subject).to receive(:sign_aws_request)
+        subject.perform_request(uri, :get, "/")
+      end
+    end
+
+    context 'sign_aws_request' do
+      it 'handles UTF-8' do
+        encoded_body = body = "boîte de réception"
+        expect_any_instance_of(Aws::Sigv4::Signer).to receive(:sign_request).with(hash_including({
+            body: body,
+        })).and_return(
+          double(headers: {})
+        )
+        expect(subject.manticore).to receive(:post).
+          with(expected_uri.to_s, {
+            :body => encoded_body,
+            :headers => {"content-type"=> "application/json"}
+          }
         ).and_return resp
+        subject.perform_request(uri, :post, "/", { body: encoded_body })
+      end
 
-      expect(subject).to receive(:sign_aws_request)
-      subject.perform_request(uri, :get, "/")
+      it 'encodes body before signing to match manticore adapter encoding' do
+        body = "boîte de réception"
+        encoded_body = body.encode("ISO-8859-1")
+        expect_any_instance_of(Aws::Sigv4::Signer).to receive(:sign_request).with(hash_including({
+            body: body,
+        })).and_return(
+          double(headers: {})
+        )
+        expect(subject.manticore).to receive(:post).
+          with(expected_uri.to_s, {
+            :body => encoded_body,
+            :headers => {"content-type"=> "application/json"}
+          }
+        ).and_return resp
+        subject.perform_request(uri, :post, "/", { body: encoded_body })
+      end
     end
   end
 

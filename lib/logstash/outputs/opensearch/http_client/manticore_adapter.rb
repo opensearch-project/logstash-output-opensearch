@@ -12,6 +12,9 @@ require 'cgi'
 require 'manticore'
 require 'uri'
 
+java_import 'org.apache.http.util.EntityUtils'
+java_import 'org.apache.http.entity.StringEntity'
+
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
   AWS_DEFAULT_PORT = 443
   AWS_DEFAULT_PROFILE = 'default'
@@ -181,8 +184,20 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       resp
     end
 
+    # from Manticore, https://github.com/cheald/manticore/blob/acc25cac2999f4658a77a0f39f60ddbca8fe14a4/lib/manticore/client.rb#L536
+    ISO_8859_1 = "ISO-8859-1".freeze
+
+    def minimum_encoding_for(string)
+      if string.ascii_only?
+        ISO_8859_1
+      else
+        string.encoding.to_s
+      end
+    end
+
     def sign_aws_request(request_uri, path, method, params)
       url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>AWS_DEFAULT_PORT.to_s, :path=>path})
+
       request = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
         :headers => params[:headers],:body => params[:body]})
 
@@ -191,7 +206,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
         http_method: request.http_method,
         url: url,
         headers: params[:headers],
-        body: params[:body]
+        # match encoding of the HTTP adapter, see https://github.com/opensearch-project/logstash-output-opensearch/issues/207
+        body: params[:body] ? EntityUtils.toString(StringEntity.new(params[:body], minimum_encoding_for(params[:body]))) : nil
       )
       params[:headers] = params[:headers].merge(signed_key.headers)
     end
