@@ -6,7 +6,7 @@ export PATH=$BUILD_DIR/gradle/bin:$PATH
 SERVICE_URL="http://integration:9200"
 
 if [[ "$SECURE_INTEGRATION" == "true" ]]; then
-  SERVICE_URL="https://integration:9200 -k -u admin:admin"
+  SERVICE_URL="https://integration:9200 -k -u admin:myStrongPassword123!"
 fi
 
 wait_for_es() {
