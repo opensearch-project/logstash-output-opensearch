@@ -87,6 +87,7 @@ module LogStash; module PluginMixins; module OpenSearch
 
     def discover_cluster_uuid
       return unless defined?(plugin_metadata)
+      return if params && params['auth_type'] && params['auth_type']['service_name'] == "aoss" # AOSS doesn't support GET /
       cluster_info = client.get('/')
       plugin_metadata.set(:cluster_uuid, cluster_info['cluster_uuid'])
     rescue => e
