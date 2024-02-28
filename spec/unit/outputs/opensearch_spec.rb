@@ -776,6 +776,30 @@ describe LogStash::Outputs::OpenSearch do
       expect(logger).to have_received(:error).with(/Unable to retrieve OpenSearch cluster uuid/i, anything)
     end
 
+    context 'with iam auth' do
+      context 'es' do
+        let(:options) { { 'hosts' => '127.0.0.1:9999', 'auth_type' => { 'service_name' => 'es' } } }
+        it "logs inability to retrieve uuid" do
+          allow(subject).to receive(:install_template)
+          subject.register
+          subject.send :wait_for_successful_connection
+    
+          expect(logger).to have_received(:error).with(/Unable to retrieve OpenSearch cluster uuid/i, anything)
+        end
+      end
+
+      context 'aoss' do
+        let(:options) { { 'hosts' => '127.0.0.1:9999', 'auth_type' => { 'service_name' => 'aoss' } } }
+        it "does not attempt to retrieve uuid" do
+          allow(subject).to receive(:install_template)
+          subject.register
+          subject.send :wait_for_successful_connection
+
+          expect(logger).to_not have_received(:error)
+        end
+      end
+    end
+
     it "logs template install failure" do
       allow(subject).to receive(:discover_cluster_uuid)
       subject.register
