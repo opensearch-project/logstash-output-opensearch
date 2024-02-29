@@ -7,6 +7,7 @@ services:
     environment:
       - INTEGRATION=true
       - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
+      - OPENDISTRO_VERSION=${OPENDISTRO_VERSION}
 
   integration:
     build:

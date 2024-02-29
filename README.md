@@ -32,12 +32,14 @@ The logstash-output-opensearch plugin helps to ship events from Logstash to Open
 ## Configuration for Logstash Output Opensearch Plugin
 
 To run the Logstash Output Opensearch plugin, add following configuration in your logstash.conf file.
+Note: For logstash running with OpenSearch 2.12.0 and higher the admin password needs to be a custom strong password supplied during cluster setup.
+
 ```
 output {
     opensearch {
         hosts       => ["hostname:port"]
         user        => "admin"
-        password    => "admin"
+        password    => "<your-admin-password>"
         index       => "logstash-logs-%{+YYYY.MM.dd}"
     }
 }
@@ -62,6 +64,8 @@ output {
 In addition to the existing authentication mechanisms, if we want to add new authentication then we will be adding them in the configuration by using auth_type.
 
 Example Configuration for basic authentication:
+Note: For logstash running with OpenSearch 2.12.0 and higher the admin password needs to be a custom strong password supplied during cluster setup.
+
 ```
 output {
     opensearch {
@@ -69,7 +73,7 @@ output {
           auth_type => {
               type => 'basic'
               user => 'admin'
-              password => 'admin'
+              password => '<your-admin-password>'
           }
           index => "logstash-logs-%{+YYYY.MM.dd}"
    }
@@ -77,6 +81,7 @@ output {
 ```
 
 To ingest data into a `data stream` through logstash, we need to create the data stream and specify the name of data stream and the `op_type` of `create` in the output configuration. The sample configuration is shown below:
+Note: For logstash running with OpenSearch 2.12.0 and higher the admin password needs to be a custom strong password supplied during cluster setup.
 
 ```yml
 output {
@@ -85,7 +90,7 @@ output {
           auth_type => {
               type => 'basic'
               user => 'admin'
-              password => 'admin'
+              password => '<your-admin-password>'
           }
           index => "my-data-stream"
           action => "create"
