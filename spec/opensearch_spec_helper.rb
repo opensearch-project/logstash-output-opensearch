@@ -72,6 +72,15 @@ module OpenSearchHelper
     end
   end
 
+  # set admin password based on version
+  def self.admin_password
+    if check_version?('< 2.12.0') || check_version?('> 7')
+      "admin"
+    else
+      "myStrongPassword123!"
+    end
+  end
+
   def clean(client)
     client.indices.delete_template(:name => "*")
     client.indices.delete_index_template(:name => "logstash*") rescue nil

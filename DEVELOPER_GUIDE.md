@@ -185,13 +185,14 @@ Build the gem locally and install it using:
 ## Configuration for Logstash Output OpenSearch Plugin
 
 To run the Logstash Output Opensearch plugin, add following configuration in your logstash.conf file.
+Note: For logstash running with OpenSearch 2.12.0 and higher the admin password needs to be a custom strong password supplied during cluster setup.
 
 ```
 output {
     opensearch {
         hosts       => ["hostname:port"]
         user        => "admin"
-        password    => "admin"
+        password    => "<your-admin-password>"
         index       => "logstash-logs-%{+YYYY.MM.dd}"
     }
 }

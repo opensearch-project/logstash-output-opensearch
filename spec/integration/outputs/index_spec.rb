@@ -140,7 +140,7 @@ describe "indexing" do
   end
   describe "a secured indexer", :secure_integration => true do
     let(:user) { "admin" }
-    let(:password) { "admin" }
+    let(:password) { OpenSearchHelper.admin_password }
     let(:opensearch_url) {"https://integration:9200"}
     let(:config) do
       {
@@ -172,7 +172,8 @@ describe "indexing" do
       :auth_type => {
         "type"=>"basic",
         "user" => "admin",
-        "password" => "admin"}
+        "password" => OpenSearchHelper.admin_password
+        }
     } }
     let(:user) {options[:auth_type]["user"]}
     let(:password) {options[:auth_type]["password"]}

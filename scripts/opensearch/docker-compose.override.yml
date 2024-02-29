@@ -7,6 +7,7 @@ services:
     environment:
       - INTEGRATION=true
       - SECURE_INTEGRATION=${SECURE_INTEGRATION:-false}
+      - OPENSEARCH_VERSION=${OPENSEARCH_VERSION:-latest}
 
   integration:
     build:
@@ -19,6 +20,7 @@ services:
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=myStrongPassword123!
     ports:
       - "9200:9200"
     user: opensearch
