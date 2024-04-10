@@ -9,6 +9,7 @@
         - [Configuration for Logstash Output OpenSearch Plugin](#configuration-for-logstash-output-opensearch-plugin)
     - [Submitting Changes](#submitting-changes)
     - [Backports](#backports) 
+- [Building Custom Docker Images](docs/building_custom_docker_images.md)
 
 # Developer Guide
 
@@ -215,3 +216,6 @@ original PR with an appropriate label `backport <backport-branch-name>` is merge
 run successfully on the PR. For example, if a PR on main needs to be backported to `1.x` branch, add a label
 `backport 1.x` to the PR and make sure the backport workflow runs on the PR along with other checks. Once this PR is
 merged to main, the workflow will create a backport PR to the `1.x` branch.
+
+# [Building Custom Docker Images](docs/building_custom_docker_images.md)
+
