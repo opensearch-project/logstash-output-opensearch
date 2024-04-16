@@ -5,11 +5,12 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 ## Current Maintainers
 
 
-| Maintainer              | GitHub ID                                   | Affiliation |
-| ----------------------- | ------------------------------------------- | ----------- |
-| Asif Sohail Mohammed | [asifsmohammed](https://github.com/asifsmohammed)     | Amazon      |
-| David Venable        | [dlvenable](https://github.com/dlvenable)             | Amazon      |
-| Hai Yan              | [oeyh](https://github.com/oeyh)                       | Amazon      |
+| Maintainer               | GitHub ID                                           | Affiliation |
+| ------------------------ | --------------------------------------------------- | ----------- |
+| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                 | Amazon      |
+| Asif Sohail Mohammed     | [asifsmohammed](https://github.com/asifsmohammed)   | Amazon      |
+| David Venable            | [dlvenable](https://github.com/dlvenable)           | Amazon      |
+| Hai Yan                  | [oeyh](https://github.com/oeyh)                     | Amazon      |
 
 
 
