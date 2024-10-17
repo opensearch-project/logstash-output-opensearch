@@ -33,7 +33,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     :profile,
     :instance_profile_credentials_retries,
     :instance_profile_credentials_timeout,
-    :region)
+    :region,
+    :account_id)
 
   class ManticoreAdapter
     attr_reader :manticore, :logger
@@ -78,10 +79,11 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       instance_cred_retries = options[:auth_type]["instance_profile_credentials_retries"] || AWS_DEFAULT_PROFILE_CREDENTIAL_RETRY
       instance_cred_timeout = options[:auth_type]["instance_profile_credentials_timeout"] || AWS_DEFAULT_PROFILE_CREDENTIAL_TIMEOUT
       region = options[:auth_type]["region"] || AWS_DEFAULT_REGION
+      account_id = nil
       set_aws_region(region)
       set_service_name(options[:auth_type]["service_name"] || AWS_SERVICE)
 
-      credential_config = AWSIAMCredential.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, region)
+      credential_config = AWSIAMCredential.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, region, account_id)
       @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
     end
 

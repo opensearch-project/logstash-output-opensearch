@@ -9,5 +9,5 @@ if [ -f Gemfile.lock ]; then
 fi
 
 cd scripts/unit-test;
-docker-compose down
-docker-compose build logstash
+docker compose down
+docker compose build logstash
