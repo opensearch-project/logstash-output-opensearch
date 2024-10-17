@@ -9,5 +9,5 @@ if [ -f Gemfile.lock ]; then
 fi
 cd scripts/opendistro;
 
-docker-compose down
-docker-compose build
+docker compose down
+docker compose build
