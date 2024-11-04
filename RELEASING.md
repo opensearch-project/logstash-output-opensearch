@@ -13,13 +13,7 @@ This document explains the release strategy for artifacts in this organization.
 
 ### Release Branching
 
-Given the current major release of 1.0, projects in this organization maintain the following active branches.
-
-* **main**: The next _major_ release. This is the branch where all merges take place and code moves fast.
-* **1.x**: The next _minor_ release. Once a change is merged into `main`, decide whether to backport it to `1.x`.
-* **1.0**: The _current_ release. In between minor releases, only hotfixes (e.g. security) are backported to `1.0`.
-
-Label PRs with the next major version label (e.g. `2.0.0`) and merge changes into `main`. Label PRs that you believe need to be backported as `1.x` and `1.0`. Backport PRs by checking out the versioned branch, cherry-pick changes and open a PR against each target backport branch.
+This project currently releases only from `main`.
 
 ### Feature Branches
 
@@ -27,14 +21,17 @@ Do not creating branches in the upstream repo, use your fork, for the exception 
 
 ## Release Labels
 
-Repositories create consistent release labels, such as `v1.0.0`, `v1.1.0` and `v2.0.0`, as well as `backport`. Use release labels to target an issue or a PR for a given release. See [MAINTAINERS](MAINTAINERS.md#triage-open-issues) for more information on triaging issues.
+Repositories create consistent release labels, such as `1.0.0`, `1.1.0` and `2.0.0`, as well as `backport`. Use release labels to target an issue or a PR for a given release. See [MAINTAINERS](MAINTAINERS.md#triage-open-issues) for more information on triaging issues.
 
 ## Releasing
 
 The release process is standard across repositories in this org and is run by a release manager volunteering from amongst [MAINTAINERS](MAINTAINERS.md).
 
-1. Create a tag, e.g. 1.0.0, and push it to this GitHub repository.
+1. Create a tag, e.g. `1.0.0`, and push it to this GitHub repository. You can do this from your local fork:
+   1. `git fetch upstream --tags`
+   1. `git tag 2.0.3`
+   1. `git push --tags upstream`
 1. The [release-drafter.yml](.github/workflows/release-drafter.yml) will be automatically kicked off and a draft release will be created.
-1. This draft release triggers the [jenkins release workflow](https://build.ci.opensearch.org/job/logstash-ouput-opensearch-release) as a As a result of which the logstash-output-plugin is released on [rubygems.org](https://rubygems.org/gems/logstash-output-opensearch). Please note that the release workflow is triggered only if created release is in draft state.
+1. This draft release triggers the [jenkins release workflow](https://build.ci.opensearch.org/job/logstash-output-opensearch-release) as a As a result of which the logstash-output-plugin is released on [rubygems.org](https://rubygems.org/gems/logstash-output-opensearch). Please note that the release workflow is triggered only if created release is in draft state.
 1. Once the above release workflow is successful, the drafted release on GitHub is published automatically.
 1. Increment "version" in [logstash-output-opensearch.gemspec](./logstash-output-opensearch.gemspec) to the next iteration, e.g. 1.0.1.
