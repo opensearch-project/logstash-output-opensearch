@@ -5,21 +5,21 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 ## Current Maintainers
 
 
-| Maintainer               | GitHub ID                                           | Affiliation |
-| ------------------------ | --------------------------------------------------- | ----------- |
-| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)                 | Amazon      |
-| Asif Sohail Mohammed     | [asifsmohammed](https://github.com/asifsmohammed)   | Amazon      |
-| David Venable            | [dlvenable](https://github.com/dlvenable)           | Amazon      |
-| Hai Yan                  | [oeyh](https://github.com/oeyh)                     | Amazon      |
+| Maintainer           | GitHub ID                                         | Affiliation |
+| -------------------- | ------------------------------------------------- | ----------- |
+| Asif Sohail Mohammed | [asifsmohammed](https://github.com/asifsmohammed) | Amazon      |
+| David Venable        | [dlvenable](https://github.com/dlvenable)         | Amazon      |
+| Hai Yan              | [oeyh](https://github.com/oeyh)                   | Amazon      |
 
 
 
 ## Emeritus
 
-| Maintainer              | GitHub ID                                   | Affiliation |
-| ----------------------- | ------------------------------------------- | ----------- |
-| Jack Mazanec            | [jmazanec15](https://github.com/jmazanec15) | Amazon      |
-| Vamshi Vijay Nakkirtha  | [vamshin](https://github.com/vamshin)       | Amazon      |
-| Vijayan Balasubramanian | [VijayanB](https://github.com/VijayanB)     | Amazon      |
-| Deep Datta              | [deepdatta](https://github.com/deepdatta)   | Amazon      |
-| Shivani Shukla          | [sshivanii](https://github.com/sshivanii)   | Amazon      |
+| Maintainer               | GitHub ID                                   | Affiliation |
+| ------------------------ | ------------------------------------------- | ----------- |
+| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)         | Independent |
+| Jack Mazanec             | [jmazanec15](https://github.com/jmazanec15) | Amazon      |
+| Vamshi Vijay Nakkirtha   | [vamshin](https://github.com/vamshin)       | Amazon      |
+| Vijayan Balasubramanian  | [VijayanB](https://github.com/VijayanB)     | Amazon      |
+| Deep Datta               | [deepdatta](https://github.com/deepdatta)   | Amazon      |
+| Shivani Shukla           | [sshivanii](https://github.com/sshivanii)   | Amazon      |
