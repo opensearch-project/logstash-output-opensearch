@@ -112,6 +112,9 @@ Starting in 2.0.0, the aws sdk version is bumped to v3. In order for all other A
 /usr/share/logstash/bin/logstash-plugin install --version 0.1.0.pre logstash-integration-aws
 /usr/share/logstash/bin/logstash-plugin install --version 2.0.0 logstash-output-opensearch
 ```
+
+For all other plugin configuration parameters, please inspect [api_configs.rb](lib/logstash/plugin_mixins/opensearch/api_configs.rb).
+
 ## ECS Compatibility
 [Elastic Common Schema(ECS)](https://www.elastic.co/guide/en/ecs/current/index.html) compatibility for V8 was added in 1.3.0. For more details on ECS support refer to this [documentation](docs/ecs_compatibility.md).
 
