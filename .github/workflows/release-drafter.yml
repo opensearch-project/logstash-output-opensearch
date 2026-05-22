@@ -13,13 +13,13 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Install Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
         with:
           ruby-version: jruby
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@67fbcbb121271f7775d2e7715933280b06314838 # v1
         with:
           role-to-assume: ${{ secrets.GET_SECRET_IAM_ROLE }}
           aws-region: us-east-1
@@ -32,7 +32,7 @@ jobs:
           mkdir dist && mv logstash-output-opensearch-*.gem dist/
           tar -cvf artifacts.tar.gz dist
       - name: Draft a release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           draft: true
           generate_release_notes: true

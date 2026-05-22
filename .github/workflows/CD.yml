@@ -12,7 +12,7 @@ jobs:
       LOGSTASH_VERSION: "7.13.2"
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
 
       - name: Build plugin
         run: |
@@ -39,7 +39,7 @@ jobs:
           tar -czf logstash-oss-with-opensearch-output-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64.tar.gz logstash-${{ env.LOGSTASH_VERSION }}
 
       - name: Upload logstash-oss-with-opensearch-output-plugin
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2
         with:
           name: logstash-oss-with-opensearch-output-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64
           path: prepare-install/logstash-oss-with-opensearch-output-plugin-${{ env.LOGSTASH_VERSION }}-linux-x64.tar.gz
