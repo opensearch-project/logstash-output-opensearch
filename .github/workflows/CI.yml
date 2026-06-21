@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
 
       - name: Build and pull docker files for unit tests with logstash ${{ matrix.logstash }}
         run: |
@@ -46,7 +46,7 @@ jobs:
       SECURE_INTEGRATION: ${{ matrix.secure }}
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
 
       - name: Build and pull docker files for OpenSearch-${{ matrix.opensearch }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
         run: |
@@ -72,7 +72,7 @@ jobs:
       SECURE_INTEGRATION: ${{ matrix.secure }}
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
 
       - name: Build and pull docker files for OpenDistro-${{ matrix.opendistro }}-security-${{ matrix.secure }} for logstash ${{ matrix.logstash }}
         run: |
