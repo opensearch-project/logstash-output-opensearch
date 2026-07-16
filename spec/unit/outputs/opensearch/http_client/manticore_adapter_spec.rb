@@ -144,6 +144,26 @@ describe LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter do
         ).and_return resp
         subject.perform_request(uri, :post, "/", { body: encoded_body })
       end
+
+      it 'handles ASCII-8BIT body (e.g. gzip-compressed) without raising UnsupportedCharsetException' do
+        require 'zlib'
+        require 'stringio'
+        io = StringIO.new
+        io.set_encoding "BINARY"
+        gz = Zlib::GzipWriter.new(io)
+        gz.write("hello world\n")
+        gz.close
+        gzip_body = io.string
+
+        expect(gzip_body.encoding.to_s).to eq("ASCII-8BIT")
+        expect(gzip_body.ascii_only?).to be false
+
+        expect_any_instance_of(Aws::Sigv4::Signer).to receive(:sign_request).and_return(
+          double(headers: {})
+        )
+        expect(subject.manticore).to receive(:post).and_return resp
+        expect { subject.perform_request(uri, :post, "/", { body: gzip_body }) }.not_to raise_error
+      end
     end
   end
 

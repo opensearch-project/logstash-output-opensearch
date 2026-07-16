@@ -190,7 +190,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     ISO_8859_1 = "ISO-8859-1".freeze
 
     def minimum_encoding_for(string)
-      if string.ascii_only?
+      if string.encoding.ascii_compatible?
         ISO_8859_1
       else
         string.encoding.to_s
