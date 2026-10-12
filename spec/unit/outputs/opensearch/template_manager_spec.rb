@@ -39,5 +39,13 @@ describe LogStash::Outputs::OpenSearch::TemplateManager do
         expect(template.include?('template')).to be_falsey
       end
     end
+
+    describe ".read_template_file" do
+      it "raises ArgumentError when template file does not exist" do
+        expect {
+          described_class.read_template_file("/non/existent/path/template.json")
+        }.to raise_error(ArgumentError, /could not be found/)
+      end
+    end
   end
 end
