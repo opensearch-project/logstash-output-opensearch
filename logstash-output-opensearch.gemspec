@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'logstash-mixin-ecs_compatibility_support', '~>1.0'
   s.add_runtime_dependency 'aws-sdk-core', '~> 3'
   s.add_runtime_dependency 'json', '>= 2.3.0', '~> 2'
+  s.add_runtime_dependency 'base64'
 
   s.add_development_dependency 'logstash-codec-plain'
   s.add_development_dependency 'logstash-devutils'
